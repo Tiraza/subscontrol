@@ -16,8 +16,6 @@
 
     <properties>
         <java.version>21</java.version>
-        <sonar.organization>tiraza</sonar.organization>
-        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
 
     <dependencies>
