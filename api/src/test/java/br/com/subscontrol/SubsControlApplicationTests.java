@@ -1,4 +1,4 @@
-package br.com.subscontrol.SubsControl;
+package br.com.subscontrol;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

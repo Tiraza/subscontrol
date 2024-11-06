@@ -1,4 +1,4 @@
-package br.com.subscontrol.SubsControl;
+package br.com.subscontrol;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
