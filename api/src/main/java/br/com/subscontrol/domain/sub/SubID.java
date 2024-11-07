@@ -26,4 +26,12 @@ public class SubID extends Identifier {
     public String getValor() {
         return valor;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SubID identifier = (SubID) o;
+        return Objects.equals(getValor(), identifier.getValor());
+    }
 }

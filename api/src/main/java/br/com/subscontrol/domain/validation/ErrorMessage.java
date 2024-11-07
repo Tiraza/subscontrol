@@ -1,4 +1,6 @@
 package br.com.subscontrol.domain.validation;
 
-public record ErrorMessage(String message) {
+import java.io.Serializable;
+
+public record ErrorMessage(String message) implements Serializable {
 }

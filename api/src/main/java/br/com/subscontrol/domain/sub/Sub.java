@@ -7,6 +7,7 @@ import br.com.subscontrol.domain.validation.ValidationHandler;
 import br.com.subscontrol.domain.validation.handler.Notification;
 
 import java.time.Instant;
+import java.util.Objects;
 
 public class Sub extends Entity<SubID> {
 
@@ -103,11 +104,6 @@ public class Sub extends Entity<SubID> {
         return this;
     }
 
-    @Override
-    public void validate(ValidationHandler handler) {
-        new SubValidator(this, handler).validate();
-    }
-
     private void selfValidate() {
         final var notification = Notification.create();
         validate(notification);
@@ -115,5 +111,18 @@ public class Sub extends Entity<SubID> {
         if (notification.hasError()) {
             throw DomainException.with("Failed to create Entity Sub", notification.getErrors());
         }
+    }
+
+    @Override
+    public void validate(ValidationHandler handler) {
+        new SubValidator(this, handler).validate();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Sub entity = (Sub) o;
+        return Objects.equals(getId(), entity.getId());
     }
 }
