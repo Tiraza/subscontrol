@@ -1,5 +1,6 @@
 package br.com.subscontrol.domain;
 
+import br.com.subscontrol.domain.validation.ValidationHandler;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -13,6 +14,11 @@ public class EntidadeTest {
         public EntidadeConcreta(Long id, String valor) {
             super(id);
             this.valor = valor;
+        }
+
+        @Override
+        public void validate(ValidationHandler handler) {
+            /* Entidade criada apenas para teste */
         }
     }
 
