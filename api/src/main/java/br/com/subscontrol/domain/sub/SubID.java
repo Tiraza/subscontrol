@@ -1,11 +1,11 @@
 package br.com.subscontrol.domain.sub;
 
-import br.com.subscontrol.domain.Identificador;
+import br.com.subscontrol.domain.Identifier;
 
 import java.util.Objects;
 import java.util.UUID;
 
-public class SubID extends Identificador  {
+public class SubID extends Identifier {
 
     private final String valor;
 
