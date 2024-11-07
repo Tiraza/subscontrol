@@ -4,12 +4,12 @@ import br.com.subscontrol.domain.validation.ValidationHandler;
 
 import java.util.Objects;
 
-public abstract class Entidade<ID> {
+public abstract class Entity<ID> {
 
     protected final ID id;
 
-    public Entidade(ID id) {
-        Objects.requireNonNull(id, "'id' nao pode ser null");
+    public Entity(ID id) {
+        Objects.requireNonNull(id, "'id' should not be null");
         this.id = id;
     }
 
@@ -23,7 +23,7 @@ public abstract class Entidade<ID> {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Entidade<?> entity = (Entidade<?>) o;
+        Entity<?> entity = (Entity<?>) o;
         return Objects.equals(getId(), entity.getId());
     }
 

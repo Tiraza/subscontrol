@@ -1,5 +1,6 @@
 package br.com.subscontrol.domain.sub;
 
+import br.com.subscontrol.domain.exceptions.DomainException;
 import br.com.subscontrol.domain.utils.InstantUtils;
 import br.com.subscontrol.utils.ThreadUtils;
 import org.junit.jupiter.api.Test;
@@ -9,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class SubTest {
 
     @Test
-    void giveValidParameters_whenCallNewSub_thenInstantiateASub() {
+    void givenValidParameters_whenCallNewSub_thenInstantiateASub() {
         final var name = "Muryllo Tiraza Santos";
         final var email = "muryllo.tiraza@subscontrol.com.br";
 
@@ -109,7 +110,7 @@ public class SubTest {
     }
 
     @Test
-    public void givenAValidInactiveSub_whenCallUpdateWithActivate_shouldReceiveSubUpdated() {
+    void givenAValidInactiveSub_whenCallUpdateWithActivate_shouldReceiveSubUpdated() {
         final var id = SubID.unique().getValor();
         final var name = "Muryllo Tiraza Santos";
         final var email = "muryllo.tiraza@subscontrol.com.br";
@@ -143,7 +144,7 @@ public class SubTest {
     }
 
     @Test
-    public void givenAValidActiveSub_whenCallUpdateWithInactivate_shouldReceiveSubUpdated() {
+    void givenAValidActiveSub_whenCallUpdateWithInactivate_shouldReceiveSubUpdated() {
         final var id = SubID.unique().getValor();
         final var name = "Muryllo Tiraza Santos";
         final var email = "muryllo.tiraza@subscontrol.com.br";
@@ -173,6 +174,102 @@ public class SubTest {
         assertEquals(createdAt, sub.getCreatedAt());
         assertTrue(updatedAt.isBefore(sub.getUpdatedAt()));
         assertNotNull(sub.getDeletedAt());
+    }
+
+    @Test
+    void givenInvalidNullName_whenCallNewSub_thenReceiveDomainException() {
+        final String name = null;
+        final String email = "muryllo.tiraza@subscontrol.com.br";
+
+        DomainException exception = assertThrows(DomainException.class, () -> Sub.newSub(name, email));
+
+        final var expectedMessage = "Failed to create Entity Sub";
+        final var expectedErrorMessage = "'name' should not be null";
+        final int expectedErrorCount = 1;
+
+        assertEquals(expectedMessage, exception.getMessage());
+        assertEquals(expectedErrorCount, exception.getErrors().size());
+        assertEquals(expectedErrorMessage, exception.firstError().message());
+    }
+
+    @Test
+    void givenInvalidNullEmail_whenCallNewSub_thenReceiveDomainException() {
+        final String name = "Muryllo Tiraza Santos";
+        final String email = null;
+
+        DomainException exception = assertThrows(DomainException.class, () -> Sub.newSub(name, email));
+
+        final var expectedMessage = "Failed to create Entity Sub";
+        final var expectedErrorMessage = "'email' should not be null";
+        final int expectedErrorCount = 1;
+
+        assertEquals(expectedMessage, exception.getMessage());
+        assertEquals(expectedErrorCount, exception.getErrors().size());
+        assertEquals(expectedErrorMessage, exception.firstError().message());
+    }
+
+    @Test
+    void givenInvalidEmptyName_whenCallNewSub_thenReceiveDomainException() {
+        final String name = " ";
+        final String email = "muryllo.tiraza@subscontrol.com.br";
+
+        DomainException exception = assertThrows(DomainException.class, () -> Sub.newSub(name, email));
+
+        final var expectedMessage = "Failed to create Entity Sub";
+        final var expectedErrorMessage = "'name' should not be empty";
+        final int expectedErrorCount = 1;
+
+        assertEquals(expectedMessage, exception.getMessage());
+        assertEquals(expectedErrorCount, exception.getErrors().size());
+        assertEquals(expectedErrorMessage, exception.firstError().message());
+    }
+
+    @Test
+    void givenInvalidEmptyEmail_whenCallNewSub_thenReceiveDomainException() {
+        final String name = "Muryllo Tiraza Santos";
+        final String email = " ";
+
+        DomainException exception = assertThrows(DomainException.class, () -> Sub.newSub(name, email));
+
+        final var expectedMessage = "Failed to create Entity Sub";
+        final var expectedErrorMessage = "'email' should not be empty";
+        final int expectedErrorCount = 1;
+
+        assertEquals(expectedMessage, exception.getMessage());
+        assertEquals(expectedErrorCount, exception.getErrors().size());
+        assertEquals(expectedErrorMessage, exception.firstError().message());
+    }
+
+    @Test
+    void givenInvalidLengthName_whenCallNewSub_thenReceiveDomainException() {
+        final String name = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum bibendum eros vel orci finibus, et tincidunt velit placerat. Suspendisse potenti. Maecenas consequat lorem sit amet diam venenatis, non auctor odio posuere. Nulla facilisi. Sed vulputate eros nec nisl maximus, in efficitur velit ultricies. Phasellus vitae turpis risus. Nam a libero ex. Etiam venenatis pharetra diam, in hendrerit libero fermentum a. Integer sit amet lacinia turpis. Sed eget tortor fringilla, posuere elit a, fermentum odio.";
+        final String email = "muryllo.tiraza@subscontrol.com.br";
+
+        DomainException exception = assertThrows(DomainException.class, () -> Sub.newSub(name, email));
+
+        final var expectedMessage = "Failed to create Entity Sub";
+        final var expectedErrorMessage = "'name' must be between 1 and 255 characters";
+        final int expectedErrorCount = 1;
+
+        assertEquals(expectedMessage, exception.getMessage());
+        assertEquals(expectedErrorCount, exception.getErrors().size());
+        assertEquals(expectedErrorMessage, exception.firstError().message());
+    }
+
+    @Test
+    void givenInvalidLengthEmail_whenCallNewSub_thenReceiveDomainException() {
+        final String name = "Muryllo Tiraza Santos";
+        final String email = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum bibendum eros vel orci finibus, et tincidunt velit placerat. Suspendisse potenti. Maecenas consequat lorem sit amet diam venenatis, non auctor odio posuere. Nulla facilisi. Sed vulputate eros nec nisl maximus, in efficitur velit ultricies. Phasellus vitae turpis risus. Nam a libero ex. Etiam venenatis pharetra diam, in hendrerit libero fermentum a. Integer sit amet lacinia turpis. Sed eget tortor fringilla, posuere elit a, fermentum odio.";
+
+        DomainException exception = assertThrows(DomainException.class, () -> Sub.newSub(name, email));
+
+        final var expectedMessage = "Failed to create Entity Sub";
+        final var expectedErrorMessage = "'email' must be between 1 and 255 characters";
+        final int expectedErrorCount = 1;
+
+        assertEquals(expectedMessage, exception.getMessage());
+        assertEquals(expectedErrorCount, exception.getErrors().size());
+        assertEquals(expectedErrorMessage, exception.firstError().message());
     }
 
 }

@@ -1,18 +1,19 @@
 package br.com.subscontrol.domain.sub;
 
-import br.com.subscontrol.domain.Entidade;
+import br.com.subscontrol.domain.Entity;
+import br.com.subscontrol.domain.exceptions.DomainException;
 import br.com.subscontrol.domain.utils.InstantUtils;
 import br.com.subscontrol.domain.validation.ValidationHandler;
 import br.com.subscontrol.domain.validation.handler.Notification;
 
 import java.time.Instant;
 
-public class Sub extends Entidade<SubID> {
+public class Sub extends Entity<SubID> {
 
     private String name;
     private String email;
     private boolean active;
-    private Instant createdAt;
+    private final Instant createdAt;
     private Instant updatedAt;
     private Instant deletedAt;
 
@@ -112,7 +113,7 @@ public class Sub extends Entidade<SubID> {
         validate(notification);
 
         if (notification.hasError()) {
-            //throw new NotificationException("Failed to create a Aggregate Genre", notification);
+            throw DomainException.with("Failed to create Entity Sub", notification.getErrors());
         }
     }
 }

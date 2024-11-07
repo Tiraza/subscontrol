@@ -13,15 +13,18 @@ public class DomainException extends NoStackTraceException {
         this.errors = anErrors;
     }
 
-    public static DomainException with(final ErrorMessage anError) {
-        return new DomainException(anError.message(), List.of(anError));
-    }
-
-    public static DomainException with(final List<ErrorMessage> errors) {
-        return new DomainException("", errors);
+    public static DomainException with(final String message, final List<ErrorMessage> errors) {
+        return new DomainException(message, errors);
     }
 
     public List<ErrorMessage> getErrors() {
         return errors;
+    }
+
+    public ErrorMessage firstError() {
+        if (getErrors() != null && !getErrors().isEmpty()) {
+            return getErrors().getFirst();
+        }
+        return null;
     }
 }
