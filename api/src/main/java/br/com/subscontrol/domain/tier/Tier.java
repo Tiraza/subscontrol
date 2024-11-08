@@ -1,4 +1,4 @@
-package br.com.subscontrol.domain.sub;
+package br.com.subscontrol.domain.tier;
 
 import br.com.subscontrol.domain.ProvidedEntity;
 import br.com.subscontrol.domain.exceptions.DomainException;
@@ -9,74 +9,70 @@ import br.com.subscontrol.domain.validation.handler.Notification;
 import java.time.Instant;
 import java.util.Objects;
 
-public class Sub extends ProvidedEntity<SubID> {
+public class Tier extends ProvidedEntity<TierID> {
 
-    private String name;
-    private String email;
-    private boolean active;
+    private String title;
+    private String description;
+    private String amount;
     private final Instant createdAt;
     private Instant updatedAt;
     private Instant deletedAt;
 
-    protected Sub(
-            final SubID id,
+    protected Tier(
+            final TierID id,
             final String providedId,
-            final String name,
-            final String email,
-            final boolean isActive,
+            final String title,
+            final String description,
+            final String amount,
             final Instant createdAt,
             final Instant updatedAt,
             final Instant deletedAt) {
         super(id, providedId);
-        this.name = name;
-        this.email = email;
-        this.active = isActive;
+        this.title = title;
+        this.description = description;
+        this.amount = amount;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
         selfValidate();
     }
 
-    public static Sub newSub(final String providedId, final String name, final String email) {
+    public static Tier newTier(final String providedId, final String title, final String description, final String amount) {
         final var now = Instant.now();
-        return new Sub(SubID.unique(), providedId, name, email, true, now, now, null);
+        return new Tier(TierID.unique(), providedId, title, description, amount, now, now, null);
     }
 
-    public static Sub with(
+    public static Tier with(
             final String id,
             final String providedId,
-            final String name,
-            final String email,
-            final boolean isActive,
+            final String title,
+            final String description,
+            final String amount,
             final Instant createdAt,
             final Instant updatedAt,
             final Instant deletedAt) {
-        return new Sub(SubID.from(id), providedId, name, email, isActive, createdAt, updatedAt, deletedAt);
+        return new Tier(TierID.from(id), providedId, title, description, amount, createdAt, updatedAt, deletedAt);
     }
 
-    public Sub update(final String name, final String email, final boolean isActive) {
-        if (isActive) {
-            activate();
-        } else {
-            deactivate();
-        }
-        this.name = name;
-        this.email = email;
+    public Tier update(final String title, final String description, final String amount) {
+        this.title = title;
+        this.description = description;
+        this.amount = amount;
         this.updatedAt = InstantUtils.now();
         selfValidate();
         return this;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
-    public String getEmail() {
-        return email;
+    public String getDescription() {
+        return description;
     }
 
-    public boolean isActive() {
-        return active;
+    public String getAmount() {
+        return amount;
     }
 
     public Instant getCreatedAt() {
@@ -91,41 +87,25 @@ public class Sub extends ProvidedEntity<SubID> {
         return deletedAt;
     }
 
-    public Sub deactivate() {
-        if (getDeletedAt() == null) {
-            this.deletedAt = InstantUtils.now();
-        }
-        this.active = false;
-        this.updatedAt = InstantUtils.now();
-        return this;
-    }
-
-    public Sub activate() {
-        this.deletedAt = null;
-        this.active = true;
-        this.updatedAt = InstantUtils.now();
-        return this;
-    }
-
     private void selfValidate() {
         final var notification = Notification.create();
         validate(notification);
 
         if (notification.hasError()) {
-            throw DomainException.with("Failed to create Entity Sub", notification.getErrors());
+            throw DomainException.with("Failed to create Entity Tier", notification.getErrors());
         }
     }
 
     @Override
     public void validate(ValidationHandler handler) {
-        new SubValidator(this, handler).validate();
+        new TierValidator(this, handler).validate();
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Sub entity = (Sub) o;
+        Tier entity = (Tier) o;
         return Objects.equals(getId(), entity.getId());
     }
 }

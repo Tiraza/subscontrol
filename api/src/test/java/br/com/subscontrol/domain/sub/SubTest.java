@@ -8,6 +8,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -16,12 +17,14 @@ class SubTest {
 
     @Test
     void givenValidParameters_whenCallNewSub_thenInstantiateASub() {
+        final var providedId = UUID.randomUUID().toString();
         final var name = "Muryllo Tiraza Santos";
         final var email = "muryllo.tiraza@subscontrol.com.br";
 
-        Sub sub = Sub.newSub(name, email);
+        Sub sub = Sub.newSub(providedId, name, email);
 
         assertNotNull(sub.getId());
+        assertEquals(providedId, sub.getProvidedId());
         assertEquals(name, sub.getName());
         assertEquals(email, sub.getEmail());
         assertTrue(sub.isActive());
@@ -32,7 +35,8 @@ class SubTest {
 
     @Test
     void givenValidParameters_whenCallWith_thenInstantiateASub() {
-        final var id = SubID.unique().getValor();
+        final var providedId = UUID.randomUUID().toString();
+        final var id = SubID.unique().getValue();
         final var name = "Muryllo Tiraza Santos";
         final var email = "muryllo.tiraza@subscontrol.com.br";
         final var isActive = false;
@@ -40,9 +44,10 @@ class SubTest {
         final var updatedAt = InstantUtils.now();
         final var deletedAt = InstantUtils.now();
 
-        Sub sub = Sub.with(id, name, email, isActive, createdAt, updatedAt, deletedAt);
+        Sub sub = Sub.with(id, providedId, name, email, isActive, createdAt, updatedAt, deletedAt);
 
-        assertEquals(id, sub.getId().getValor());
+        assertEquals(id, sub.getId().getValue());
+        assertEquals(providedId, sub.getProvidedId());
         assertEquals(name, sub.getName());
         assertEquals(email, sub.getEmail());
         assertEquals(isActive, sub.isActive());
@@ -53,12 +58,14 @@ class SubTest {
 
     @Test
     void givenActiveSub_whenCallDeactivate_thenDeactivateASub() {
+        final var providedId = UUID.randomUUID().toString();
         final var name = "Muryllo Tiraza Santos";
         final var email = "muryllo.tiraza@subscontrol.com.br";
 
-        Sub sub = Sub.newSub(name, email);
+        Sub sub = Sub.newSub(providedId, name, email);
 
         assertNotNull(sub.getId());
+        assertEquals(providedId, sub.getProvidedId());
         assertEquals(name, sub.getName());
         assertEquals(email, sub.getEmail());
         assertTrue(sub.isActive());
@@ -74,6 +81,7 @@ class SubTest {
         sub.deactivate();
 
         assertEquals(id, sub.getId());
+        assertEquals(providedId, sub.getProvidedId());
         assertEquals(name, sub.getName());
         assertEquals(email, sub.getEmail());
         assertFalse(sub.isActive());
@@ -84,6 +92,7 @@ class SubTest {
 
     @Test
     void givenInactiveSub_whenCallActivate_thenActivateASub() {
+        final var providedId = UUID.randomUUID().toString();
         final var id = SubID.unique().toString();
         final var name = "Muryllo Tiraza Santos";
         final var email = "muryllo.tiraza@subscontrol.com.br";
@@ -92,9 +101,10 @@ class SubTest {
         final var updatedAt = InstantUtils.now();
         final var deletedAt = InstantUtils.now();
 
-        Sub sub = Sub.with(id, name, email, isActive, createdAt, updatedAt, deletedAt);
+        Sub sub = Sub.with(id, providedId, name, email, isActive, createdAt, updatedAt, deletedAt);
 
-        assertEquals(id, sub.getId().getValor());
+        assertEquals(id, sub.getId().getValue());
+        assertEquals(providedId, sub.getProvidedId());
         assertEquals(name, sub.getName());
         assertEquals(email, sub.getEmail());
         assertEquals(isActive, sub.isActive());
@@ -105,7 +115,8 @@ class SubTest {
         ThreadUtils.sleep();
         sub.activate();
 
-        assertEquals(id, sub.getId().getValor());
+        assertEquals(id, sub.getId().getValue());
+        assertEquals(providedId, sub.getProvidedId());
         assertEquals(name, sub.getName());
         assertEquals(email, sub.getEmail());
         assertTrue(sub.isActive());
@@ -116,7 +127,8 @@ class SubTest {
 
     @Test
     void givenAValidInactiveSub_whenCallUpdateWithActivate_shouldReceiveSubUpdated() {
-        final var id = SubID.unique().getValor();
+        final var id = SubID.unique().getValue();
+        final var providedId = UUID.randomUUID().toString();
         final var name = "Muryllo Tiraza Santos";
         final var email = "muryllo.tiraza@subscontrol.com.br";
         final var isActive = false;
@@ -124,9 +136,10 @@ class SubTest {
         final var updatedAt = InstantUtils.now();
         final var deletedAt = InstantUtils.now();
 
-        Sub sub = Sub.with(id, name, email, isActive, createdAt, updatedAt, deletedAt);
+        Sub sub = Sub.with(id, providedId, name, email, isActive, createdAt, updatedAt, deletedAt);
 
-        assertEquals(id, sub.getId().getValor());
+        assertEquals(id, sub.getId().getValue());
+        assertEquals(providedId, sub.getProvidedId());
         assertEquals(name, sub.getName());
         assertEquals(email, sub.getEmail());
         assertEquals(isActive, sub.isActive());
@@ -139,7 +152,8 @@ class SubTest {
         final var expectedEmail = "victor.tiraza@subscontrol.com.br";
         sub.update(expectedName, expectedEmail, true);
 
-        assertEquals(id, sub.getId().getValor());
+        assertEquals(id, sub.getId().getValue());
+        assertEquals(providedId, sub.getProvidedId());
         assertEquals(expectedName, sub.getName());
         assertEquals(expectedEmail, sub.getEmail());
         assertTrue(sub.isActive());
@@ -150,16 +164,18 @@ class SubTest {
 
     @Test
     void givenAValidActiveSub_whenCallUpdateWithInactivate_shouldReceiveSubUpdated() {
-        final var id = SubID.unique().getValor();
+        final var id = SubID.unique().getValue();
+        final var providedId = UUID.randomUUID().toString();
         final var name = "Muryllo Tiraza Santos";
         final var email = "muryllo.tiraza@subscontrol.com.br";
         final var isActive = true;
         final var createdAt = InstantUtils.now();
         final var updatedAt = InstantUtils.now();
 
-        Sub sub = Sub.with(id, name, email, isActive, createdAt, updatedAt, null);
+        Sub sub = Sub.with(id, providedId, name, email, isActive, createdAt, updatedAt, null);
 
-        assertEquals(id, sub.getId().getValor());
+        assertEquals(id, sub.getId().getValue());
+        assertEquals(providedId, sub.getProvidedId());
         assertEquals(name, sub.getName());
         assertEquals(email, sub.getEmail());
         assertEquals(isActive, sub.isActive());
@@ -172,7 +188,8 @@ class SubTest {
         final var expectedEmail = "victor.tiraza@subscontrol.com.br";
         sub.update(expectedName, expectedEmail, false);
 
-        assertEquals(id, sub.getId().getValor());
+        assertEquals(id, sub.getId().getValue());
+        assertEquals(providedId, sub.getProvidedId());
         assertEquals(expectedName, sub.getName());
         assertEquals(expectedEmail, sub.getEmail());
         assertFalse(sub.isActive());
@@ -184,7 +201,8 @@ class SubTest {
     @ParameterizedTest
     @MethodSource("provideArguments")
     void givenInvalidParameter_whenCallNewSub_thenReceiveDomainException(String errorMessage, String name, String email) {
-        DomainException exception = assertThrows(DomainException.class, () -> Sub.newSub(name, email));
+        final var providedId = UUID.randomUUID().toString();
+        DomainException exception = assertThrows(DomainException.class, () -> Sub.newSub(providedId, name, email));
 
         final var expectedMessage = "Failed to create Entity Sub";
         final int expectedErrorCount = 1;
