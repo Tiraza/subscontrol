@@ -1,6 +1,6 @@
 package br.com.subscontrol.domain.sub;
 
-import br.com.subscontrol.domain.Entity;
+import br.com.subscontrol.domain.ProvidedEntity;
 import br.com.subscontrol.domain.exceptions.DomainException;
 import br.com.subscontrol.domain.utils.InstantUtils;
 import br.com.subscontrol.domain.validation.ValidationHandler;
@@ -8,7 +8,7 @@ import br.com.subscontrol.domain.validation.handler.Notification;
 
 import java.time.Instant;
 
-public class Sub extends Entity<SubID> {
+public class Sub extends ProvidedEntity<SubID> {
 
     private String name;
     private String email;
@@ -19,13 +19,14 @@ public class Sub extends Entity<SubID> {
 
     protected Sub(
             final SubID id,
+            final String providedId,
             final String name,
             final String email,
             final boolean isActive,
             final Instant createdAt,
             final Instant updatedAt,
             final Instant deletedAt) {
-        super(id);
+        super(id, providedId);
         this.name = name;
         this.email = email;
         this.active = isActive;
@@ -35,20 +36,21 @@ public class Sub extends Entity<SubID> {
         selfValidate();
     }
 
-    public static Sub newSub(final String nome, final String email) {
+    public static Sub newSub(final String providedId, final String name, final String email) {
         final var now = Instant.now();
-        return new Sub(SubID.unique(), nome, email, true, now, now, null);
+        return new Sub(SubID.unique(), providedId, name, email, true, now, now, null);
     }
 
     public static Sub with(
             final String id,
+            final String providedId,
             final String name,
             final String email,
             final boolean isActive,
             final Instant createdAt,
             final Instant updatedAt,
             final Instant deletedAt) {
-        return new Sub(SubID.from(id), name, email, isActive, createdAt, updatedAt, deletedAt);
+        return new Sub(SubID.from(id), providedId, name, email, isActive, createdAt, updatedAt, deletedAt);
     }
 
     public Sub update(final String name, final String email, final boolean isActive) {
@@ -60,6 +62,7 @@ public class Sub extends Entity<SubID> {
         this.name = name;
         this.email = email;
         this.updatedAt = InstantUtils.now();
+        selfValidate();
         return this;
     }
 
@@ -103,11 +106,6 @@ public class Sub extends Entity<SubID> {
         return this;
     }
 
-    @Override
-    public void validate(ValidationHandler handler) {
-        new SubValidator(this, handler).validate();
-    }
-
     private void selfValidate() {
         final var notification = Notification.create();
         validate(notification);
@@ -116,4 +114,10 @@ public class Sub extends Entity<SubID> {
             throw DomainException.with("Failed to create Entity Sub", notification.getErrors());
         }
     }
+
+    @Override
+    public void validate(ValidationHandler handler) {
+        new SubValidator(this, handler).validate();
+    }
+
 }

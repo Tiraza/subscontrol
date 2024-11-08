@@ -23,7 +23,8 @@ public class SubID extends Identifier {
     }
 
     @Override
-    public String getValor() {
+    public String getValue() {
         return valor;
     }
+
 }

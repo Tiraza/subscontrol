@@ -1,54 +1,96 @@
 package br.com.subscontrol.domain;
 
 import br.com.subscontrol.domain.validation.ValidationHandler;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.UUID;
 
-public class EntityTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-    private static class EntityConcreta extends Entity<Long> {
+class EntityTest {
 
-        private String valor;
+    @Test
+    void givenValidId_whenInstantiating_thenShouldCreateEntity() {
+        final StubID id = new StubID();
+        final StubEntity entity = new StubEntity(id);
 
-        public EntityConcreta(Long id, String valor) {
+        assertNotNull(entity);
+        assertEquals(id, entity.getId());
+    }
+
+    @Test
+    void givenNullId_whenInstantiating_thenShouldThrowException() {
+        final StubID id = null;
+
+        Assertions.assertThrows(
+                NullPointerException.class,
+                () -> new StubEntity(id),
+                "'id' should not be null"
+        );
+    }
+
+    @Test
+    void givenTwoEntitiesWithSameId_whenComparingEquality_thenShouldBeEqual() {
+        final StubID id = new StubID();
+        final StubEntity entity1 = new StubEntity(id);
+        final StubEntity entity2 = new StubEntity(id);
+
+        assertEquals(entity1, entity2);
+        assertEquals(entity1.hashCode(), entity2.hashCode());
+    }
+
+    @Test
+    void givenTwoEntitiesWithDifferentIds_whenComparingEquality_thenShouldNotBeEqual() {
+        final StubEntity entity1 = new StubEntity(new StubID());
+        final StubEntity entity2 = new StubEntity(new StubID());
+
+        Assertions.assertNotEquals(entity1, entity2);
+        Assertions.assertNotEquals(entity1.hashCode(), entity2.hashCode());
+    }
+
+    @Test
+    void givenEntityAndDifferentClass_whenComparingEquality_thenShouldNotBeEqual() {
+        final StubID id = new StubID();
+        final StubEntity entity = new StubEntity(id);
+        final DifferentEntity differentEntity = new DifferentEntity(id);
+        Assertions.assertNotEquals(entity, differentEntity);
+    }
+
+    private static class StubID extends Identifier {
+
+        private final String value;
+
+        public StubID() {
+            value = UUID.randomUUID().toString();
+        }
+
+        @Override
+        public String getValue() {
+            return value;
+        }
+    }
+
+    private static class StubEntity extends Entity<StubID> {
+        public StubEntity(StubID id) {
             super(id);
-            this.valor = valor;
         }
 
         @Override
         public void validate(ValidationHandler handler) {
-            /* Entidade criada apenas para teste */
+            // Not needed for these tests
         }
     }
 
-    @Test
-    void dadoParametrosValidos_quandoChamarNew_deveCriarEntidadeComId() {
-        final var id = 1L;
-        EntityConcreta entidade = new EntityConcreta(id, null);
-        assertEquals(id, entidade.getId());
-    }
+    private static class DifferentEntity extends Entity<StubID> {
+        public DifferentEntity(StubID id) {
+            super(id);
+        }
 
-    @Test
-    void dadoIdNull_quandoChamarNew_deveLancarExececao() {
-        final var mensagem = "'id' should not be null";
-        final var exception = assertThrows(NullPointerException.class, () -> new EntityConcreta(null, null));
-        assertEquals(mensagem, exception.getMessage());
-    }
-
-    @Test
-    void dadoEntidadesComMesmoId_quandoComparar_entaoDeveRetornarQueSaoIguais() {
-        final var entidade1 = new EntityConcreta(1L, "Primeiro Valor");
-        final var entidade2 = new EntityConcreta(1L, "Segundo Valor");
-        assertEquals(entidade1, entidade2);
-        assertEquals(entidade1.hashCode(), entidade2.hashCode());
-    }
-
-    @Test
-    void dadoEntidadesComDiferentesIds_quandoComparar_entaoDeveRetornarQueSaoDiferentes() {
-        final var entidade1 = new EntityConcreta(1L, "Valor");
-        final var entidade2 = new EntityConcreta(2L, "Valor");
-        assertNotEquals(entidade1, entidade2);
-        assertNotEquals(entidade1.hashCode(), entidade2.hashCode());
+        @Override
+        public void validate(ValidationHandler handler) {
+            // Not needed for these tests
+        }
     }
 }

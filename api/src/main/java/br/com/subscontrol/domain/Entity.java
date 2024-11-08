@@ -4,7 +4,7 @@ import br.com.subscontrol.domain.validation.ValidationHandler;
 
 import java.util.Objects;
 
-public abstract class Entity<ID> {
+public abstract class Entity<ID extends Identifier> {
 
     protected final ID id;
 
