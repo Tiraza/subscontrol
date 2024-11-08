@@ -7,7 +7,6 @@ import br.com.subscontrol.domain.validation.ValidationHandler;
 import br.com.subscontrol.domain.validation.handler.Notification;
 
 import java.time.Instant;
-import java.util.Objects;
 
 public class Sub extends ProvidedEntity<SubID> {
 
@@ -121,11 +120,4 @@ public class Sub extends ProvidedEntity<SubID> {
         new SubValidator(this, handler).validate();
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Sub entity = (Sub) o;
-        return Objects.equals(getId(), entity.getId());
-    }
 }

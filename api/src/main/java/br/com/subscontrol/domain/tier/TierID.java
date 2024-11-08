@@ -27,11 +27,4 @@ public class TierID extends Identifier {
         return valor;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        TierID identifier = (TierID) o;
-        return Objects.equals(getValue(), identifier.getValue());
-    }
 }

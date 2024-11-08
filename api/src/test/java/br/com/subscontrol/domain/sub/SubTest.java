@@ -88,6 +88,21 @@ class SubTest {
         assertEquals(createdAt, sub.getCreatedAt());
         assertTrue(updatedAt.isBefore(sub.getUpdatedAt()));
         assertNotNull(sub.getDeletedAt());
+
+        final var newUpdatedAt = sub.getUpdatedAt();
+        final var deletedAt = sub.getDeletedAt();
+
+        ThreadUtils.sleep();
+        sub.deactivate();
+
+        assertEquals(id, sub.getId());
+        assertEquals(providedId, sub.getProvidedId());
+        assertEquals(name, sub.getName());
+        assertEquals(email, sub.getEmail());
+        assertFalse(sub.isActive());
+        assertEquals(createdAt, sub.getCreatedAt());
+        assertEquals(deletedAt, sub.getDeletedAt());
+        assertTrue(newUpdatedAt.isBefore(sub.getUpdatedAt()));
     }
 
     @Test

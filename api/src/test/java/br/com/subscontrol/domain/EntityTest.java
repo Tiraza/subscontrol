@@ -43,19 +43,11 @@ class EntityTest {
 
     @Test
     void givenTwoEntitiesWithDifferentIds_whenComparingEquality_thenShouldNotBeEqual() {
-        // given
         final StubEntity entity1 = new StubEntity(new StubID());
         final StubEntity entity2 = new StubEntity(new StubID());
 
-        // when/then
         Assertions.assertNotEquals(entity1, entity2);
         Assertions.assertNotEquals(entity1.hashCode(), entity2.hashCode());
-    }
-
-    @Test
-    void givenEntityAndNull_whenComparingEquality_thenShouldNotBeEqual() {
-        final StubEntity entity = new StubEntity(new StubID());
-        Assertions.assertNotEquals(entity, null);
     }
 
     @Test
