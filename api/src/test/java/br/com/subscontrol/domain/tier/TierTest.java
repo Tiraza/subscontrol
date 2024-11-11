@@ -32,7 +32,6 @@ class TierTest {
         assertEquals(expectedTitle, tier.getTitle());
         assertEquals(expectedDescription, tier.getDescription());
         assertEquals(expectedAmount, tier.getAmount());
-
     }
 
     @Test
@@ -42,11 +41,12 @@ class TierTest {
         final var expectedTitle = "Assinante Basico";
         final var expectedDescription = "Modalidade basica de assinatura";
         final var expectedAmount = "R$ 10,00";
+        final var isActive = true;
         final var createdAt = InstantUtils.now();
         final var updatedAt = InstantUtils.now();
         final var deletedAt = InstantUtils.now();
 
-        Tier tier = Tier.with(id, providedId, expectedTitle, expectedDescription, expectedAmount, createdAt, updatedAt, deletedAt);
+        Tier tier = Tier.with(id, providedId, expectedTitle, expectedDescription, expectedAmount, isActive, createdAt, updatedAt, deletedAt);
 
         assertEquals(id, tier.getId().getValue());
         assertEquals(providedId, tier.getProvidedId());
@@ -55,7 +55,7 @@ class TierTest {
         assertEquals(expectedAmount, tier.getAmount());
         assertEquals(createdAt, tier.getCreatedAt());
         assertEquals(updatedAt, tier.getUpdatedAt());
-        assertEquals(deletedAt, tier.getDeletedAt());
+        assertNull(tier.getDeletedAt());
     }
 
     @Test
@@ -65,11 +65,12 @@ class TierTest {
         final var title = "Assinante Basico";
         final var description = "Modalidade basica de assinatura";
         final var amount = "R$ 10,00";
+        final var isActive = true;
         final var createdAt = InstantUtils.now();
         final var updatedAt = InstantUtils.now();
         final var deletedAt = InstantUtils.now();
 
-        Tier tier = Tier.with(id, providedId, title, description, amount, createdAt, updatedAt, deletedAt);
+        Tier tier = Tier.with(id, providedId, title, description, amount, isActive, createdAt, updatedAt, deletedAt);
 
         assertEquals(id, tier.getId().getValue());
         assertEquals(providedId, tier.getProvidedId());
@@ -78,19 +79,19 @@ class TierTest {
         assertEquals(amount, tier.getAmount());
         assertEquals(createdAt, tier.getCreatedAt());
         assertEquals(updatedAt, tier.getUpdatedAt());
-        assertEquals(deletedAt, tier.getDeletedAt());
+        assertNull(tier.getDeletedAt());
 
         ThreadUtils.sleep();
         final var expectedTitle = "Assinante Total";
         final var expectedDescription = "Modalidade com acesso total";
         final var expectedAmount = "R$ 50,00";
-        tier.update(expectedTitle, expectedDescription, expectedAmount);
+        tier.update(expectedTitle, expectedDescription, expectedAmount, isActive);
 
         assertEquals(expectedTitle, tier.getTitle());
         assertEquals(expectedDescription, tier.getDescription());
         assertEquals(expectedAmount, tier.getAmount());
         assertEquals(createdAt, tier.getCreatedAt());
-        assertEquals(deletedAt, tier.getDeletedAt());
+        assertNull(tier.getDeletedAt());
         assertTrue(updatedAt.isBefore(tier.getUpdatedAt()));
     }
 

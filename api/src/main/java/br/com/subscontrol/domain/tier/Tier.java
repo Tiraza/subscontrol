@@ -13,9 +13,6 @@ public class Tier extends ProvidedEntity<TierID> {
     private String title;
     private String description;
     private String amount;
-    private final Instant createdAt;
-    private Instant updatedAt;
-    private Instant deletedAt;
 
     protected Tier(
             final TierID id,
@@ -23,22 +20,20 @@ public class Tier extends ProvidedEntity<TierID> {
             final String title,
             final String description,
             final String amount,
+            final boolean active,
             final Instant createdAt,
             final Instant updatedAt,
             final Instant deletedAt) {
-        super(id, providedId);
+        super(id, providedId, active, createdAt, updatedAt, deletedAt);
         this.title = title;
         this.description = description;
         this.amount = amount;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.deletedAt = deletedAt;
         selfValidate();
     }
 
     public static Tier newTier(final String providedId, final String title, final String description, final String amount) {
-        final var now = Instant.now();
-        return new Tier(TierID.unique(), providedId, title, description, amount, now, now, null);
+        final Instant now = Instant.now();
+        return new Tier(TierID.unique(), providedId, title, description, amount, true, now, now, null);
     }
 
     public static Tier with(
@@ -47,19 +42,24 @@ public class Tier extends ProvidedEntity<TierID> {
             final String title,
             final String description,
             final String amount,
+            final boolean active,
             final Instant createdAt,
             final Instant updatedAt,
             final Instant deletedAt) {
-        return new Tier(TierID.from(id), providedId, title, description, amount, createdAt, updatedAt, deletedAt);
+        return new Tier(TierID.from(id), providedId, title, description, amount, active, createdAt, updatedAt, deletedAt);
     }
 
-    public Tier update(final String title, final String description, final String amount) {
+    public void update(final String title, final String description, final String amount, final boolean isActive) {
+        if (isActive) {
+            activate();
+        } else {
+            deactivate();
+        }
         this.title = title;
         this.description = description;
         this.amount = amount;
         this.updatedAt = InstantUtils.now();
         selfValidate();
-        return this;
     }
 
     public String getTitle() {
@@ -72,18 +72,6 @@ public class Tier extends ProvidedEntity<TierID> {
 
     public String getAmount() {
         return amount;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public Instant getDeletedAt() {
-        return deletedAt;
     }
 
     private void selfValidate() {
