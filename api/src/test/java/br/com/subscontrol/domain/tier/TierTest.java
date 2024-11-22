@@ -16,13 +16,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class TierTest {
 
     @Test
-    void givenValidParameters_whenCallNewTier_thenInstantiateATier() {
+    void givenValidParameters_whenCallCreate() {
         final var providedId = UUID.randomUUID().toString();
         final var expectedTitle = "Assinante Basico";
         final var expectedDescription = "Modalidade basica de assinatura";
         final var expectedAmount = "R$ 10,00";
 
-        Tier tier = Tier.newTier(providedId, expectedTitle, expectedDescription, expectedAmount);
+        Tier tier = Tier.create(providedId, expectedTitle, expectedDescription, expectedAmount);
 
         assertNotNull(tier.getId());
         assertNotNull(tier.getCreatedAt());
@@ -97,12 +97,12 @@ class TierTest {
 
     @ParameterizedTest
     @MethodSource("provideArguments")
-    void givenInvalidParameter_whenCallNewTier_thenReceiveDomainException(String errorMessage, String title) {
+    void givenInvalidParameter_whenCallCreate_thenReceiveDomainException(String errorMessage, String title) {
         final var providedId = UUID.randomUUID().toString();
         final var expectedDescription = "Modalidade basica de assinatura";
         final var expectedAmount = "R$ 10,00";
 
-        DomainException exception = assertThrows(DomainException.class, () -> Tier.newTier(providedId, title, expectedDescription, expectedAmount));
+        DomainException exception = assertThrows(DomainException.class, () -> Tier.create(providedId, title, expectedDescription, expectedAmount));
 
         final var expectedMessage = "Failed to create Entity Tier";
         final int expectedErrorCount = 1;

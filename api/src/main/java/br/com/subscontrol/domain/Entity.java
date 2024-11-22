@@ -1,6 +1,8 @@
 package br.com.subscontrol.domain;
 
+import br.com.subscontrol.domain.exceptions.DomainException;
 import br.com.subscontrol.domain.validation.ValidationHandler;
+import br.com.subscontrol.domain.validation.handler.Notification;
 
 import java.util.Objects;
 
@@ -17,6 +19,15 @@ public abstract class Entity<ID extends Identifier> {
 
     public ID getId() {
         return id;
+    }
+
+    protected void selfValidate() {
+        final var notification = Notification.create();
+        validate(notification);
+
+        if (notification.hasError()) {
+            throw DomainException.with("Failed to create Entity", notification.getErrors());
+        }
     }
 
     @Override

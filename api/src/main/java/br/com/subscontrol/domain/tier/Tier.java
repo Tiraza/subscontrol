@@ -1,10 +1,8 @@
 package br.com.subscontrol.domain.tier;
 
 import br.com.subscontrol.domain.ProvidedEntity;
-import br.com.subscontrol.domain.exceptions.DomainException;
 import br.com.subscontrol.domain.utils.InstantUtils;
 import br.com.subscontrol.domain.validation.ValidationHandler;
-import br.com.subscontrol.domain.validation.handler.Notification;
 
 import java.time.Instant;
 
@@ -31,7 +29,7 @@ public class Tier extends ProvidedEntity<TierID> {
         selfValidate();
     }
 
-    public static Tier newTier(final String providedId, final String title, final String description, final String amount) {
+    public static Tier create(final String providedId, final String title, final String description, final String amount) {
         final Instant now = Instant.now();
         return new Tier(TierID.unique(), providedId, title, description, amount, true, now, now, null);
     }
@@ -72,15 +70,6 @@ public class Tier extends ProvidedEntity<TierID> {
 
     public String getAmount() {
         return amount;
-    }
-
-    private void selfValidate() {
-        final var notification = Notification.create();
-        validate(notification);
-
-        if (notification.hasError()) {
-            throw DomainException.with("Failed to create Entity Tier", notification.getErrors());
-        }
     }
 
     @Override

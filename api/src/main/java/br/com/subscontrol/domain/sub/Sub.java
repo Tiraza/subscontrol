@@ -1,10 +1,8 @@
 package br.com.subscontrol.domain.sub;
 
 import br.com.subscontrol.domain.ProvidedEntity;
-import br.com.subscontrol.domain.exceptions.DomainException;
 import br.com.subscontrol.domain.utils.InstantUtils;
 import br.com.subscontrol.domain.validation.ValidationHandler;
-import br.com.subscontrol.domain.validation.handler.Notification;
 
 import java.time.Instant;
 
@@ -28,7 +26,7 @@ public class Sub extends ProvidedEntity<SubID> {
         selfValidate();
     }
 
-    public static Sub newSub(final String providedId, final String name, final String email) {
+    public static Sub create(final String providedId, final String name, final String email) {
         final Instant now = Instant.now();
         return new Sub(SubID.unique(), providedId, name, email, true, now, now, null);
     }
@@ -63,15 +61,6 @@ public class Sub extends ProvidedEntity<SubID> {
 
     public String getEmail() {
         return email;
-    }
-
-    private void selfValidate() {
-        final var notification = Notification.create();
-        validate(notification);
-
-        if (notification.hasError()) {
-            throw DomainException.with("Failed to create Entity Sub", notification.getErrors());
-        }
     }
 
     @Override
