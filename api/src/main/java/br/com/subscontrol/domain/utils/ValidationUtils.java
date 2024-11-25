@@ -3,6 +3,8 @@ package br.com.subscontrol.domain.utils;
 import br.com.subscontrol.domain.validation.ErrorMessage;
 import br.com.subscontrol.domain.validation.ValidationHandler;
 
+import java.net.URI;
+
 public final class ValidationUtils {
 
     public static final int NAME_MAX_LENGTH = 255;
@@ -24,6 +26,14 @@ public final class ValidationUtils {
         final int length = value.trim().length();
         if (length > NAME_MAX_LENGTH || length < NAME_MIN_LENGTH) {
             handler.append(new ErrorMessage(String.format("'%s' must be between 1 and 255 characters", fieldName)));
+        }
+    }
+
+    public static void checkUrlConstraints(final String urlString, final ValidationHandler handler) {
+        try {
+            new URI(urlString).toURL();
+        } catch (Exception e) {
+            handler.append(new ErrorMessage("URL is not valid"));
         }
     }
 }

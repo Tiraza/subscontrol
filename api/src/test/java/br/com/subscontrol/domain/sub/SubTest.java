@@ -15,13 +15,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SubTest {
 
+
     @Test
-    void givenValidParameters_whenCallNewSub_thenInstantiateASub() {
+    void givenValidParameters_whenCallCreate_thenInstantiateASub() {
         final var providedId = UUID.randomUUID().toString();
         final var name = "Muryllo Tiraza Santos";
         final var email = "muryllo.tiraza@subscontrol.com.br";
 
-        Sub sub = Sub.newSub(providedId, name, email);
+        Sub sub = Sub.create(providedId, name, email);
 
         assertNotNull(sub.getId());
         assertEquals(providedId, sub.getProvidedId());
@@ -62,7 +63,7 @@ class SubTest {
         final var name = "Muryllo Tiraza Santos";
         final var email = "muryllo.tiraza@subscontrol.com.br";
 
-        Sub sub = Sub.newSub(providedId, name, email);
+        Sub sub = Sub.create(providedId, name, email);
 
         assertNotNull(sub.getId());
         assertEquals(providedId, sub.getProvidedId());
@@ -215,11 +216,11 @@ class SubTest {
 
     @ParameterizedTest
     @MethodSource("provideArguments")
-    void givenInvalidParameter_whenCallNewSub_thenReceiveDomainException(String errorMessage, String name, String email) {
+    void givenInvalidParameter_whenCallCreate_thenReceiveDomainException(String errorMessage, String name, String email) {
         final var providedId = UUID.randomUUID().toString();
-        DomainException exception = assertThrows(DomainException.class, () -> Sub.newSub(providedId, name, email));
+        DomainException exception = assertThrows(DomainException.class, () -> Sub.create(providedId, name, email));
 
-        final var expectedMessage = "Failed to create Entity Sub";
+        final var expectedMessage = "Failed to create Entity";
         final int expectedErrorCount = 1;
 
         assertEquals(expectedMessage, exception.getMessage());
