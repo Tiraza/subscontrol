@@ -104,7 +104,7 @@ class TierTest {
 
         DomainException exception = assertThrows(DomainException.class, () -> Tier.create(providedId, title, expectedDescription, expectedAmount));
 
-        final var expectedMessage = "Failed to create Entity Tier";
+        final var expectedMessage = "Failed to create Entity";
         final int expectedErrorCount = 1;
 
         assertEquals(expectedMessage, exception.getMessage());

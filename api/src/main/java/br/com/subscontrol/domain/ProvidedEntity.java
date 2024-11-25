@@ -12,7 +12,7 @@ public abstract class ProvidedEntity<ID extends Identifier> extends Entity<ID> {
     protected Instant updatedAt;
     protected Instant deletedAt;
 
-    public ProvidedEntity(ID id, String providedId, boolean active, Instant createdAt, Instant updatedAt, Instant deletedAt) {
+    protected ProvidedEntity(ID id, String providedId, boolean active, Instant createdAt, Instant updatedAt, Instant deletedAt) {
         super(id);
         this.providedId = providedId;
         this.active = active;

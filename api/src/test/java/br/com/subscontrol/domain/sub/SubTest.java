@@ -15,8 +15,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SubTest {
 
+
     @Test
-    void givenValidParameters_whenCallCreate() {
+    void givenValidParameters_whenCallCreate_thenInstantiateASub() {
         final var providedId = UUID.randomUUID().toString();
         final var name = "Muryllo Tiraza Santos";
         final var email = "muryllo.tiraza@subscontrol.com.br";
@@ -219,7 +220,7 @@ class SubTest {
         final var providedId = UUID.randomUUID().toString();
         DomainException exception = assertThrows(DomainException.class, () -> Sub.create(providedId, name, email));
 
-        final var expectedMessage = "Failed to create Entity Sub";
+        final var expectedMessage = "Failed to create Entity";
         final int expectedErrorCount = 1;
 
         assertEquals(expectedMessage, exception.getMessage());

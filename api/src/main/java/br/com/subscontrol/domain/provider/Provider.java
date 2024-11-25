@@ -44,6 +44,14 @@ public abstract class Provider<ID extends Identifier> extends Entity<ID> {
         return authentication;
     }
 
+    public void deactivate() {
+        this.active = false;
+    }
+
+    public void activate() {
+        this.active = true;
+    }
+
     @Override
     public void validate(ValidationHandler handler) {
         new ProviderValidator(this, handler).validate();

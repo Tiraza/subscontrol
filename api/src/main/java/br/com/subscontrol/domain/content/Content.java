@@ -56,6 +56,6 @@ public class Content extends ProvidedEntity<ContentID> {
 
     @Override
     public void validate(ValidationHandler handler) {
-        new ContentValidator(this, handler);
+        new ContentValidator(this, handler).validate();
     }
 }

@@ -12,10 +12,12 @@ public class ProviderValidator extends Validator {
         super(handler);
         this.provider = provider;
     }
-    
 
     @Override
     public void validate() {
         ValidationUtils.checkStringConstraints(provider.getName(), "name", validationHandler());
+        if (provider.getBaseUrl() != null && !provider.getBaseUrl().isEmpty()) {
+            ValidationUtils.checkUrlConstraints(provider.getBaseUrl(), validationHandler());
+        }
     }
 }
