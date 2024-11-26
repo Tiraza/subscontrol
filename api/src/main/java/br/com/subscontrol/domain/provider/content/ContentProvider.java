@@ -22,8 +22,24 @@ public class ContentProvider extends Provider<ContentProviderID> {
         selfValidate();
     }
 
-    public static ContentProvider create(final ContentProviderType type, final String name, final String baseUrl, final Authentication authentication) {
+    public static ContentProvider create(
+            final ContentProviderType type,
+            final String name,
+            final String baseUrl,
+            final Authentication authentication) {
         return new ContentProvider(ContentProviderID.unique(), type, name, baseUrl, true, null, authentication);
+    }
+
+    public static ContentProvider create(
+            final String type,
+            final String name,
+            final String baseUrl,
+            final String clientId,
+            final String clientSecret,
+            final String authorizationUrl,
+            final String tokenUrl) {
+        Authentication authentication = Authentication.with(clientId, clientSecret, authorizationUrl, tokenUrl);
+        return new ContentProvider(ContentProviderID.unique(), ContentProviderType.from(type), name, baseUrl, true, null, authentication);
     }
 
     public static ContentProvider with(
@@ -35,6 +51,18 @@ public class ContentProvider extends Provider<ContentProviderID> {
             final Instant lastSync,
             final Authentication authentication) {
         return new ContentProvider(ContentProviderID.from(id), type, name, baseUrl, active, lastSync, authentication);
+    }
+
+    public void update(
+            final String name,
+            final String baseUrl,
+            final boolean isActive,
+            final String clientId,
+            final String clientSecret,
+            final String authorizationUrl,
+            final String tokenUrl) {
+        Authentication authentication = Authentication.with(clientId, clientSecret, authorizationUrl, tokenUrl);
+        update(name, baseUrl, isActive, authentication);
     }
 
     public void update(final String name, final String baseUrl, final boolean isActive, final Authentication authentication) {

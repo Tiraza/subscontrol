@@ -2,7 +2,6 @@ package br.com.subscontrol.domain.provider.content;
 
 import br.com.subscontrol.domain.exceptions.DomainException;
 import br.com.subscontrol.domain.provider.authentication.Authentication;
-import br.com.subscontrol.domain.provider.authentication.OAuthAuthentication;
 import br.com.subscontrol.domain.utils.InstantUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -21,7 +20,7 @@ class ContentProviderTest {
         final var expectedName = "Google Drive Integration";
         final var expectedUrl = "";
 
-        final Authentication expectedAuthentication = new OAuthAuthentication("", "", "", "");
+        final Authentication expectedAuthentication = Authentication.with("", "", "", "");
 
         ContentProvider provider = ContentProvider.create(expectedType, expectedName, expectedUrl, expectedAuthentication);
 
@@ -68,7 +67,7 @@ class ContentProviderTest {
         final var expectedName = "Google Drive Integration";
         final var expectedUrl = "";
 
-        final Authentication expectedAuthentication = new OAuthAuthentication("", "", "", "");
+        final Authentication expectedAuthentication = Authentication.with("", "", "", "");
 
         ContentProvider provider = ContentProvider.create(expectedType, expectedName, expectedUrl, expectedAuthentication);
 
