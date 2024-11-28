@@ -12,7 +12,12 @@
     <groupId>br.com.subscontrol</groupId>
     <artifactId>SubsControl</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
     <name>SubsControl</name>
+    <modules>
+        <module>domain</module>
+        <module>application</module>
+    </modules>
 
     <properties>
         <java.version>21</java.version>
