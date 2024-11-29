@@ -1,4 +1,4 @@
-package br.com.subscontrol.domain.application;
+package br.com.subscontrol.application;
 
 public abstract class NullaryUseCase<OUT> {
 
