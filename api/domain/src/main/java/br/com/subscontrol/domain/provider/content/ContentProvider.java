@@ -80,4 +80,5 @@ public class ContentProvider extends Provider<ContentProviderID> {
     public ContentProviderType getType() {
         return type;
     }
+
 }

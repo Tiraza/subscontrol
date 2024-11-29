@@ -10,11 +10,11 @@ import br.com.subscontrol.domain.provider.content.ContentProviderID;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-public class DefaultUpadteContentProviderUseCase extends UpdateContentProviderUseCase {
+public class DefaultUpdateContentProviderUseCase extends UpdateContentProviderUseCase {
 
     private final ContentProviderGateway gateway;
 
-    public DefaultUpadteContentProviderUseCase(final ContentProviderGateway gateway) {
+    public DefaultUpdateContentProviderUseCase(final ContentProviderGateway gateway) {
         this.gateway = Objects.requireNonNull(gateway);
     }
 
