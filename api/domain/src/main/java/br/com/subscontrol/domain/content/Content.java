@@ -39,13 +39,14 @@ public class Content extends ProvidedEntity<ContentID> {
         return new Content(ContentID.from(id), providedId, label, isActive, createdAt, updatedAt, deletedAt);
     }
 
-    public void update(final String label, final boolean isActive) {
+    public void update(final String label, final String providedId, final boolean isActive) {
         if (isActive) {
             activate();
         } else {
             deactivate();
         }
         this.label = label;
+        this.providedId = providedId;
         this.updatedAt = InstantUtils.now();
         selfValidate();
     }

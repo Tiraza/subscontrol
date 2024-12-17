@@ -115,11 +115,12 @@ class ContentTest {
 
         ThreadUtils.sleep();
         final var expectedLabel = "New Content Label";
-        content.update(expectedLabel, false);
+        final var expectedProvidedId = UUID.randomUUID().toString();
+        content.update(expectedLabel, expectedProvidedId, false);
 
         assertEquals(id, content.getId().getValue());
-        assertEquals(providedId, content.getProvidedId());
         assertEquals(expectedLabel, content.getLabel());
+        assertEquals(expectedProvidedId, content.getProvidedId());
         assertFalse(content.isActive());
         assertEquals(createdAt, content.getCreatedAt());
         assertTrue(updatedAt.isBefore(content.getUpdatedAt()));

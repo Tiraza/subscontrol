@@ -3,6 +3,7 @@ package br.com.subscontrol.domain;
 import br.com.subscontrol.domain.utils.InstantUtils;
 
 import java.time.Instant;
+import java.util.Objects;
 
 public abstract class ProvidedEntity<ID extends Identifier> extends Entity<ID> {
 
@@ -14,7 +15,7 @@ public abstract class ProvidedEntity<ID extends Identifier> extends Entity<ID> {
 
     protected ProvidedEntity(ID id, String providedId, boolean active, Instant createdAt, Instant updatedAt, Instant deletedAt) {
         super(id);
-        this.providedId = providedId;
+        this.providedId = Objects.requireNonNull(providedId, "'providedId' should not be null");;
         this.active = active;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;

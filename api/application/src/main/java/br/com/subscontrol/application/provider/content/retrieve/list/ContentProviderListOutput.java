@@ -11,7 +11,7 @@ public record ContentProviderListOutput(
         Instant lastSync
 ) {
 
-    public static ContentProviderListOutput from (final ContentProvider provider) {
+    public static ContentProviderListOutput from(final ContentProvider provider) {
         return new ContentProviderListOutput(
                 provider.getId().getValue(),
                 provider.getName(),
