@@ -20,6 +20,6 @@ public class DefaultGetContentProviderUseCase extends GetContentProviderUseCase 
         final ContentProviderID providerID = ContentProviderID.from(id);
         return this.gateway.findById(providerID)
                 .map(ContentProviderOutput::from)
-                .orElseThrow(() -> NotFoundException.with(ContentProvider.class, providerID));
+                .orElseThrow(NotFoundException.notFound(ContentProvider.class, providerID));
     }
 }

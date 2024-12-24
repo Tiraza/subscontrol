@@ -20,6 +20,6 @@ public class DefaultGetSubProviderUseCase extends GetSubProviderUseCase {
         final SubProviderID providerID = SubProviderID.from(id);
         return this.gateway.findById(providerID)
                 .map(SubProviderOutPut::from)
-                .orElseThrow(() -> NotFoundException.with(SubProvider.class, providerID));
+                .orElseThrow(NotFoundException.notFound(SubProvider.class, providerID));
     }
 }

@@ -18,6 +18,6 @@ public class DefaultGetContentUseCase extends GetContentUseCase {
         final ContentID contentID = ContentID.from(id);
         return this.gateway.findById(contentID)
                 .map(ContentOutput::from)
-                .orElseThrow(() -> NotFoundException.with(Content.class, contentID));
+                .orElseThrow(NotFoundException.notFound(Content.class, contentID));
     }
 }

@@ -166,10 +166,11 @@ class SubTest {
         ThreadUtils.sleep();
         final var expectedName = "Victor Tiraza Santos";
         final var expectedEmail = "victor.tiraza@subscontrol.com.br";
-        sub.update(expectedName, expectedEmail, true);
+        final var expectedProvidedId = UUID.randomUUID().toString();
+        sub.update(expectedName, expectedEmail, expectedProvidedId, true);
 
         assertEquals(id, sub.getId().getValue());
-        assertEquals(providedId, sub.getProvidedId());
+        assertEquals(expectedProvidedId, sub.getProvidedId());
         assertEquals(expectedName, sub.getName());
         assertEquals(expectedEmail, sub.getEmail());
         assertTrue(sub.isActive());
@@ -202,10 +203,11 @@ class SubTest {
         ThreadUtils.sleep();
         final var expectedName = "Victor Tiraza Santos";
         final var expectedEmail = "victor.tiraza@subscontrol.com.br";
-        sub.update(expectedName, expectedEmail, false);
+        final var expectedProvidedId = UUID.randomUUID().toString();
+        sub.update(expectedName, expectedEmail, expectedProvidedId, false);
 
         assertEquals(id, sub.getId().getValue());
-        assertEquals(providedId, sub.getProvidedId());
+        assertEquals(expectedProvidedId, sub.getProvidedId());
         assertEquals(expectedName, sub.getName());
         assertEquals(expectedEmail, sub.getEmail());
         assertFalse(sub.isActive());

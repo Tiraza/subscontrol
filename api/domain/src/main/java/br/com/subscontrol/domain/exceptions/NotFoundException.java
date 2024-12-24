@@ -6,6 +6,7 @@ import br.com.subscontrol.domain.validation.ErrorMessage;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 public class NotFoundException extends DomainException {
 
@@ -27,5 +28,9 @@ public class NotFoundException extends DomainException {
                 value
         );
         return new NotFoundException(anError, Collections.emptyList());
+    }
+
+    public static Supplier<DomainException> notFound(final Class<? extends Entity<?>> clazz, final Identifier id) {
+        return () -> NotFoundException.with(clazz, id);
     }
 }

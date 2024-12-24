@@ -1,13 +1,9 @@
 package br.com.subscontrol.application.content.update;
 
-import br.com.subscontrol.domain.Identifier;
 import br.com.subscontrol.domain.content.Content;
 import br.com.subscontrol.domain.content.ContentGateway;
 import br.com.subscontrol.domain.content.ContentID;
-import br.com.subscontrol.domain.exceptions.DomainException;
 import br.com.subscontrol.domain.exceptions.NotFoundException;
-
-import java.util.function.Supplier;
 
 public class DefaultUpdateContentUseCase extends UpdateContentUseCase {
 
@@ -20,7 +16,8 @@ public class DefaultUpdateContentUseCase extends UpdateContentUseCase {
     @Override
     public UpdateContentOutput execute(final UpdateContentCommand command) {
         ContentID contentID = ContentID.from(command.id());
-        Content content = this.gateway.findById(contentID).orElseThrow(notFound(contentID));
+        Content content = this.gateway.findById(contentID)
+                .orElseThrow(NotFoundException.notFound(Content.class, contentID));
         content.update(
                 command.label(),
                 command.providedId(),
@@ -29,7 +26,4 @@ public class DefaultUpdateContentUseCase extends UpdateContentUseCase {
         return UpdateContentOutput.from(this.gateway.update(content));
     }
 
-    private Supplier<DomainException> notFound(final Identifier id) {
-        return () -> NotFoundException.with(Content.class, id);
-    }
 }
