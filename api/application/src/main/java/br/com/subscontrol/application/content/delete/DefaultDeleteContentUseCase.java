@@ -3,12 +3,14 @@ package br.com.subscontrol.application.content.delete;
 import br.com.subscontrol.domain.content.ContentGateway;
 import br.com.subscontrol.domain.content.ContentID;
 
+import java.util.Objects;
+
 public class DefaultDeleteContentUseCase extends DeleteContentUseCase {
 
     private final ContentGateway gateway;
 
     public DefaultDeleteContentUseCase(ContentGateway gateway) {
-        this.gateway = gateway;
+        this.gateway = Objects.requireNonNull(gateway);
     }
 
     @Override

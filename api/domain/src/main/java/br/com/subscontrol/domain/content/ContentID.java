@@ -10,8 +10,7 @@ public class ContentID extends Identifier {
     private final String valor;
 
     private ContentID(final String valor) {
-        Objects.requireNonNull(valor);
-        this.valor = valor;
+        this.valor = Objects.requireNonNull(valor, "'ContentID' should not be null");
     }
 
     public static ContentID unique() {

@@ -36,10 +36,11 @@ public class GetContentUseCaseTest extends UseCaseTest {
 
     @Test
     void givenAValidId_whenCallsGet_shouldReturnProvider() {
+        final var expectedProviderID = UUID.randomUUID().toString();
         final var expectedProvidedId = UUID.randomUUID().toString();
         final var expectedLabel = "Shared Folder";
 
-        final var content = Content.create(expectedProvidedId, expectedLabel);
+        final var content = Content.create(expectedProviderID, expectedProvidedId, expectedLabel);
         final var expectedId = content.getId();
 
         when(gateway.findById(any())).thenReturn(Optional.of(content));
@@ -47,6 +48,7 @@ public class GetContentUseCaseTest extends UseCaseTest {
         final var actualContent = useCase.execute(expectedId.getValue());
 
         assertEquals(expectedId.getValue(), actualContent.id());
+        assertEquals(expectedProviderID, actualContent.providerID());
         assertEquals(expectedProvidedId, actualContent.providedId());
         assertEquals(expectedLabel, actualContent.label());
         assertTrue(actualContent.isActive());

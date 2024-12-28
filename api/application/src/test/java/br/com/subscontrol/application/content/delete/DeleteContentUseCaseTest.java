@@ -32,7 +32,11 @@ public class DeleteContentUseCaseTest extends UseCaseTest {
 
     @Test
     void givenAValidId_whenCallsDelete_shouldDelete() {
-        final var content = Content.create(UUID.randomUUID().toString(), "Shared Folder");
+        final var content = Content.create(
+                UUID.randomUUID().toString(),
+                UUID.randomUUID().toString(),
+                "Shared Folder");
+
         final var expectedId = content.getId();
 
         doNothing().when(gateway).deleteById(any());
@@ -55,7 +59,11 @@ public class DeleteContentUseCaseTest extends UseCaseTest {
 
     @Test
     void givenAValidId_whenCallsDeleteAndGatewayThrowsUnexpectedError_shouldReceiveException() {
-        final var content = Content.create(UUID.randomUUID().toString(), "Shared Folder");
+        final var content = Content.create(
+                UUID.randomUUID().toString(),
+                UUID.randomUUID().toString(),
+                "Shared Folder");
+
         final var expectedId = content.getId();
 
         doThrow(new IllegalStateException("Gateway error")).when(gateway).deleteById(any());

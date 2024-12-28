@@ -6,6 +6,7 @@ import java.time.Instant;
 
 public record ContentOutput(
         String id,
+        String providerID,
         String providedId,
         String label,
         boolean isActive,
@@ -17,6 +18,7 @@ public record ContentOutput(
     public static ContentOutput from(final Content content) {
         return new ContentOutput(
                 content.getId().getValue(),
+                content.getContentProviderID().getValue(),
                 content.getProvidedId(),
                 content.getLabel(),
                 content.isActive(),

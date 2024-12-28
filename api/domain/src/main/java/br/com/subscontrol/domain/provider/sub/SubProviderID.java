@@ -10,8 +10,7 @@ public class SubProviderID extends Identifier  {
     private final String valor;
 
     private SubProviderID(final String valor) {
-        Objects.requireNonNull(valor);
-        this.valor = valor;
+        this.valor = Objects.requireNonNull(valor, "'SubProviderID' should not be null");;
     }
 
     public static SubProviderID unique() {

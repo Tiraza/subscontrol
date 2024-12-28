@@ -5,12 +5,14 @@ import br.com.subscontrol.domain.sub.Sub;
 import br.com.subscontrol.domain.sub.SubGateway;
 import br.com.subscontrol.domain.sub.SubID;
 
+import java.util.Objects;
+
 public class DefaultUpdateSubUseCase extends UpdateSubUseCase {
 
     private final SubGateway gateway;
 
     public DefaultUpdateSubUseCase(SubGateway gateway) {
-        this.gateway = gateway;
+        this.gateway = Objects.requireNonNull(gateway);
     }
 
     @Override
@@ -20,8 +22,7 @@ public class DefaultUpdateSubUseCase extends UpdateSubUseCase {
         sub.update(
                 command.name(),
                 command.email(),
-                command.providedId(),
-                command.active()
+                command.isActive()
         );
         return UpdateSubOutput.from(this.gateway.update(sub));
     }

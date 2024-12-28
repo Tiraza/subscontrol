@@ -17,12 +17,14 @@ class ContentTest {
 
     @Test
     void givenValidParameters_whenCallCreate_thenInstantiateAContent() {
+        final var providerID = UUID.randomUUID().toString();
         final var providedId = UUID.randomUUID().toString();
         final var label = "Content Label";
 
-        Content content = Content.create(providedId, label);
+        Content content = Content.create(providerID, providedId, label);
 
         assertNotNull(content.getId());
+        assertEquals(providerID, content.getContentProviderID().getValue());
         assertEquals(providedId, content.getProvidedId());
         assertEquals(label, content.getLabel());
         assertTrue(content.isActive());
@@ -34,6 +36,7 @@ class ContentTest {
     @Test
     void givenValidParameters_whenCallWith_thenInstantiateAContent() {
         final var id = ContentID.unique().getValue();
+        final var providerID = UUID.randomUUID().toString();
         final var providedId = UUID.randomUUID().toString();
         final var label = "Content Label";
         final var isActive = false;
@@ -41,9 +44,10 @@ class ContentTest {
         final var updatedAt = InstantUtils.now();
         final var deletedAt = InstantUtils.now();
 
-        Content content = Content.with(id, providedId, label, isActive, createdAt, updatedAt, deletedAt);
+        Content content = Content.with(id, providerID, providedId, label, isActive, createdAt, updatedAt, deletedAt);
 
         assertEquals(id, content.getId().getValue());
+        assertEquals(providerID, content.getContentProviderID().getValue());
         assertEquals(providedId, content.getProvidedId());
         assertEquals(label, content.getLabel());
         assertEquals(isActive, content.isActive());
@@ -55,6 +59,7 @@ class ContentTest {
     @Test
     void givenActiveInstance_whenCallDeactivate_thenReturnInstanceDeactivated() {
         final var id = ContentID.unique().getValue();
+        final var providerID = UUID.randomUUID().toString();
         final var providedId = UUID.randomUUID().toString();
         final var label = "Content Label";
         final var isActive = true;
@@ -62,7 +67,7 @@ class ContentTest {
         final var updatedAt = InstantUtils.now();
         final var deletedAt = InstantUtils.now();
 
-        Content content = Content.with(id, providedId, label, isActive, createdAt, updatedAt, deletedAt);
+        Content content = Content.with(id, providerID, providedId, label, isActive, createdAt, updatedAt, deletedAt);
 
         assertTrue(content.isActive());
 
@@ -76,6 +81,7 @@ class ContentTest {
     @Test
     void givenInactiveInstance_whenCallActivate_thenReturnInstanceActivated() {
         final var id = ContentID.unique().getValue();
+        final var providerID = UUID.randomUUID().toString();
         final var providedId = UUID.randomUUID().toString();
         final var label = "Content Label";
         final var isActive = false;
@@ -83,7 +89,7 @@ class ContentTest {
         final var updatedAt = InstantUtils.now();
         final var deletedAt = InstantUtils.now();
 
-        Content content = Content.with(id, providedId, label, isActive, createdAt, updatedAt, deletedAt);
+        Content content = Content.with(id, providerID, providedId, label, isActive, createdAt, updatedAt, deletedAt);
 
         assertFalse(content.isActive());
 
@@ -97,6 +103,7 @@ class ContentTest {
     @Test
     void givenValidInstance_whenCallUpdateWithValidParameters_thenUpdateInstance() {
         final var id = ContentID.unique().getValue();
+        final var providerID = UUID.randomUUID().toString();
         final var providedId = UUID.randomUUID().toString();
         final var label = "Content Label";
         final var isActive = true;
@@ -104,7 +111,7 @@ class ContentTest {
         final var updatedAt = InstantUtils.now();
         final var deletedAt = InstantUtils.now();
 
-        Content content = Content.with(id, providedId, label, isActive, createdAt, updatedAt, deletedAt);
+        Content content = Content.with(id, providerID, providedId, label, isActive, createdAt, updatedAt, deletedAt);
 
         assertEquals(id, content.getId().getValue());
         assertEquals(providedId, content.getProvidedId());
@@ -115,12 +122,10 @@ class ContentTest {
 
         ThreadUtils.sleep();
         final var expectedLabel = "New Content Label";
-        final var expectedProvidedId = UUID.randomUUID().toString();
-        content.update(expectedLabel, expectedProvidedId, false);
+        content.update(expectedLabel, false);
 
         assertEquals(id, content.getId().getValue());
         assertEquals(expectedLabel, content.getLabel());
-        assertEquals(expectedProvidedId, content.getProvidedId());
         assertFalse(content.isActive());
         assertEquals(createdAt, content.getCreatedAt());
         assertTrue(updatedAt.isBefore(content.getUpdatedAt()));
@@ -128,9 +133,9 @@ class ContentTest {
 
     @ParameterizedTest
     @MethodSource("provideArguments")
-    void givenInvalidParameter_whenCallCreate_thenReceiveDomainException(String errorMessage, String label) {
+    void givenInvalidParameter_whenCallCreate_thenReceiveDomainException(String errorMessage, String providerID, String label) {
         final var providedId = UUID.randomUUID().toString();
-        DomainException exception = assertThrows(DomainException.class, () -> Content.create(providedId, label));
+        DomainException exception = assertThrows(DomainException.class, () -> Content.create(providerID, providedId, label));
 
         final var expectedMessage = "Failed to create Entity";
         final int expectedErrorCount = 1;
@@ -141,12 +146,15 @@ class ContentTest {
     }
 
     private static Stream<Arguments> provideArguments() {
+        final var validProviderID = UUID.randomUUID().toString();
+        final var validLabel = "Content Label";
         final var invalidLengthValue = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum bibendum eros vel orci finibus, et tincidunt velit placerat. Suspendisse potenti. Maecenas consequat lorem sit amet diam venenatis, non auctor odio posuere. Nulla facilisi. Sed vulputate eros nec nisl maximus, in efficitur velit ultricies. Phasellus vitae turpis risus. Nam a libero ex. Etiam venenatis pharetra diam, in hendrerit libero fermentum a. Integer sit amet lacinia turpis. Sed eget tortor fringilla, posuere elit a, fermentum odio.";
 
         return Stream.of(
-                Arguments.of("'label' should not be null", null),
-                Arguments.of("'label' should not be empty", "  "),
-                Arguments.of("'label' must be between 1 and 255 characters", invalidLengthValue)
+                Arguments.of("'label' should not be null", validProviderID, null),
+                Arguments.of("'label' should not be empty", validProviderID, "  "),
+                Arguments.of("'label' must be between 1 and 255 characters", validProviderID, invalidLengthValue),
+                Arguments.of("'ProviderID' should not be empty", "  ", validLabel)
         );
     }
 }

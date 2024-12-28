@@ -40,10 +40,12 @@ public class CreateContentUseCaseTest extends UseCaseTest {
     @Test
     void givenAValidCommand_whenCallsCreate_shouldReturnId() {
         final var expectedLabel = "Shared Folder";
+        final var expectedProviderID = UUID.randomUUID().toString();
         final var expectedProvidedId = UUID.randomUUID().toString();
         final var expectedIsActive = true;
 
         final var command = CreateContentCommand.with(
+                expectedProviderID,
                 expectedProvidedId,
                 expectedLabel
         );
@@ -57,6 +59,7 @@ public class CreateContentUseCaseTest extends UseCaseTest {
 
         Mockito.verify(gateway, times(1)).create(argThat(content ->
                 Objects.equals(expectedProvidedId, content.getProvidedId())
+                        && Objects.equals(expectedProviderID, content.getContentProviderID().getValue())
                         && Objects.equals(expectedLabel, content.getLabel())
                         && Objects.equals(expectedIsActive, content.isActive())
         ));
@@ -64,8 +67,8 @@ public class CreateContentUseCaseTest extends UseCaseTest {
 
     @ParameterizedTest
     @MethodSource("provideArguments")
-    void givenInvalidCommand_whenCallsCreate_thenReceiveDomainException(String errorMessage, String providedId, String label) {
-        final var command = CreateContentCommand.with(providedId, label);
+    void givenInvalidCommand_whenCallsCreate_thenReceiveDomainException(String errorMessage, String providerID, String label) {
+        final var command = CreateContentCommand.with(providerID, UUID.randomUUID().toString(), label);
         final var exception = Assertions.assertThrows(DomainException.class, () -> useCase.execute(command));
 
         Assertions.assertNotNull(exception);
@@ -76,13 +79,15 @@ public class CreateContentUseCaseTest extends UseCaseTest {
     }
 
     private static Stream<Arguments> provideArguments() {
-        final var providedId = UUID.randomUUID().toString();
+        final var validProviderID = UUID.randomUUID().toString();
+        final var validLabel = "Content Label";
         final var invalidLengthValue = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum bibendum eros vel orci finibus, et tincidunt velit placerat. Suspendisse potenti. Maecenas consequat lorem sit amet diam venenatis, non auctor odio posuere. Nulla facilisi. Sed vulputate eros nec nisl maximus, in efficitur velit ultricies. Phasellus vitae turpis risus. Nam a libero ex. Etiam venenatis pharetra diam, in hendrerit libero fermentum a. Integer sit amet lacinia turpis. Sed eget tortor fringilla, posuere elit a, fermentum odio.";
 
         return Stream.of(
-                Arguments.of("'label' should not be null", providedId, null),
-                Arguments.of("'label' should not be empty", providedId, " "),
-                Arguments.of("'label' must be between 1 and 255 characters", providedId, invalidLengthValue)
+                Arguments.of("'label' should not be null", validProviderID, null),
+                Arguments.of("'label' should not be empty", validProviderID, " "),
+                Arguments.of("'label' must be between 1 and 255 characters", validProviderID, invalidLengthValue),
+                Arguments.of("'ProviderID' should not be empty", "  ", validLabel)
         );
     }
 }

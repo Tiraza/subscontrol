@@ -10,8 +10,7 @@ public class TierID extends Identifier {
     private final String valor;
 
     private TierID(final String valor) {
-        Objects.requireNonNull(valor);
-        this.valor = valor;
+        this.valor = Objects.requireNonNull(valor, "'TierID' should not be null");
     }
 
     public static TierID unique() {

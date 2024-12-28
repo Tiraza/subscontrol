@@ -43,7 +43,7 @@ public class Sub extends ProvidedEntity<SubID> {
         return new Sub(SubID.from(id), providedId, name, email, isActive, createdAt, updatedAt, deletedAt);
     }
 
-    public void update(final String name, final String email, final String providedId, final boolean isActive) {
+    public void update(final String name, final String email, final boolean isActive) {
         if (isActive) {
             activate();
         } else {
@@ -51,7 +51,6 @@ public class Sub extends ProvidedEntity<SubID> {
         }
         this.name = name;
         this.email = email;
-        this.providedId = providedId;
         this.updatedAt = InstantUtils.now();
         selfValidate();
     }

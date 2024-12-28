@@ -5,12 +5,14 @@ import br.com.subscontrol.domain.content.ContentGateway;
 import br.com.subscontrol.domain.content.ContentID;
 import br.com.subscontrol.domain.exceptions.NotFoundException;
 
+import java.util.Objects;
+
 public class DefaultUpdateContentUseCase extends UpdateContentUseCase {
 
     private final ContentGateway gateway;
 
     public DefaultUpdateContentUseCase(ContentGateway gateway) {
-        this.gateway = gateway;
+        this.gateway = Objects.requireNonNull(gateway);
     }
 
     @Override
@@ -18,11 +20,7 @@ public class DefaultUpdateContentUseCase extends UpdateContentUseCase {
         ContentID contentID = ContentID.from(command.id());
         Content content = this.gateway.findById(contentID)
                 .orElseThrow(NotFoundException.notFound(Content.class, contentID));
-        content.update(
-                command.label(),
-                command.providedId(),
-                command.active()
-        );
+        content.update(command.label(), command.active());
         return UpdateContentOutput.from(this.gateway.update(content));
     }
 

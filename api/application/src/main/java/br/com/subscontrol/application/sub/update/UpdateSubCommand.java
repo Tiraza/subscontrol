@@ -4,16 +4,14 @@ public record UpdateSubCommand(
         String id,
         String name,
         String email,
-        String providedId,
-        boolean active
+        boolean isActive
 ) {
 
     public static UpdateSubCommand with(
             String id,
             String name,
             String email,
-            String providedId,
-            boolean active) {
-        return new UpdateSubCommand(id, name, email, providedId, active);
+            boolean isActive) {
+        return new UpdateSubCommand(id, name, email, isActive);
     }
 }

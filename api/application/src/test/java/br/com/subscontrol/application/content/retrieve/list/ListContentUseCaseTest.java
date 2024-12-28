@@ -35,8 +35,8 @@ public class ListContentUseCaseTest extends UseCaseTest {
     @Test
     void givenAValidQuery_whenCallsList_shouldReturnProviders() {
         final var contents = List.of(
-                Content.create(UUID.randomUUID().toString(), "Shared Folder A"),
-                Content.create(UUID.randomUUID().toString(), "Shared Folder B")
+                Content.create(UUID.randomUUID().toString(), UUID.randomUUID().toString(), "Shared Folder A"),
+                Content.create(UUID.randomUUID().toString(), UUID.randomUUID().toString(), "Shared Folder B")
         );
 
         final var expectedPage = 0;

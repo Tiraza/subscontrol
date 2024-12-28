@@ -10,8 +10,7 @@ public class SubID extends Identifier {
     private final String valor;
 
     private SubID(final String valor) {
-        Objects.requireNonNull(valor);
-        this.valor = valor;
+        this.valor = Objects.requireNonNull(valor, "'SubID' should not be null");
     }
 
     public static SubID unique() {

@@ -5,12 +5,14 @@ import br.com.subscontrol.domain.content.ContentGateway;
 import br.com.subscontrol.domain.content.ContentID;
 import br.com.subscontrol.domain.exceptions.NotFoundException;
 
+import java.util.Objects;
+
 public class DefaultGetContentUseCase extends GetContentUseCase {
 
     private final ContentGateway gateway;
 
     public DefaultGetContentUseCase(ContentGateway gateway) {
-        this.gateway = gateway;
+        this.gateway = Objects.requireNonNull(gateway);
     }
 
     @Override

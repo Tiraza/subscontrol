@@ -43,18 +43,16 @@ public class UpdateContentUseCaseTest extends UseCaseTest {
 
     @Test
     void givenAValidCommand_whenCallsUpdate_shouldReturnId() {
-        final var content = Content.create(UUID.randomUUID().toString(), "Shared Folder");
+        final var content = Content.create(UUID.randomUUID().toString(), UUID.randomUUID().toString(), "Shared Folder");
         sleep();
 
         final var updatedAt = content.getUpdatedAt();
         final var expectedId = content.getId();
-        final var expectedProvidedId = UUID.randomUUID().toString();
         final var expectedLabel = "Google Drive Shared Folder";
         final var expectedIsActive = false;
 
         final var command = UpdateContentCommand.with(
                 expectedId.getValue(),
-                expectedProvidedId,
                 expectedLabel,
                 expectedIsActive
         );
@@ -72,7 +70,6 @@ public class UpdateContentUseCaseTest extends UseCaseTest {
 
         Mockito.verify(gateway, times(1)).update(argThat(updatedContent ->
                 Objects.equals(expectedId, updatedContent.getId())
-                        && Objects.equals(expectedProvidedId, updatedContent.getProvidedId())
                         && Objects.equals(expectedLabel, updatedContent.getLabel())
                         && Objects.equals(expectedIsActive, updatedContent.isActive())
                         && updatedAt.isBefore(updatedContent.getUpdatedAt())
@@ -86,7 +83,6 @@ public class UpdateContentUseCaseTest extends UseCaseTest {
 
         final var command = UpdateContentCommand.with(
                 expectedId,
-                UUID.randomUUID().toString(),
                 "Shared Folder",
                 true
         );
@@ -106,14 +102,13 @@ public class UpdateContentUseCaseTest extends UseCaseTest {
     @ParameterizedTest
     @MethodSource("provideArguments")
     void givenInvalidCommand_whenCallsUpdate_thenReceiveDomainException(String errorMessage, String label) {
-        final var content = Content.create(UUID.randomUUID().toString(), "Shared Folder");
+        final var content = Content.create(UUID.randomUUID().toString(), UUID.randomUUID().toString(), "Shared Folder");
 
         final var expectedId = content.getId();
         final var expectedIsActive = true;
 
         final var command = UpdateContentCommand.with(
                 expectedId.getValue(),
-                UUID.randomUUID().toString(),
                 label,
                 expectedIsActive
         );

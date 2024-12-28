@@ -10,8 +10,7 @@ public class ContentProviderID extends Identifier {
     private final String valor;
 
     private ContentProviderID(final String valor) {
-        Objects.requireNonNull(valor);
-        this.valor = valor;
+        this.valor = Objects.requireNonNull(valor, "'ContentProviderID' should not be null");
     }
 
     public static ContentProviderID unique() {

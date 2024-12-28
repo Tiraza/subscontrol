@@ -16,5 +16,6 @@ public class ContentValidator extends Validator {
     @Override
     public void validate() {
         ValidationUtils.checkStringConstraints(content.getLabel(), "label", validationHandler());
+        ValidationUtils.checkIdentifierConstraints(content.getContentProviderID(), "ProviderID", validationHandler());
     }
 }

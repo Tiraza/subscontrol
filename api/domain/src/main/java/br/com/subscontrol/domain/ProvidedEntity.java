@@ -7,7 +7,7 @@ import java.util.Objects;
 
 public abstract class ProvidedEntity<ID extends Identifier> extends Entity<ID> {
 
-    protected String providedId;
+    protected final String providedId;
     protected boolean active;
     protected Instant createdAt;
     protected Instant updatedAt;
@@ -15,7 +15,7 @@ public abstract class ProvidedEntity<ID extends Identifier> extends Entity<ID> {
 
     protected ProvidedEntity(ID id, String providedId, boolean active, Instant createdAt, Instant updatedAt, Instant deletedAt) {
         super(id);
-        this.providedId = Objects.requireNonNull(providedId, "'providedId' should not be null");;
+        this.providedId = Objects.requireNonNull(providedId, "'providedId' should not be null");
         this.active = active;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;

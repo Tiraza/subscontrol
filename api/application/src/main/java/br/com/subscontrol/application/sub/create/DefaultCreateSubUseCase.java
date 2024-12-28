@@ -3,12 +3,14 @@ package br.com.subscontrol.application.sub.create;
 import br.com.subscontrol.domain.sub.Sub;
 import br.com.subscontrol.domain.sub.SubGateway;
 
+import java.util.Objects;
+
 public class DefaultCreateSubUseCase extends CreateSubUseCase {
 
     private final SubGateway gateway;
 
     public DefaultCreateSubUseCase(SubGateway gateway) {
-        this.gateway = gateway;
+        this.gateway = Objects.requireNonNull(gateway);
     }
 
     @Override

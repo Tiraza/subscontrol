@@ -1,5 +1,6 @@
 package br.com.subscontrol.domain.utils;
 
+import br.com.subscontrol.domain.Identifier;
 import br.com.subscontrol.domain.validation.ErrorMessage;
 import br.com.subscontrol.domain.validation.ValidationHandler;
 
@@ -11,6 +12,17 @@ public final class ValidationUtils {
     public static final int NAME_MIN_LENGTH = 1;
 
     private ValidationUtils() {}
+
+    public static void checkIdentifierConstraints(final Identifier identifier, final String fieldName, final ValidationHandler handler) {
+        if (identifier == null || identifier.getValue() == null) {
+            handler.append(new ErrorMessage(String.format("'%s' should not be null", fieldName)));
+            return;
+        }
+
+        if (identifier.getValue().isBlank()) {
+            handler.append(new ErrorMessage(String.format("'%s' should not be empty", fieldName)));
+        }
+    }
 
     public static void checkStringConstraints(final String value, final String fieldName, final ValidationHandler handler) {
         if (value == null) {
