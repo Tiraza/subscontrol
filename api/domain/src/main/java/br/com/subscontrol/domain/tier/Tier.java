@@ -1,16 +1,26 @@
 package br.com.subscontrol.domain.tier;
 
 import br.com.subscontrol.domain.ProvidedEntity;
+import br.com.subscontrol.domain.content.ContentID;
+import br.com.subscontrol.domain.provider.sub.SubProviderID;
+import br.com.subscontrol.domain.sub.SubID;
 import br.com.subscontrol.domain.utils.InstantUtils;
 import br.com.subscontrol.domain.validation.ValidationHandler;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class Tier extends ProvidedEntity<TierID> {
 
     private String title;
     private String description;
     private String amount;
+    private List<TierID> subTiers;
+    private List<SubID> subscribers;
+    private List<ContentID> contents;
+    private final SubProviderID subProviderID;
 
     protected Tier(
             final TierID id,

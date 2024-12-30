@@ -1,0 +1,11 @@
+postgre:
+  url: ${DATABASE_URL:localhost:5432}
+  username: ${DATABASE_USERNAME:postgres}
+  password: ${DATABASE_PASSWORD:postgres}
+  database: ${DATABASE_NAME:subs-control}
+
+spring:
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: none
