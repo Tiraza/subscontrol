@@ -6,7 +6,6 @@ import java.util.List;
 
 public record UpdateTierCommand(
         String id,
-        String providedId,
         String title,
         String description,
         String amount,
@@ -18,7 +17,6 @@ public record UpdateTierCommand(
 
     public static UpdateTierCommand with(
             String id,
-            String providedId,
             String title,
             String description,
             String amount,
@@ -29,7 +27,6 @@ public record UpdateTierCommand(
     ) {
         return new UpdateTierCommand(
                 id,
-                providedId,
                 title,
                 description,
                 amount,

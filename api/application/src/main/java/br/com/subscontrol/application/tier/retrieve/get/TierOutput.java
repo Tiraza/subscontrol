@@ -10,6 +10,8 @@ import java.util.List;
 
 public record TierOutput(
         String id,
+        String subProviderID,
+        String providedId,
         String title,
         String description,
         String amount,
@@ -25,6 +27,8 @@ public record TierOutput(
     public static TierOutput from(final Tier tier) {
         return new TierOutput(
                 tier.getId().getValue(),
+                tier.getSubProviderID().getValue(),
+                tier.getProvidedId(),
                 tier.getTitle(),
                 tier.getDescription(),
                 tier.getAmount(),

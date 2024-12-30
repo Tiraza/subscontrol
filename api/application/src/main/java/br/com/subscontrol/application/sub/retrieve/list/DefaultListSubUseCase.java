@@ -6,11 +6,11 @@ import br.com.subscontrol.domain.sub.SubGateway;
 
 import java.util.Objects;
 
-public class DefaulListSubUseCase extends ListSubUseCase {
+public class DefaultListSubUseCase extends ListSubUseCase {
 
     private final SubGateway gateway;
 
-    public DefaulListSubUseCase(SubGateway gateway) {
+    public DefaultListSubUseCase(SubGateway gateway) {
         this.gateway = Objects.requireNonNull(gateway);
     }
 
