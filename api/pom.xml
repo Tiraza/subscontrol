@@ -25,6 +25,7 @@
         <java.version>21</java.version>
         <sonar.organization>tiraza</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <sonar.exclusions>**/src/test/java/**/*</sonar.exclusions>
         <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/report-aggregate/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
     </properties>
 

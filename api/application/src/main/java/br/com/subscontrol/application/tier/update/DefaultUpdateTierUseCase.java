@@ -8,7 +8,6 @@ import br.com.subscontrol.domain.tier.TierGateway;
 import br.com.subscontrol.domain.tier.TierID;
 
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class DefaultUpdateTierUseCase extends UpdateTierUseCase {
 
@@ -27,9 +26,9 @@ public class DefaultUpdateTierUseCase extends UpdateTierUseCase {
                 command.title(),
                 command.description(),
                 command.amount(),
-                command.subTiers().stream().map(TierID::from).collect(Collectors.toList()),
-                command.subscribers().stream().map(SubID::from).collect(Collectors.toList()),
-                command.contents().stream().map(ContentID::from).collect(Collectors.toList()),
+                command.subTiers().stream().map(TierID::from).toList(),
+                command.subscribers().stream().map(SubID::from).toList(),
+                command.contents().stream().map(ContentID::from).toList(),
                 command.active()
         );
         return UpdateTierOutput.from(this.gateway.update(tier));
