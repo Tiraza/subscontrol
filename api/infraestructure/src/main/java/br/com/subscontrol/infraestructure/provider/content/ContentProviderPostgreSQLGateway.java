@@ -6,9 +6,11 @@ import br.com.subscontrol.domain.provider.content.ContentProvider;
 import br.com.subscontrol.domain.provider.content.ContentProviderGateway;
 import br.com.subscontrol.domain.provider.content.ContentProviderID;
 import br.com.subscontrol.infraestructure.provider.content.persistence.ContentProviderRepository;
+import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
+@Component
 public class ContentProviderPostgreSQLGateway implements ContentProviderGateway {
 
     private final ContentProviderRepository repository;

@@ -12,6 +12,7 @@ import java.time.Instant;
 public class ContentProviderJpaEntity extends ProviderJpaEntity {
 
     @Id
+    @Column(name = "id", nullable = false)
     private String id;
 
     @Enumerated(EnumType.STRING)

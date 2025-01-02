@@ -4,6 +4,7 @@ import br.com.subscontrol.domain.provider.Provider;
 import br.com.subscontrol.domain.provider.authentication.Authentication;
 
 import java.time.Instant;
+import java.util.Objects;
 
 public class SubProvider extends Provider<SubProviderID> {
 
@@ -18,7 +19,7 @@ public class SubProvider extends Provider<SubProviderID> {
             final Instant lastSync,
             final Authentication authentication) {
         super(id, name, baseUrl, active, lastSync, authentication);
-        this.type = type;
+        this.type = Objects.requireNonNull(type, "'type' should not be null");;
         selfValidate();
     }
 
@@ -47,6 +48,18 @@ public class SubProvider extends Provider<SubProviderID> {
             final Instant lastSync,
             final Authentication authentication) {
         return new SubProvider(SubProviderID.from(id), type, name, baseUrl, active, lastSync, authentication);
+    }
+
+    public static SubProvider with(final SubProvider provider) {
+        return new SubProvider(
+                provider.getId(),
+                provider.getType(),
+                provider.getName(),
+                provider.getBaseUrl(),
+                provider.isActive(),
+                provider.getLastSync(),
+                provider.getAuthentication()
+        );
     }
 
     public void update(

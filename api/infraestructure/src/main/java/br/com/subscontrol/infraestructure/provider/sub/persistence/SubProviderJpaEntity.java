@@ -1,17 +1,20 @@
 package br.com.subscontrol.infraestructure.provider.sub.persistence;
 
+import br.com.subscontrol.domain.provider.authentication.Authentication;
 import br.com.subscontrol.domain.provider.sub.SubProvider;
 import br.com.subscontrol.domain.provider.sub.SubProviderType;
 import br.com.subscontrol.infraestructure.provider.ProviderJpaEntity;
 import jakarta.persistence.*;
 
 import java.time.Instant;
+import java.util.Objects;
 
 @Entity
 @Table(name = "SUB_PROVIDERS")
 public class SubProviderJpaEntity extends ProviderJpaEntity {
 
     @Id
+    @Column(name = "id", nullable = false)
     private String id;
 
     @Enumerated(EnumType.STRING)
@@ -44,15 +47,28 @@ public class SubProviderJpaEntity extends ProviderJpaEntity {
     }
 
     public static SubProviderJpaEntity from(final SubProvider subProvider) {
+        String clienteId = "";
+        String clienteSecret = "";
+        String authorizationUrl = "";
+        String tokenUrl = "";
+
+        Authentication authentication = subProvider.getAuthentication();
+        if (!Objects.isNull(authentication)) {
+           clienteId = authentication.clientId();
+           clienteSecret = authentication.clientSecret();
+           authorizationUrl = authentication.authorizationUrl();
+           tokenUrl = authentication.tokenUrl();
+        }
+
         return new SubProviderJpaEntity(
                 subProvider.getId().getValue(),
                 subProvider.getType(),
                 subProvider.getName(),
                 subProvider.getBaseUrl(),
-                subProvider.getAuthentication().clientId(),
-                subProvider.getAuthentication().clientSecret(),
-                subProvider.getAuthentication().authorizationUrl(),
-                subProvider.getAuthentication().tokenUrl(),
+                clienteId,
+                clienteSecret,
+                authorizationUrl,
+                tokenUrl,
                 subProvider.isActive(),
                 subProvider.getLastSync()
         );

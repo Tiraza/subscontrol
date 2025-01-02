@@ -12,7 +12,7 @@ public class ProviderJpaEntity {
     @Column(name = "name", nullable = false)
     protected String name;
 
-    @Column(name = "base_url", nullable = false)
+    @Column(name = "base_url")
     protected String baseUrl;
 
     @Column(name = "client_id")

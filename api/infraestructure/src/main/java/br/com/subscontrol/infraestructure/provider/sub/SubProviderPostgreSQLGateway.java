@@ -5,12 +5,17 @@ import br.com.subscontrol.domain.pagination.SearchQuery;
 import br.com.subscontrol.domain.provider.sub.SubProvider;
 import br.com.subscontrol.domain.provider.sub.SubProviderGateway;
 import br.com.subscontrol.domain.provider.sub.SubProviderID;
+import br.com.subscontrol.infraestructure.provider.sub.persistence.SubProviderJpaEntity;
 import br.com.subscontrol.infraestructure.provider.sub.persistence.SubProviderRepository;
-import org.springframework.stereotype.Service;
+import br.com.subscontrol.infraestructure.util.SpecificationUtils;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-@Service
+@Component
 public class SubProviderPostgreSQLGateway implements SubProviderGateway {
 
     private final SubProviderRepository repository;
@@ -20,27 +25,56 @@ public class SubProviderPostgreSQLGateway implements SubProviderGateway {
     }
 
     @Override
-    public SubProvider create(SubProvider provider) {
-        return null;
+    public SubProvider create(final SubProvider provider) {
+        return save(provider);
     }
 
     @Override
-    public void deleteById(SubProviderID id) {
-
+    public void deleteById(final SubProviderID id) {
+        final String value = id.getValue();
+        if (this.repository.existsById(value)) {
+            this.repository.deleteById(value);
+        }
     }
 
     @Override
-    public Optional<SubProvider> findById(SubProviderID id) {
-        return Optional.empty();
+    public Optional<SubProvider> findById(final SubProviderID id) {
+        return this.repository.findById(id.getValue()).map(SubProviderJpaEntity::toDomain);
     }
 
     @Override
-    public SubProvider update(SubProvider provider) {
-        return null;
+    public SubProvider update(final SubProvider provider) {
+        return save(provider);
     }
 
     @Override
-    public Pagination<SubProvider> findAll(SearchQuery query) {
-        return null;
+    public Pagination<SubProvider> findAll(final SearchQuery query) {
+        final var page = PageRequest.of(
+                query.page(),
+                query.perPage(),
+                Sort.by(Sort.Direction.fromString(query.direction()), query.sort())
+        );
+
+        final var where = Optional.ofNullable(query.terms())
+                .filter(str -> !str.isBlank())
+                .map(this::assembleSpecification)
+                .orElse(null);
+
+        final var resuls = this.repository.findAll(Specification.where(where), page);
+
+        return new Pagination<>(
+                resuls.getNumber(),
+                resuls.getSize(),
+                resuls.getTotalElements(),
+                resuls.map(SubProviderJpaEntity::toDomain).toList()
+        );
+    }
+
+    private SubProvider save(final SubProvider provider) {
+        return this.repository.save(SubProviderJpaEntity.from(provider)).toDomain();
+    }
+
+    private Specification<SubProviderJpaEntity> assembleSpecification(final String terms) {
+        return SpecificationUtils.like("name", terms);
     }
 }
