@@ -1,11 +1,13 @@
 package br.com.subscontrol.infraestructure.provider.content.persistence;
 
+import br.com.subscontrol.domain.provider.authentication.Authentication;
 import br.com.subscontrol.domain.provider.content.ContentProvider;
 import br.com.subscontrol.domain.provider.content.ContentProviderType;
 import br.com.subscontrol.infraestructure.provider.ProviderJpaEntity;
 import jakarta.persistence.*;
 
 import java.time.Instant;
+import java.util.Optional;
 
 @Entity
 @Table(name = "CONTENT_PROVIDERS")
@@ -45,15 +47,16 @@ public class ContentProviderJpaEntity extends ProviderJpaEntity {
     }
 
     public static ContentProviderJpaEntity from(final ContentProvider contentProvider) {
+        Authentication authentication = contentProvider.getAuthentication();
         return new ContentProviderJpaEntity(
                 contentProvider.getId().getValue(),
                 contentProvider.getType(),
                 contentProvider.getName(),
                 contentProvider.getBaseUrl(),
-                contentProvider.getAuthentication().clientId(),
-                contentProvider.getAuthentication().clientSecret(),
-                contentProvider.getAuthentication().authorizationUrl(),
-                contentProvider.getAuthentication().tokenUrl(),
+                Optional.ofNullable(authentication).map(Authentication::clientId).orElse(""),
+                Optional.ofNullable(authentication).map(Authentication::clientSecret).orElse(""),
+                Optional.ofNullable(authentication).map(Authentication::authorizationUrl).orElse(""),
+                Optional.ofNullable(authentication).map(Authentication::tokenUrl).orElse(""),
                 contentProvider.isActive(),
                 contentProvider.getLastSync()
         );

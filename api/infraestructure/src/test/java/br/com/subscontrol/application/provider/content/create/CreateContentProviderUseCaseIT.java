@@ -1,9 +1,9 @@
-package br.com.subscontrol.application.provider.sub.create;
+package br.com.subscontrol.application.provider.content.create;
 
 import br.com.subscontrol.IntegrationTest;
 import br.com.subscontrol.domain.exceptions.DomainException;
-import br.com.subscontrol.domain.provider.sub.SubProviderGateway;
-import br.com.subscontrol.infraestructure.provider.sub.persistence.SubProviderRepository;
+import br.com.subscontrol.domain.provider.content.ContentProviderGateway;
+import br.com.subscontrol.infraestructure.provider.content.persistence.ContentProviderRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -18,28 +18,28 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @IntegrationTest
-public class CreateSubProviderUseCaseIT {
+public class CreateContentProviderUseCaseIT {
 
     @Autowired
-    private CreateSubProviderUseCase useCase;
+    private CreateContentProviderUseCase useCase;
 
     @Autowired
-    private SubProviderGateway gateway;
+    private ContentProviderGateway gateway;
 
     @Autowired
-    private SubProviderRepository repository;
+    private ContentProviderRepository repository;
 
     @Test
     void givenAValidCommand_whenCallsCreate_shouldReturnId() {
-        final var expectedType = "Patreon";
-        final var expectedName = "Patreon Integration";
-        final var expectedBaseUrl = "http://patreon.com";
+        final var expectedType = "Google Drive";
+        final var expectedName = "Google Drive Integration";
+        final var expectedBaseUrl = "http://google.com";
         final var expectedClientId = UUID.randomUUID().toString();
         final var expectedClientSecret = UUID.randomUUID().toString();
-        final var expectedAuthorizationUrl = "http://patreon.com/authorization";
-        final var expectedTokenUrl = "http://patreon.com/token";
+        final var expectedAuthorizationUrl = "http://google.com/authorization";
+        final var expectedTokenUrl = "http://google.com/token";
 
-        final var command = CreateSubProviderCommand.with(
+        final var command = CreateContentProviderCommand.with(
                 expectedType,
                 expectedName,
                 expectedBaseUrl,
@@ -72,13 +72,13 @@ public class CreateSubProviderUseCaseIT {
     @ParameterizedTest
     @MethodSource("provideArguments")
     void givenInvalidCommand_whenCallsCreate_thenReceiveDomainException(String errorMessage, String name, String url) {
-        final var expectedType = "Patreon";
+        final var expectedType = "Google Drive";
         final var expectedClientId = UUID.randomUUID().toString();
         final var expectedClientSecret = UUID.randomUUID().toString();
-        final var expectedAuthorizationUrl = "http://patreon.com/authorization";
-        final var expectedTokenUrl = "http://patreon.com/token";
+        final var expectedAuthorizationUrl = "http://google.com/authorization";
+        final var expectedTokenUrl = "http://google.com/token";
 
-        final var command = CreateSubProviderCommand.with(
+        final var command = CreateContentProviderCommand.with(
                 expectedType,
                 name,
                 url,
@@ -97,11 +97,12 @@ public class CreateSubProviderUseCaseIT {
         Assertions.assertNotNull(exception);
         Assertions.assertEquals(1, exception.getErrors().size());
         Assertions.assertEquals(errorMessage, exception.firstError().message());
+
     }
 
     private static Stream<Arguments> provideArguments() {
-        final var name = "Patreon Integration";
-        final var validUrl = "http://www.patreon.com";
+        final var name = "Google Drive Integration";
+        final var validUrl = "http://www.google.com";
         final var invalidUrl = "this_is_an_invalid_url!@#";
         final var invalidLengthValue = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum bibendum eros vel orci finibus, et tincidunt velit placerat. Suspendisse potenti. Maecenas consequat lorem sit amet diam venenatis, non auctor odio posuere. Nulla facilisi. Sed vulputate eros nec nisl maximus, in efficitur velit ultricies. Phasellus vitae turpis risus. Nam a libero ex. Etiam venenatis pharetra diam, in hendrerit libero fermentum a. Integer sit amet lacinia turpis. Sed eget tortor fringilla, posuere elit a, fermentum odio.";
 
@@ -112,4 +113,5 @@ public class CreateSubProviderUseCaseIT {
                 Arguments.of("URL is not valid", name, invalidUrl)
         );
     }
+
 }

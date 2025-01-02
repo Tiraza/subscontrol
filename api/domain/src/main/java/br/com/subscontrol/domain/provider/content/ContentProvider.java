@@ -53,6 +53,18 @@ public class ContentProvider extends Provider<ContentProviderID> {
         return new ContentProvider(ContentProviderID.from(id), type, name, baseUrl, active, lastSync, authentication);
     }
 
+    public static ContentProvider with(final ContentProvider provider) {
+        return new ContentProvider(
+                provider.getId(),
+                provider.getType(),
+                provider.getName(),
+                provider.getBaseUrl(),
+                provider.isActive(),
+                provider.getLastSync(),
+                provider.getAuthentication()
+        );
+    }
+
     public void update(
             final String name,
             final String baseUrl,

@@ -1,39 +1,32 @@
 package br.com.subscontrol.application.provider.content.retrieve.get;
 
-import br.com.subscontrol.application.UseCaseTest;
+import br.com.subscontrol.IntegrationTest;
 import br.com.subscontrol.domain.exceptions.NotFoundException;
 import br.com.subscontrol.domain.provider.content.ContentProvider;
 import br.com.subscontrol.domain.provider.content.ContentProviderGateway;
 import br.com.subscontrol.domain.provider.content.ContentProviderID;
 import br.com.subscontrol.domain.provider.content.ContentProviderType;
+import br.com.subscontrol.infraestructure.provider.content.persistence.ContentProviderRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.when;
 
-class GetContentProviderUseCaseTest extends UseCaseTest {
+@IntegrationTest
+public class GetContentProviderUseCaseIT {
 
-    @InjectMocks
-    private DefaultGetContentProviderUseCase useCase;
+    @Autowired
+    private GetContentProviderUseCase useCase;
 
-    @Mock
+    @SpyBean
     private ContentProviderGateway gateway;
 
-    @Override
-    protected List<Object> getMocks() {
-        return List.of(gateway);
-    }
+    @Autowired
+    private ContentProviderRepository repository;
 
     @Test
     void givenAValidId_whenCallsGet_shouldReturnProvider() {
@@ -55,11 +48,17 @@ class GetContentProviderUseCaseTest extends UseCaseTest {
                 expectedAuthorizationUrl,
                 expectedTokenUrl);
 
+        assertEquals(0, repository.count());
+
+        gateway.create(provider);
+
+        assertEquals(1, repository.count());
+
         final var expectedId = provider.getId();
 
-        when(gateway.findById(any())).thenReturn(Optional.of(provider));
-
         final var actualProvider = useCase.execute(expectedId.getValue());
+
+        assertEquals(1, repository.count());
 
         assertEquals(expectedId.getValue(), actualProvider.id());
         assertEquals(expectedType, actualProvider.type());
@@ -70,8 +69,6 @@ class GetContentProviderUseCaseTest extends UseCaseTest {
         assertEquals(expectedClientSecret, actualProvider.clientSecret());
         assertEquals(expectedAuthorizationUrl, actualProvider.authorizationUrl());
         assertEquals(expectedTokenUrl, actualProvider.tokenUrl());
-
-        Mockito.verify(gateway, times(1)).findById(eq(expectedId));
     }
 
     @Test
@@ -79,12 +76,9 @@ class GetContentProviderUseCaseTest extends UseCaseTest {
         final var expectedErrorMessage = "ContentProvider with ID 123 was not found";
         final var expectedId = ContentProviderID.from("123");
 
-        when(gateway.findById(eq(expectedId))).thenReturn(Optional.empty());
-
         final var actualException = Assertions.assertThrows(NotFoundException.class, () -> useCase.execute(expectedId.getValue()));
 
         assertEquals(expectedErrorMessage, actualException.getMessage());
-
-        Mockito.verify(gateway, times(1)).findById(eq(expectedId));
     }
+
 }

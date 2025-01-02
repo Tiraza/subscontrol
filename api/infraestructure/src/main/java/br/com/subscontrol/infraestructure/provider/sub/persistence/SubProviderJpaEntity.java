@@ -7,7 +7,7 @@ import br.com.subscontrol.infraestructure.provider.ProviderJpaEntity;
 import jakarta.persistence.*;
 
 import java.time.Instant;
-import java.util.Objects;
+import java.util.Optional;
 
 @Entity
 @Table(name = "SUB_PROVIDERS")
@@ -47,28 +47,16 @@ public class SubProviderJpaEntity extends ProviderJpaEntity {
     }
 
     public static SubProviderJpaEntity from(final SubProvider subProvider) {
-        String clienteId = "";
-        String clienteSecret = "";
-        String authorizationUrl = "";
-        String tokenUrl = "";
-
         Authentication authentication = subProvider.getAuthentication();
-        if (!Objects.isNull(authentication)) {
-           clienteId = authentication.clientId();
-           clienteSecret = authentication.clientSecret();
-           authorizationUrl = authentication.authorizationUrl();
-           tokenUrl = authentication.tokenUrl();
-        }
-
         return new SubProviderJpaEntity(
                 subProvider.getId().getValue(),
                 subProvider.getType(),
                 subProvider.getName(),
                 subProvider.getBaseUrl(),
-                clienteId,
-                clienteSecret,
-                authorizationUrl,
-                tokenUrl,
+                Optional.ofNullable(authentication).map(Authentication::clientId).orElse(""),
+                Optional.ofNullable(authentication).map(Authentication::clientSecret).orElse(""),
+                Optional.ofNullable(authentication).map(Authentication::authorizationUrl).orElse(""),
+                Optional.ofNullable(authentication).map(Authentication::tokenUrl).orElse(""),
                 subProvider.isActive(),
                 subProvider.getLastSync()
         );

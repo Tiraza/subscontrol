@@ -1,1 +1,2 @@
-## SubsControl
+# SubsControl
+[![CI](https://github.com/Tiraza/subscontrol/actions/workflows/ci.yaml/badge.svg)](https://github.com/Tiraza/subscontrol/actions/workflows/ci.yaml) [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Tiraza_subscontrol&metric=coverage)](https://sonarcloud.io/summary/new_code?id=Tiraza_subscontrol) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Tiraza_subscontrol&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Tiraza_subscontrol) 
