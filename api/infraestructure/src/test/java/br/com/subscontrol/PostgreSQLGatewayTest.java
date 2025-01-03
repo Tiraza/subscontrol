@@ -15,7 +15,7 @@ import java.lang.annotation.*;
 @ComponentScan(
         basePackages = "br.com.subscontrol.infraestructure",
         includeFilters = {
-            @ComponentScan.Filter(type = FilterType.REGEX, pattern = ".*[PostgreSQLGateway]")
+            @ComponentScan.Filter(type = FilterType.REGEX, pattern = ".[PostgreSQLGateway]")
         }
 )
 @DataJpaTest
