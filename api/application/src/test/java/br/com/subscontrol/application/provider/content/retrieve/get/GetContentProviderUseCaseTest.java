@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
@@ -60,15 +61,15 @@ class GetContentProviderUseCaseTest extends UseCaseTest {
 
         final var actualProvider = useCase.execute(expectedId.getValue());
 
-        Assertions.assertEquals(expectedId.getValue(), actualProvider.id());
-        Assertions.assertEquals(expectedType, actualProvider.type());
-        Assertions.assertEquals(expectedName, actualProvider.name());
-        Assertions.assertEquals(expectedBaseUrl, actualProvider.baseUrl());
-        Assertions.assertEquals(expectedIsActive, actualProvider.isActive());
-        Assertions.assertEquals(expectedClientId, actualProvider.clientId());
-        Assertions.assertEquals(expectedClientSecret, actualProvider.clientSecret());
-        Assertions.assertEquals(expectedAuthorizationUrl, actualProvider.authorizationUrl());
-        Assertions.assertEquals(expectedTokenUrl, actualProvider.tokenUrl());
+        assertEquals(expectedId.getValue(), actualProvider.id());
+        assertEquals(expectedType, actualProvider.type());
+        assertEquals(expectedName, actualProvider.name());
+        assertEquals(expectedBaseUrl, actualProvider.baseUrl());
+        assertEquals(expectedIsActive, actualProvider.isActive());
+        assertEquals(expectedClientId, actualProvider.clientId());
+        assertEquals(expectedClientSecret, actualProvider.clientSecret());
+        assertEquals(expectedAuthorizationUrl, actualProvider.authorizationUrl());
+        assertEquals(expectedTokenUrl, actualProvider.tokenUrl());
 
         Mockito.verify(gateway, times(1)).findById(eq(expectedId));
     }
@@ -82,7 +83,7 @@ class GetContentProviderUseCaseTest extends UseCaseTest {
 
         final var actualException = Assertions.assertThrows(NotFoundException.class, () -> useCase.execute(expectedId.getValue()));
 
-        Assertions.assertEquals(expectedErrorMessage, actualException.getMessage());
+        assertEquals(expectedErrorMessage, actualException.getMessage());
 
         Mockito.verify(gateway, times(1)).findById(eq(expectedId));
     }

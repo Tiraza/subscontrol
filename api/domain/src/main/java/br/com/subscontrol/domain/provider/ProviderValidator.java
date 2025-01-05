@@ -16,6 +16,7 @@ public class ProviderValidator extends Validator {
     @Override
     public void validate() {
         ValidationUtils.checkStringConstraints(provider.getName(), "name", validationHandler());
+
         if (provider.getBaseUrl() != null && !provider.getBaseUrl().isEmpty()) {
             ValidationUtils.checkUrlConstraints(provider.getBaseUrl(), validationHandler());
         }

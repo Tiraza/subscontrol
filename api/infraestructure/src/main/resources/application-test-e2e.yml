@@ -1,0 +1,12 @@
+postgre:
+  url: localhost:${postgresql.port}
+  username: postgres
+  password: postgres
+  database: subs-control
+
+server:
+  port: 8080
+  undertow:
+    threads:
+      worker: 10
+      io: 2
