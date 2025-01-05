@@ -3,7 +3,6 @@ package br.com.subscontrol.infraestructure.provider.sub.models;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public record UpdateSubProviderRequest(
-        @JsonProperty("id") String id,
         @JsonProperty("name") String name,
         @JsonProperty("base_url") String baseUrl,
         @JsonProperty("is_active") Boolean active,

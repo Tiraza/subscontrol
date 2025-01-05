@@ -79,7 +79,7 @@ public class SubProviderController implements SubProviderAPI {
     @Override
     public ResponseEntity<?> updateById(final String id, final UpdateSubProviderRequest input) {
         final var command = UpdateSubProviderCommand.with(
-                input.id(),
+                id,
                 input.name(),
                 input.baseUrl(),
                 input.active(),

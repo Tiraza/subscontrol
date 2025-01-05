@@ -16,7 +16,6 @@ class UpdateSubProviderRequestTest {
 
     @Test
     void testMarshall() throws Exception {
-        final var expectedId = "123";
         final var expectedName = "Patreon Integration";
         final var expectedBaseUrl = "http://www.patreon.com";
         final var expectedIsActive = true;
@@ -26,7 +25,6 @@ class UpdateSubProviderRequestTest {
         final var expectedTokenUrl = "/token";
 
         final var response = new UpdateSubProviderRequest(
-                expectedId,
                 expectedName,
                 expectedBaseUrl,
                 expectedIsActive,
@@ -39,7 +37,6 @@ class UpdateSubProviderRequestTest {
         final var actualJson = this.json.write(response);
 
         Assertions.assertThat(actualJson)
-                .hasJsonPathValue("$.id", expectedId)
                 .hasJsonPathValue("$.name", expectedName)
                 .hasJsonPathValue("$.base_url", expectedBaseUrl)
                 .hasJsonPathValue("$.is_active", expectedIsActive)
@@ -51,7 +48,6 @@ class UpdateSubProviderRequestTest {
 
     @Test
     void testUnmarshall() throws Exception {
-        final var expectedId = "123";
         final var expectedName = "Patreon Integration";
         final var expectedBaseUrl = "http://www.patreon.com";
         final var expectedIsActive = true;
@@ -62,7 +58,6 @@ class UpdateSubProviderRequestTest {
 
         final var json = """
         {
-            "id": "%s",
             "name": "%s",
             "base_url": "%s",
             "is_active": %s,
@@ -72,7 +67,6 @@ class UpdateSubProviderRequestTest {
             "token_url": "%s"
         }
         """.formatted(
-                expectedId,
                 expectedName,
                 expectedBaseUrl,
                 expectedIsActive,
@@ -85,7 +79,6 @@ class UpdateSubProviderRequestTest {
         final var actualJson = this.json.parse(json);
 
         Assertions.assertThat(actualJson)
-                .hasFieldOrPropertyWithValue("id", expectedId)
                 .hasFieldOrPropertyWithValue("name", expectedName)
                 .hasFieldOrPropertyWithValue("baseUrl", expectedBaseUrl)
                 .hasFieldOrPropertyWithValue("active", expectedIsActive)
