@@ -1,7 +1,6 @@
 package br.com.subscontrol.domain.provider.sub;
 
 import br.com.subscontrol.domain.exceptions.DomainException;
-import br.com.subscontrol.domain.provider.authentication.Authentication;
 import br.com.subscontrol.domain.utils.InstantUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -20,17 +19,14 @@ class SubProviderTest {
         final var expectedName = "Patreon Integration";
         final var expectedUrl = "";
 
-        final Authentication expectedAuthentication = Authentication.with("", "", "", "");
-
-        SubProvider provider = SubProvider.create(expectedType, expectedName, expectedUrl, expectedAuthentication);
+        SubProvider provider = SubProvider.create(expectedType, expectedName, expectedUrl, null);
 
         assertNotNull(provider.getId());
         assertTrue(provider.isActive());
         assertEquals(expectedType, provider.getType());
         assertEquals(expectedName, provider.getName());
         assertEquals(expectedUrl, provider.getBaseUrl());
-
-        assertNotNull(provider.getAuthentication());
+        assertNull(provider.getAuthentication());
     }
 
     @Test
@@ -67,24 +63,21 @@ class SubProviderTest {
         final var expectedName = "Patreon Integration";
         final var expectedUrl = "";
 
-        final Authentication expectedAuthentication = Authentication.with("", "", "", "");
-
-        SubProvider provider = SubProvider.create(expectedType, expectedName, expectedUrl, expectedAuthentication);
+        SubProvider provider = SubProvider.create(expectedType, expectedName, expectedUrl, null);
 
         assertNotNull(provider.getId());
         assertTrue(provider.isActive());
         assertEquals(expectedType, provider.getType());
         assertEquals(expectedName, provider.getName());
         assertEquals(expectedUrl, provider.getBaseUrl());
-
-        assertNotNull(provider.getAuthentication());
+        assertNull(provider.getAuthentication());
 
         final var id = provider.getId().getValue();
         final var active = provider.isActive();
         final var type = provider.getType();
         final var name = "Google Drive";
         final var url = "http://www.patreon.com";
-        provider.update(name, url, true, provider.getAuthentication());
+        provider.update(name, url, true);
 
         assertEquals(id, provider.getId().getValue());
         assertEquals(active, provider.isActive());

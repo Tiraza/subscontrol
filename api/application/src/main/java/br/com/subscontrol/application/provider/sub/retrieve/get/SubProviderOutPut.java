@@ -26,10 +26,10 @@ public record SubProviderOutPut(
 
         Authentication authentication = provider.getAuthentication();
         if (authentication != null) {
-            clientId = authentication.clientId();
-            clientSecret = authentication.clientSecret();
-            authorizationUrl = authentication.authorizationUrl();
-            tokenUrl = authentication.tokenUrl();
+            clientId = authentication.getClientId();
+            clientSecret = authentication.getClientSecret();
+            authorizationUrl = authentication.getAuthorizationUrl();
+            tokenUrl = authentication.getTokenUrl();
         }
 
         return new SubProviderOutPut(

@@ -8,13 +8,13 @@ import java.util.Optional;
 
 public abstract class SubSynchronizer implements SubSynchronization {
 
-    public void synchronize(final SubProvider provider) {
+    public final void synchronize(final SubProvider provider) {
         synchronized (provider.getId().getValue()) {
             Optional.ofNullable(provider.getAuthentication()).ifPresent(this::start);
         }
     }
 
-    private void start(final Authentication authentication) {
+    protected void start(final Authentication authentication) {
         synchronizeTiers(authentication).forEach(tier -> {
             synchronizeSubsFromTier(authentication, tier);
         });

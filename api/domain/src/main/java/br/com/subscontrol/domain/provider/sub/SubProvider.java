@@ -35,8 +35,9 @@ public class SubProvider extends Provider<SubProviderID> {
             final String clientSecret,
             final String authorizationUrl,
             final String tokenUrl) {
-        Authentication authentication = Authentication.with(clientId, clientSecret, authorizationUrl, tokenUrl);
-        return new SubProvider(SubProviderID.unique(), SubProviderType.from(type), name, baseUrl, true, null, authentication);
+        final SubProviderID providerID = SubProviderID.unique();
+        final Authentication authentication = Authentication.withClientSecret(providerID, clientId, clientSecret, authorizationUrl, tokenUrl);
+        return new SubProvider(providerID, SubProviderType.from(type), name, baseUrl, true, null, authentication);
     }
 
     public static SubProvider with(
@@ -62,19 +63,7 @@ public class SubProvider extends Provider<SubProviderID> {
         );
     }
 
-    public void update(
-            final String name,
-            final String baseUrl,
-            final boolean isActive,
-            final String clientId,
-            final String clientSecret,
-            final String authorizationUrl,
-            final String tokenUrl) {
-        Authentication authentication = Authentication.with(clientId, clientSecret, authorizationUrl, tokenUrl);
-        update(name, baseUrl, isActive, authentication);
-    }
-
-    public void update(final String name, final String baseUrl, final boolean isActive, final Authentication authentication) {
+    public void update(final String name, final String baseUrl, final boolean isActive) {
         if (isActive) {
             activate();
         } else {
@@ -82,7 +71,6 @@ public class SubProvider extends Provider<SubProviderID> {
         }
         this.name = name;
         this.baseUrl = baseUrl;
-        this.authentication = authentication;
         selfValidate();
     }
 

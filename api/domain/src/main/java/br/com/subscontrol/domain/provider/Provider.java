@@ -1,13 +1,13 @@
 package br.com.subscontrol.domain.provider;
 
 import br.com.subscontrol.domain.Entity;
-import br.com.subscontrol.domain.Identifier;
 import br.com.subscontrol.domain.provider.authentication.Authentication;
 import br.com.subscontrol.domain.validation.ValidationHandler;
 
 import java.time.Instant;
+import java.util.Optional;
 
-public abstract class Provider<ID extends Identifier> extends Entity<ID> {
+public abstract class Provider<ID extends ProviderID> extends Entity<ID> {
 
     protected String name;
     protected String baseUrl;
@@ -22,6 +22,24 @@ public abstract class Provider<ID extends Identifier> extends Entity<ID> {
         this.active = active;
         this.lastSync = lastSync;
         this.authentication = authentication;
+    }
+
+    public void updateAuthentication(
+            final String clientId,
+            final String clientSecret,
+            final String authorizationUrl,
+            final String tokenUrl) {
+        Optional.ofNullable(authentication).ifPresentOrElse(
+                auth -> auth.updateClientSecret(clientId, clientSecret, authorizationUrl, tokenUrl),
+                () -> authentication = Authentication.withClientSecret(this.id, clientId, clientSecret, authorizationUrl, tokenUrl)
+        );
+    }
+
+    public void updateAuthentication(final byte[] file) {
+        Optional.ofNullable(authentication).ifPresentOrElse(
+                auth -> auth.updateFile(file),
+                () -> authentication = Authentication.withFile(this.id, file)
+        );
     }
 
     public String getName() {

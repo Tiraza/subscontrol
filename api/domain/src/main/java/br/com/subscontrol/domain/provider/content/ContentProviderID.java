@@ -1,16 +1,13 @@
 package br.com.subscontrol.domain.provider.content;
 
-import br.com.subscontrol.domain.Identifier;
+import br.com.subscontrol.domain.provider.ProviderID;
 
-import java.util.Objects;
 import java.util.UUID;
 
-public class ContentProviderID extends Identifier {
+public class ContentProviderID extends ProviderID {
 
-    private final String valor;
-
-    private ContentProviderID(final String valor) {
-        this.valor = Objects.requireNonNull(valor, "'ContentProviderID' should not be null");
+    private ContentProviderID(final String value) {
+        super(value, "ContentProviderID");
     }
 
     public static ContentProviderID unique() {
@@ -21,8 +18,4 @@ public class ContentProviderID extends Identifier {
         return new ContentProviderID(id);
     }
 
-    @Override
-    public String getValue() {
-        return valor;
-    }
 }

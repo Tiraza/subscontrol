@@ -20,14 +20,8 @@ public class DefaultUpdateContentProviderUseCase extends UpdateContentProviderUs
         ContentProviderID providerID = ContentProviderID.from(command.id());
         ContentProvider provider = this.gateway.findById(providerID)
                 .orElseThrow(NotFoundException.notFound(ContentProvider.class, providerID));
-        provider.update(
-                command.name(),
-                command.baseUrl(),
-                command.active(),
-                command.clientId(),
-                command.clientSecret(),
-                command.authorizationUrl(),
-                command.tokenUrl());
+        provider.update(command.name(), command.baseUrl(), command.active());
+        //TODO: Update Authentication
         return UpdateContentProviderOutput.from(this.gateway.update(provider));
     }
 
