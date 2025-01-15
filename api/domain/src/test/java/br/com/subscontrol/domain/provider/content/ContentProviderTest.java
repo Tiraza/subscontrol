@@ -1,12 +1,15 @@
 package br.com.subscontrol.domain.provider.content;
 
 import br.com.subscontrol.domain.exceptions.DomainException;
+import br.com.subscontrol.domain.provider.authentication.Authentication;
+import br.com.subscontrol.domain.provider.authentication.AuthenticationType;
 import br.com.subscontrol.domain.utils.InstantUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -18,43 +21,67 @@ class ContentProviderTest {
         final var expectedType = ContentProviderType.GOOGLE_DRIVE;
         final var expectedName = "Google Drive Integration";
         final var expectedUrl = "";
+        final var expectedAuthenticationType = AuthenticationType.CLIENT_SECRET;
+        final var expectedClientId = UUID.randomUUID().toString();
+        final var expectedClientSecret = UUID.randomUUID().toString();
+        final var expectedAuthorizationUrl = "/authorization";
+        final var expectedTokenUrl = "/token";
 
-        ContentProvider provider = ContentProvider.create(expectedType, expectedName, expectedUrl, null);
+        ContentProvider provider = ContentProvider.create(
+                expectedType.getName(),
+                expectedName,
+                expectedUrl,
+                expectedAuthenticationType.name(),
+                expectedClientId,
+                expectedClientSecret,
+                expectedAuthorizationUrl,
+                expectedTokenUrl,
+                null
+        );
 
         assertNotNull(provider.getId());
         assertTrue(provider.isActive());
         assertEquals(expectedType, provider.getType());
         assertEquals(expectedName, provider.getName());
         assertEquals(expectedUrl, provider.getBaseUrl());
-        assertNull(provider.getAuthentication());
+
+        Authentication authentication = provider.getAuthentication();
+        assertNotNull(authentication);
+        assertEquals(expectedAuthenticationType, authentication.getType());
+        assertEquals(expectedClientId, authentication.getClientId());
+        assertEquals(expectedClientSecret, authentication.getClientSecret());
+        assertEquals(expectedAuthorizationUrl, authentication.getAuthorizationUrl());
+        assertEquals(expectedTokenUrl, authentication.getTokenUrl());
+        assertNull(authentication.getFile());
     }
 
     @Test
     void givenValidParameters_whenCallWith_thenReturnAnInstance() {
-        final var expectedId = ContentProviderID.unique().getValue();
+        final var expectedId = ContentProviderID.unique();
         final var expectedType = ContentProviderType.GOOGLE_DRIVE;
         final var expectedName = "Google Drive Integration";
         final var expectedUrl = "";
         final var expetedIsActive = true;
         final var expectedLastSync = InstantUtils.now();
+        final var expectedAuthentication = Authentication.withFile(expectedId, new byte[1]);
 
         ContentProvider provider = ContentProvider.with(
-                expectedId,
+                expectedId.getValue(),
                 expectedType,
                 expectedName,
                 expectedUrl,
                 expetedIsActive,
                 expectedLastSync,
-                null
+                expectedAuthentication
         );
 
-        assertEquals(expectedId, provider.getId().getValue());
+        assertEquals(expectedId, provider.getId());
         assertEquals(expectedType, provider.getType());
         assertEquals(expectedName, provider.getName());
         assertEquals(expectedUrl, provider.getBaseUrl());
         assertEquals(expetedIsActive, provider.isActive());
         assertEquals(expectedLastSync, provider.getLastSync());
-        assertNull(provider.getAuthentication());
+        assertEquals(expectedAuthentication, provider.getAuthentication());
     }
 
     @Test
@@ -62,15 +89,38 @@ class ContentProviderTest {
         final var expectedType = ContentProviderType.GOOGLE_DRIVE;
         final var expectedName = "Google Drive Integration";
         final var expectedUrl = "";
+        final var expectedAuthenticationType = AuthenticationType.CLIENT_SECRET;
+        final var expectedClientId = UUID.randomUUID().toString();
+        final var expectedClientSecret = UUID.randomUUID().toString();
+        final var expectedAuthorizationUrl = "/authorization";
+        final var expectedTokenUrl = "/token";
 
-        ContentProvider provider = ContentProvider.create(expectedType, expectedName, expectedUrl, null);
+        ContentProvider provider = ContentProvider.create(
+                expectedType.getName(),
+                expectedName,
+                expectedUrl,
+                expectedAuthenticationType.name(),
+                expectedClientId,
+                expectedClientSecret,
+                expectedAuthorizationUrl,
+                expectedTokenUrl,
+                null
+        );
 
         assertNotNull(provider.getId());
         assertTrue(provider.isActive());
         assertEquals(expectedType, provider.getType());
         assertEquals(expectedName, provider.getName());
         assertEquals(expectedUrl, provider.getBaseUrl());
-        assertNull(provider.getAuthentication());
+
+        Authentication authentication = provider.getAuthentication();
+        assertNotNull(authentication);
+        assertEquals(expectedAuthenticationType, authentication.getType());
+        assertEquals(expectedClientId, authentication.getClientId());
+        assertEquals(expectedClientSecret, authentication.getClientSecret());
+        assertEquals(expectedAuthorizationUrl, authentication.getAuthorizationUrl());
+        assertEquals(expectedTokenUrl, authentication.getTokenUrl());
+        assertNull(authentication.getFile());
 
         final var id = provider.getId().getValue();
         final var active = provider.isActive();
@@ -88,14 +138,15 @@ class ContentProviderTest {
 
     @Test
     void givenActiveInstance_whenCallDeactivate_thenReturnInstanceDeactivated() {
+        ContentProviderID providerID = ContentProviderID.unique();
         ContentProvider provider = ContentProvider.with(
-                ContentProviderID.unique().getValue(),
+                providerID.getValue(),
                 ContentProviderType.GOOGLE_DRIVE,
                 "Google Drive Integration",
                 "",
                 true,
                 null,
-                null);
+                Authentication.withFile(providerID, new byte[1]));
 
         assertTrue(provider.isActive());
         provider.deactivate();
@@ -104,6 +155,7 @@ class ContentProviderTest {
 
     @Test
     void givenInactiveInstance_whenCallActivate_thenReturnInstanceActivated() {
+        ContentProviderID providerID = ContentProviderID.unique();
         ContentProvider provider = ContentProvider.with(
                 ContentProviderID.unique().getValue(),
                 ContentProviderType.GOOGLE_DRIVE,
@@ -111,17 +163,51 @@ class ContentProviderTest {
                 "",
                 false,
                 null,
-                null);
+                Authentication.withFile(providerID, new byte[1]));
 
         assertFalse(provider.isActive());
         provider.activate();
         assertTrue(provider.isActive());
     }
 
+    @Test
+    void givenInvalidNullAuthentication_whenCallWith_thenReceiveDomainException() {
+        DomainException exception = assertThrows(DomainException.class, () -> {
+            ContentProvider.with(
+                    ContentProviderID.unique().getValue(),
+                    ContentProviderType.GOOGLE_DRIVE,
+                    "Patreon",
+                    "http://www.patreon.com",
+                    true,
+                    InstantUtils.now(),
+                    null
+            );
+        });
+
+        final var expectedMessage = "Failed to create Entity";
+        final int expectedErrorCount = 1;
+        final var expectedErroMessage = "A provider must have authentication";
+
+        assertEquals(expectedMessage, exception.getMessage());
+        assertEquals(expectedErrorCount, exception.getErrors().size());
+        assertEquals(expectedErroMessage, exception.firstError().message());
+    }
+
     @ParameterizedTest
     @MethodSource("provideArguments")
     void givenInvalidParameter_whenCallCreate_thenReceiveDomainException(String errorMessage, String name, String url) {
-        DomainException exception = assertThrows(DomainException.class, () -> ContentProvider.create(ContentProviderType.GOOGLE_DRIVE, name, url, null));
+        DomainException exception = assertThrows(DomainException.class, () -> {
+            ContentProvider.create(
+                    ContentProviderType.GOOGLE_DRIVE.getName(),
+                    name,
+                    url,
+                    AuthenticationType.CLIENT_SECRET.name(),
+                    UUID.randomUUID().toString(),
+                    UUID.randomUUID().toString(),
+                    "/authorization",
+                    "/token",
+                    null);
+        });
 
         final var expectedMessage = "Failed to create Entity";
         final int expectedErrorCount = 1;

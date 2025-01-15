@@ -13,7 +13,7 @@ public class UnsupportedAuthenticationType extends DomainException {
     }
 
     public static UnsupportedAuthenticationType with(final AuthenticationType type) {
-        final var anError = "Unsupported authentication type '%s'".formatted(type);
+        final var anError = "Unsupported authentication type '%s'".formatted(type.name());
         return new UnsupportedAuthenticationType(anError, Collections.emptyList());
     }
 

@@ -2,6 +2,7 @@ package br.com.subscontrol.application.provider.sub.create;
 
 import br.com.subscontrol.application.UseCaseTest;
 import br.com.subscontrol.domain.exceptions.DomainException;
+import br.com.subscontrol.domain.provider.authentication.AuthenticationType;
 import br.com.subscontrol.domain.provider.sub.SubProviderGateway;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -12,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
+import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -38,23 +40,26 @@ class CreateSubProviderUseCaseTest extends UseCaseTest {
     }
 
     @Test
-    void givenAValidCommand_whenCallsCreate_shouldReturnId() {
+    void givenAValidCommand_whenCallsCreateWithAuthenticationClientSecret_shouldReturnId() {
         final var expectedType = "Patreon";
         final var expectedName = "Patreon Integration";
         final var expectedBaseUrl = "http://patreon.com";
+        final var expectedAuthenticationType = AuthenticationType.CLIENT_SECRET;
         final var expectedClientId = UUID.randomUUID().toString();
         final var expectedClientSecret = UUID.randomUUID().toString();
-        final var expectedAuthorizationUrl = "http://patreon.com/authorization";
-        final var expectedTokenUrl = "http://patreon.com/token";
+        final var expectedAuthorizationUrl = "/authorization";
+        final var expectedTokenUrl = "/token";
 
         final var command = CreateSubProviderCommand.with(
                 expectedType,
                 expectedName,
                 expectedBaseUrl,
+                expectedAuthenticationType.name(),
                 expectedClientId,
                 expectedClientSecret,
                 expectedAuthorizationUrl,
-                expectedTokenUrl
+                expectedTokenUrl,
+                null
         );
 
         when(gateway.create(any())).thenAnswer(returnsFirstArg());
@@ -68,10 +73,47 @@ class CreateSubProviderUseCaseTest extends UseCaseTest {
                 Objects.equals(expectedType, subProvider.getType().getName())
                         && Objects.equals(expectedName, subProvider.getName())
                         && Objects.equals(expectedBaseUrl, subProvider.getBaseUrl())
-                        && Objects.equals(expectedClientId, subProvider.getAuthentication().clientId())
-                        && Objects.equals(expectedClientSecret, subProvider.getAuthentication().clientSecret())
-                        && Objects.equals(expectedAuthorizationUrl, subProvider.getAuthentication().authorizationUrl())
-                        && Objects.equals(expectedTokenUrl, subProvider.getAuthentication().tokenUrl())
+                        && Objects.equals(expectedAuthenticationType, subProvider.getAuthentication().getType())
+                        && Objects.equals(expectedClientId, subProvider.getAuthentication().getClientId())
+                        && Objects.equals(expectedClientSecret, subProvider.getAuthentication().getClientSecret())
+                        && Objects.equals(expectedAuthorizationUrl, subProvider.getAuthentication().getAuthorizationUrl())
+                        && Objects.equals(expectedTokenUrl, subProvider.getAuthentication().getTokenUrl())
+        ));
+    }
+
+    @Test
+    void givenAValidCommand_whenCallsCreateWithAuthenticationClientFile_shouldReturnId() {
+        final var expectedType = "Google Drive";
+        final var expectedName = "Google Drive Integration";
+        final var expectedBaseUrl = "http://google.com";
+        final var expectedAuthenticationType = AuthenticationType.FILE;
+        final var expectedFile = Base64.getEncoder().encodeToString("test".getBytes());
+
+        final var command = CreateSubProviderCommand.with(
+                expectedType,
+                expectedName,
+                expectedBaseUrl,
+                expectedAuthenticationType.name(),
+                null,
+                null,
+                null,
+                null,
+                expectedFile
+        );
+
+        when(gateway.create(any())).thenAnswer(returnsFirstArg());
+
+        final var output = useCase.execute(command);
+
+        assertNotNull(output);
+        assertNotNull(output.id());
+
+        Mockito.verify(gateway, times(1)).create(argThat(provider ->
+                Objects.equals(expectedType, provider.getType().getName())
+                        && Objects.equals(expectedName, provider.getName())
+                        && Objects.equals(expectedBaseUrl, provider.getBaseUrl())
+                        && Objects.equals(expectedAuthenticationType, provider.getAuthentication().getType())
+                        && !Objects.isNull(provider.getAuthentication().getFile())
         ));
     }
 
@@ -79,19 +121,22 @@ class CreateSubProviderUseCaseTest extends UseCaseTest {
     @MethodSource("provideArguments")
     void givenInvalidCommand_whenCallsCreate_thenReceiveDomainException(String errorMessage, String name, String url) {
         final var expectedType = "Patreon";
+        final var expectedAuthenticationType = AuthenticationType.CLIENT_SECRET;
         final var expectedClientId = UUID.randomUUID().toString();
         final var expectedClientSecret = UUID.randomUUID().toString();
-        final var expectedAuthorizationUrl = "http://patreon.com/authorization";
-        final var expectedTokenUrl = "http://patreon.com/token";
+        final var expectedAuthorizationUrl = "/authorization";
+        final var expectedTokenUrl = "/token";
 
         final var command = CreateSubProviderCommand.with(
                 expectedType,
                 name,
                 url,
+                expectedAuthenticationType.name(),
                 expectedClientId,
                 expectedClientSecret,
                 expectedAuthorizationUrl,
-                expectedTokenUrl
+                expectedTokenUrl,
+                null
         );
 
         final var exception = Assertions.assertThrows(DomainException.class, () -> useCase.execute(command));

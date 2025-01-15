@@ -10,21 +10,23 @@ import br.com.subscontrol.domain.provider.sub.SubProviderType;
 import br.com.subscontrol.domain.tier.Tier;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.Spy;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class SyncSubProviderUseCaseTest extends UseCaseTest {
 
@@ -56,22 +58,22 @@ public class SyncSubProviderUseCaseTest extends UseCaseTest {
 
         Assertions.assertEquals(expectedErrorMessage, actualException.getMessage());
 
-        Mockito.verify(gateway, times(1)).findById(eq(expectedId));
+        verify(gateway, times(1)).findById(eq(expectedId));
     }
 
-    @Test
-    void givenAValidParameters_whenCallsExecuteAndDoesNotExistsSynchronizer_shouldReturnIllegalArgument() {
+    @ParameterizedTest
+    @MethodSource("authenticationTypes")
+    void givenAValidParameters_whenCallsExecuteAndDoesNotExistsSynchronizer_shouldReturnIllegalArgument(
+            final Authentication authentication
+    ) {
         final var expectedType = SubProviderType.PATREON;
         final var expectedErrorMessage = "Unknown SubProviderType: PATREON";
 
         final var provider = SubProvider.create(
-                expectedType.getName(),
+                expectedType,
                 "Patreon Integration",
                 "https://www.patreon.com",
-                UUID.randomUUID().toString(),
-                UUID.randomUUID().toString(),
-                "/authorization",
-                "/token");
+                authentication);
 
         final var expectedId = provider.getId();
 
@@ -82,8 +84,10 @@ public class SyncSubProviderUseCaseTest extends UseCaseTest {
 
         Assertions.assertEquals(expectedErrorMessage, actualException.getMessage());
 
-        Mockito.verify(gateway, times(1)).findById(eq(expectedId));
-        Mockito.verify(synchronizers, times(1)).get(eq(expectedType));
+        verify(gateway, times(1)).findById(eq(expectedId));
+        verify(synchronizers, times(1)).get(eq(expectedType));
+        verify(synchronizer, times(0)).synchronizeTiers(any());
+        verify(synchronizer, times(0)).synchronizeSubsFromTier(any(), any());
     }
 
     @Test
@@ -103,59 +107,51 @@ public class SyncSubProviderUseCaseTest extends UseCaseTest {
 
         assertDoesNotThrow(() -> useCase.execute(expectedId.getValue()));
 
-        Mockito.verify(gateway, times(1)).findById(eq(expectedId));
-        Mockito.verify(synchronizers, times(1)).get(eq(expectedType));
-        Mockito.verify(synchronizer, times(0)).synchronizeTiers(any());
-        Mockito.verify(synchronizer, times(0)).synchronizeSubsFromTier(any(), any());
+        verify(gateway, times(1)).findById(eq(expectedId));
+        verify(synchronizers, times(1)).get(eq(expectedType));
+        verify(synchronizer, times(0)).synchronizeTiers(any());
+        verify(synchronizer, times(0)).synchronizeSubsFromTier(any(), any());
     }
 
-    @Test
-    void givenAValidParameters_whenCallsExecuteAndDoNotSyncAnyTier_shouldBeOk() {
+    @ParameterizedTest
+    @MethodSource("authenticationTypes")
+    void givenAValidParameters_whenCallsExecuteAndDoNotSyncAnyTier_shouldBeOk(
+            final Authentication expectedAuthentication
+    ) {
         final var expectedType = SubProviderType.PATREON;
-
-        final var expetedAuthentication = new Authentication(
-                UUID.randomUUID().toString(),
-                UUID.randomUUID().toString(),
-                "/authorization",
-                "/token"
-        );
 
         final var provider = SubProvider.create(
                 expectedType,
                 "Patreon Integration",
                 "https://www.patreon.com",
-                expetedAuthentication);
+                expectedAuthentication);
 
         final var expectedId = provider.getId();
 
         when(gateway.findById(any())).thenReturn(Optional.of(provider));
         when(synchronizers.get(expectedType)).thenReturn(synchronizer);
-        when(synchronizer.synchronizeTiers(expetedAuthentication)).thenReturn(List.of());
+        when(synchronizer.synchronizeTiers(expectedAuthentication)).thenReturn(List.of());
 
         assertDoesNotThrow(() -> useCase.execute(expectedId.getValue()));
 
-        Mockito.verify(gateway, times(1)).findById(eq(expectedId));
-        Mockito.verify(synchronizers, times(1)).get(eq(expectedType));
-        Mockito.verify(synchronizer, times(1)).synchronizeTiers(expetedAuthentication);
-        Mockito.verify(synchronizer, times(0)).synchronizeSubsFromTier(any(), any());
+        verify(gateway, times(1)).findById(eq(expectedId));
+        verify(synchronizers, times(1)).get(eq(expectedType));
+        verify(synchronizer, times(1)).synchronizeTiers(expectedAuthentication);
+        verify(synchronizer, times(0)).synchronizeSubsFromTier(any(), any());
     }
 
-    @Test
-    void givenAValidParameters_whenCallsExecuteAndSyncAnyTier_subsShouldBySync() {
+    @ParameterizedTest
+    @MethodSource("authenticationTypes")
+    void givenAValidParameters_whenCallsExecuteAndSyncAnyTier_subsShouldBySync(
+            final Authentication expectedAuthentication
+    ) {
         final var expectedType = SubProviderType.PATREON;
-
-        final var expetedAuthentication = new Authentication(
-                UUID.randomUUID().toString(),
-                UUID.randomUUID().toString(),
-                "/authorization",
-                "/token"
-        );
 
         final var provider = SubProvider.create(
                 expectedType,
                 "Patreon Integration",
                 "https://www.patreon.com",
-                expetedAuthentication);
+                expectedAuthentication);
 
         final var expectedId = provider.getId();
 
@@ -169,14 +165,30 @@ public class SyncSubProviderUseCaseTest extends UseCaseTest {
 
         when(gateway.findById(any())).thenReturn(Optional.of(provider));
         when(synchronizers.get(expectedType)).thenReturn(synchronizer);
-        when(synchronizer.synchronizeTiers(expetedAuthentication)).thenReturn(List.of(tier));
+        when(synchronizer.synchronizeTiers(expectedAuthentication)).thenReturn(List.of(tier));
 
         assertDoesNotThrow(() -> useCase.execute(expectedId.getValue()));
 
-        Mockito.verify(gateway, times(1)).findById(eq(expectedId));
-        Mockito.verify(synchronizers, times(1)).get(eq(expectedType));
-        Mockito.verify(synchronizer, times(1)).synchronizeTiers(expetedAuthentication);
-        Mockito.verify(synchronizer, times(1)).synchronizeSubsFromTier(expetedAuthentication, tier);
+        verify(gateway, times(1)).findById(eq(expectedId));
+        verify(synchronizers, times(1)).get(eq(expectedType));
+        verify(synchronizer, times(1)).synchronizeTiers(expectedAuthentication);
+        verify(synchronizer, times(1)).synchronizeSubsFromTier(expectedAuthentication, tier);
+    }
+
+    private static Stream<Arguments> authenticationTypes() {
+        return Stream.of(
+                Arguments.of(Authentication.withClientSecret(
+                        SubProviderID.unique(),
+                        UUID.randomUUID().toString(),
+                        UUID.randomUUID().toString(),
+                        "/authorization",
+                        "/token")
+                ),
+                Arguments.of(Authentication.withFile(
+                        SubProviderID.unique(),
+                        new byte[1])
+                )
+        );
     }
 
 }

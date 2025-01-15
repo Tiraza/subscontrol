@@ -38,6 +38,11 @@ public class AuthenticationValidator extends Validator {
     private void checkFileConstraints() {
         if (authentication.getFile() == null) {
             validationHandler().append(new ErrorMessage("'file' should not be null"));
+            return;
+        }
+
+        if (authentication.getFile().length == 0) {
+            validationHandler().append(new ErrorMessage("'file' should not be empty"));
         }
     }
 }

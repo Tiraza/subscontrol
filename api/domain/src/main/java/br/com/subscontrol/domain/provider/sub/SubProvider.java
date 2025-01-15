@@ -8,7 +8,7 @@ import java.util.Objects;
 
 public class SubProvider extends Provider<SubProviderID> {
 
-    private SubProviderType type;
+    private final SubProviderType type;
 
     protected SubProvider(
             final SubProviderID id,
@@ -23,21 +23,33 @@ public class SubProvider extends Provider<SubProviderID> {
         selfValidate();
     }
 
-    public static SubProvider create(final SubProviderType type, final String name, final String baseUrl, final Authentication authentication) {
-        return new SubProvider(SubProviderID.unique(), type, name, baseUrl, true, null, authentication);
-    }
-
     public static SubProvider create(
-            final String type,
-            final String name,
-            final String baseUrl,
-            final String clientId,
-            final String clientSecret,
-            final String authorizationUrl,
-            final String tokenUrl) {
-        final SubProviderID providerID = SubProviderID.unique();
-        final Authentication authentication = Authentication.withClientSecret(providerID, clientId, clientSecret, authorizationUrl, tokenUrl);
-        return new SubProvider(providerID, SubProviderType.from(type), name, baseUrl, true, null, authentication);
+            String type,
+            String name,
+            String baseUrl,
+            String authenticationType,
+            String clientId,
+            String clientSecret,
+            String authorizationUrl,
+            String tokenUrl,
+            String fileBase64) {
+        SubProviderID providerID = SubProviderID.unique();
+        return new SubProvider(
+                providerID,
+                SubProviderType.from(type),
+                name,
+                baseUrl,
+                true,
+                null,
+                Authentication.create(
+                        providerID,
+                        authenticationType,
+                        clientId,
+                        clientSecret,
+                        authorizationUrl,
+                        tokenUrl,
+                        fileBase64
+                ));
     }
 
     public static SubProvider with(

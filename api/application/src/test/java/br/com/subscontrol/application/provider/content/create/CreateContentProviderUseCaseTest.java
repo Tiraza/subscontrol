@@ -2,6 +2,7 @@ package br.com.subscontrol.application.provider.content.create;
 
 import br.com.subscontrol.application.UseCaseTest;
 import br.com.subscontrol.domain.exceptions.DomainException;
+import br.com.subscontrol.domain.provider.authentication.AuthenticationType;
 import br.com.subscontrol.domain.provider.content.ContentProviderGateway;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -12,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
+import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -38,23 +40,26 @@ class CreateContentProviderUseCaseTest extends UseCaseTest {
     }
 
     @Test
-    void givenAValidCommand_whenCallsCreate_shouldReturnId() {
+    void givenAValidCommand_whenCallsCreateWithAuthenticationClientSecret_shouldReturnId() {
         final var expectedType = "Google Drive";
         final var expectedName = "Google Drive Integration";
         final var expectedBaseUrl = "http://google.com";
+        final var expectedAuthenticationType = AuthenticationType.CLIENT_SECRET;
         final var expectedClientId = UUID.randomUUID().toString();
         final var expectedClientSecret = UUID.randomUUID().toString();
-        final var expectedAuthorizationUrl = "http://google.com/authorization";
-        final var expectedTokenUrl = "http://google.com/token";
+        final var expectedAuthorizationUrl = "/authorization";
+        final var expectedTokenUrl = "/token";
 
         final var command = CreateContentProviderCommand.with(
                 expectedType,
                 expectedName,
                 expectedBaseUrl,
+                expectedAuthenticationType.name(),
                 expectedClientId,
                 expectedClientSecret,
                 expectedAuthorizationUrl,
-                expectedTokenUrl
+                expectedTokenUrl,
+                null
         );
 
         when(gateway.create(any())).thenAnswer(returnsFirstArg());
@@ -66,12 +71,49 @@ class CreateContentProviderUseCaseTest extends UseCaseTest {
 
         Mockito.verify(gateway, times(1)).create(argThat(contentProvider ->
                 Objects.equals(expectedType, contentProvider.getType().getName())
-                && Objects.equals(expectedName, contentProvider.getName())
-                && Objects.equals(expectedBaseUrl, contentProvider.getBaseUrl())
-                && Objects.equals(expectedClientId, contentProvider.getAuthentication().clientId())
-                && Objects.equals(expectedClientSecret, contentProvider.getAuthentication().clientSecret())
-                && Objects.equals(expectedAuthorizationUrl, contentProvider.getAuthentication().authorizationUrl())
-                && Objects.equals(expectedTokenUrl, contentProvider.getAuthentication().tokenUrl())
+                        && Objects.equals(expectedName, contentProvider.getName())
+                        && Objects.equals(expectedBaseUrl, contentProvider.getBaseUrl())
+                        && Objects.equals(expectedAuthenticationType, contentProvider.getAuthentication().getType())
+                        && Objects.equals(expectedClientId, contentProvider.getAuthentication().getClientId())
+                        && Objects.equals(expectedClientSecret, contentProvider.getAuthentication().getClientSecret())
+                        && Objects.equals(expectedAuthorizationUrl, contentProvider.getAuthentication().getAuthorizationUrl())
+                        && Objects.equals(expectedTokenUrl, contentProvider.getAuthentication().getTokenUrl())
+        ));
+    }
+
+    @Test
+    void givenAValidCommand_whenCallsCreateWithAuthenticationClientFile_shouldReturnId() {
+        final var expectedType = "Google Drive";
+        final var expectedName = "Google Drive Integration";
+        final var expectedBaseUrl = "http://google.com";
+        final var expectedAuthenticationType = AuthenticationType.FILE;
+        final var expectedFile = Base64.getEncoder().encodeToString("test".getBytes());
+
+        final var command = CreateContentProviderCommand.with(
+                expectedType,
+                expectedName,
+                expectedBaseUrl,
+                expectedAuthenticationType.name(),
+                null,
+                null,
+                null,
+                null,
+                expectedFile
+        );
+
+        when(gateway.create(any())).thenAnswer(returnsFirstArg());
+
+        final var output = useCase.execute(command);
+
+        assertNotNull(output);
+        assertNotNull(output.id());
+
+        Mockito.verify(gateway, times(1)).create(argThat(contentProvider ->
+                Objects.equals(expectedType, contentProvider.getType().getName())
+                        && Objects.equals(expectedName, contentProvider.getName())
+                        && Objects.equals(expectedBaseUrl, contentProvider.getBaseUrl())
+                        && Objects.equals(expectedAuthenticationType, contentProvider.getAuthentication().getType())
+                        && !Objects.isNull(contentProvider.getAuthentication().getFile())
         ));
     }
 
@@ -79,19 +121,22 @@ class CreateContentProviderUseCaseTest extends UseCaseTest {
     @MethodSource("provideArguments")
     void givenInvalidCommand_whenCallsCreate_thenReceiveDomainException(String errorMessage, String name, String url) {
         final var expectedType = "Google Drive";
+        final var expectedAuthenticationType = AuthenticationType.CLIENT_SECRET;
         final var expectedClientId = UUID.randomUUID().toString();
         final var expectedClientSecret = UUID.randomUUID().toString();
-        final var expectedAuthorizationUrl = "http://google.com/authorization";
-        final var expectedTokenUrl = "http://google.com/token";
+        final var expectedAuthorizationUrl = "/authorization";
+        final var expectedTokenUrl = "/token";
 
         final var command = CreateContentProviderCommand.with(
                 expectedType,
                 name,
                 url,
+                expectedAuthenticationType.name(),
                 expectedClientId,
                 expectedClientSecret,
                 expectedAuthorizationUrl,
-                expectedTokenUrl
+                expectedTokenUrl,
+                null
         );
 
         final var exception = Assertions.assertThrows(DomainException.class, () -> useCase.execute(command));

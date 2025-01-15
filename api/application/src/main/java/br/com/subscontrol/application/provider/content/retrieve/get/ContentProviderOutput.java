@@ -12,6 +12,7 @@ public record ContentProviderOutput(
         String baseUrl,
         boolean isActive,
         Instant lastSync,
+        String authenticationType,
         String clientId,
         String clientSecret,
         String authorizationUrl,
@@ -19,19 +20,7 @@ public record ContentProviderOutput(
 ) {
 
     public static ContentProviderOutput from(final ContentProvider provider) {
-        String clientId = "";
-        String clientSecret = "";
-        String authorizationUrl = "";
-        String tokenUrl = "";
-
-        Authentication authentication = provider.getAuthentication();
-        if (authentication != null) {
-            clientId = authentication.getClientId();
-            clientSecret = authentication.getClientSecret();
-            authorizationUrl = authentication.getAuthorizationUrl();
-            tokenUrl = authentication.getTokenUrl();
-        }
-
+        final Authentication authentication = provider.getAuthentication();
         return new ContentProviderOutput(
                 provider.getId().getValue(),
                 provider.getType().getName(),
@@ -39,10 +28,11 @@ public record ContentProviderOutput(
                 provider.getBaseUrl(),
                 provider.isActive(),
                 provider.getLastSync(),
-                clientId,
-                clientSecret,
-                authorizationUrl,
-                tokenUrl
+                authentication.getType().name(),
+                authentication.getClientId(),
+                authentication.getClientSecret(),
+                authentication.getAuthorizationUrl(),
+                authentication.getTokenUrl()
         );
     }
 }

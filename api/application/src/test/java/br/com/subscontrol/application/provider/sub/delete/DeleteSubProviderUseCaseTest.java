@@ -1,6 +1,7 @@
 package br.com.subscontrol.application.provider.sub.delete;
 
 import br.com.subscontrol.application.UseCaseTest;
+import br.com.subscontrol.domain.provider.authentication.AuthenticationType;
 import br.com.subscontrol.domain.provider.sub.SubProvider;
 import br.com.subscontrol.domain.provider.sub.SubProviderGateway;
 import br.com.subscontrol.domain.provider.sub.SubProviderID;
@@ -12,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
@@ -33,10 +35,16 @@ class DeleteSubProviderUseCaseTest extends UseCaseTest {
     @Test
     void givenAValidId_whenCallsDelete_shouldDelete() {
         final var subProvider = SubProvider.create(
-                SubProviderType.PATREON,
+                SubProviderType.PATREON.getName(),
                 "Patreon Integration",
                 "http://patreon.com",
-                null);
+                AuthenticationType.CLIENT_SECRET.name(),
+                UUID.randomUUID().toString(),
+                UUID.randomUUID().toString(),
+                "/authorization",
+                "/token",
+                null
+        );
 
         final var expectedId = subProvider.getId();
 
@@ -61,10 +69,16 @@ class DeleteSubProviderUseCaseTest extends UseCaseTest {
     @Test
     void givenAValidId_whenCallsDeleteAndGatewayThrowsUnexpectedError_shouldReceiveException() {
         final var subProvider = SubProvider.create(
-                SubProviderType.PATREON,
+                SubProviderType.PATREON.getName(),
                 "Patreon Integration",
                 "http://patreon.com",
-                null);
+                AuthenticationType.CLIENT_SECRET.name(),
+                UUID.randomUUID().toString(),
+                UUID.randomUUID().toString(),
+                "/authorization",
+                "/token",
+                null
+        );
 
         final var expectedId = subProvider.getId();
 

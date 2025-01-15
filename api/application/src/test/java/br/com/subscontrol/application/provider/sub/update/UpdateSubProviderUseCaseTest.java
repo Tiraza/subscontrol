@@ -84,10 +84,10 @@ public class UpdateSubProviderUseCaseTest extends UseCaseTest {
                 Objects.equals(expectedName, subProvider.getName())
                         && Objects.equals(expectedBaseUrl, subProvider.getBaseUrl())
                         && Objects.equals(expectedIsActive, subProvider.isActive())
-                        && Objects.equals(expectedClientId, subProvider.getAuthentication().clientId())
-                        && Objects.equals(expectedClientSecret, subProvider.getAuthentication().clientSecret())
-                        && Objects.equals(expectedAuthorizationUrl, subProvider.getAuthentication().authorizationUrl())
-                        && Objects.equals(expectedTokenUrl, subProvider.getAuthentication().tokenUrl())
+                        && Objects.equals(expectedClientId, subProvider.getAuthentication().getClientId())
+                        && Objects.equals(expectedClientSecret, subProvider.getAuthentication().getClientSecret())
+                        && Objects.equals(expectedAuthorizationUrl, subProvider.getAuthentication().getAuthorizationUrl())
+                        && Objects.equals(expectedTokenUrl, subProvider.getAuthentication().getTokenUrl())
         ));
     }
 

@@ -84,10 +84,10 @@ class UpdateContentProviderUseCaseTest extends UseCaseTest {
                 Objects.equals(expectedName, contentProvider.getName())
                         && Objects.equals(expectedBaseUrl, contentProvider.getBaseUrl())
                         && Objects.equals(expectedIsActive, contentProvider.isActive())
-                        && Objects.equals(expectedClientId, contentProvider.getAuthentication().clientId())
-                        && Objects.equals(expectedClientSecret, contentProvider.getAuthentication().clientSecret())
-                        && Objects.equals(expectedAuthorizationUrl, contentProvider.getAuthentication().authorizationUrl())
-                        && Objects.equals(expectedTokenUrl, contentProvider.getAuthentication().tokenUrl())
+                        && Objects.equals(expectedClientId, contentProvider.getAuthentication().getClientId())
+                        && Objects.equals(expectedClientSecret, contentProvider.getAuthentication().getClientSecret())
+                        && Objects.equals(expectedAuthorizationUrl, contentProvider.getAuthentication().getAuthorizationUrl())
+                        && Objects.equals(expectedTokenUrl, contentProvider.getAuthentication().getTokenUrl())
         ));
     }
 

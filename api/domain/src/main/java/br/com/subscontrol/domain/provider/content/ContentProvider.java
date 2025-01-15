@@ -23,24 +23,32 @@ public class ContentProvider extends Provider<ContentProviderID> {
     }
 
     public static ContentProvider create(
-            final ContentProviderType type,
-            final String name,
-            final String baseUrl,
-            final Authentication authentication) {
-        return new ContentProvider(ContentProviderID.unique(), type, name, baseUrl, true, null, authentication);
-    }
-
-    public static ContentProvider create(
-            final String type,
-            final String name,
-            final String baseUrl,
-            final String clientId,
-            final String clientSecret,
-            final String authorizationUrl,
-            final String tokenUrl) {
-        final ContentProviderID providerID = ContentProviderID.unique();
-        final Authentication authentication = Authentication.withClientSecret(providerID, clientId, clientSecret, authorizationUrl, tokenUrl);
-        return new ContentProvider(providerID, ContentProviderType.from(type), name, baseUrl, true, null, authentication);
+            String type,
+            String name,
+            String baseUrl,
+            String authenticationType,
+            String clientId,
+            String clientSecret,
+            String authorizationUrl,
+            String tokenUrl,
+            String fileBase64) {
+        ContentProviderID providerID = ContentProviderID.unique();
+        return new ContentProvider(
+                providerID,
+                ContentProviderType.from(type),
+                name,
+                baseUrl,
+                true,
+                null,
+                Authentication.create(
+                        providerID,
+                        authenticationType,
+                        clientId,
+                        clientSecret,
+                        authorizationUrl,
+                        tokenUrl,
+                        fileBase64
+                ));
     }
 
     public static ContentProvider with(
