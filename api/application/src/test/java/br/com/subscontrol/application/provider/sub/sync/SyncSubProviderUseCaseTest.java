@@ -8,6 +8,7 @@ import br.com.subscontrol.domain.provider.sub.SubProviderGateway;
 import br.com.subscontrol.domain.provider.sub.SubProviderID;
 import br.com.subscontrol.domain.provider.sub.SubProviderType;
 import br.com.subscontrol.domain.tier.Tier;
+import br.com.subscontrol.domain.utils.InstantUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -69,11 +70,15 @@ public class SyncSubProviderUseCaseTest extends UseCaseTest {
         final var expectedType = SubProviderType.PATREON;
         final var expectedErrorMessage = "Unknown SubProviderType: PATREON";
 
-        final var provider = SubProvider.create(
-                expectedType,
+        final var provider = SubProvider.with(
+                authentication.getProviderID().getValue(),
+                SubProviderType.PATREON,
                 "Patreon Integration",
                 "https://www.patreon.com",
-                authentication);
+                true,
+                null,
+                authentication
+        );
 
         final var expectedId = provider.getId();
 
@@ -90,29 +95,6 @@ public class SyncSubProviderUseCaseTest extends UseCaseTest {
         verify(synchronizer, times(0)).synchronizeSubsFromTier(any(), any());
     }
 
-    @Test
-    void givenAValidParametersWithoutAuthentication_whenCallsExecute_shouldBeOk() {
-        final var expectedType = SubProviderType.PATREON;
-
-        final var provider = SubProvider.create(
-                expectedType,
-                "Patreon Integration",
-                "https://www.patreon.com",
-                null);
-
-        final var expectedId = provider.getId();
-
-        when(gateway.findById(any())).thenReturn(Optional.of(provider));
-        when(synchronizers.get(expectedType)).thenReturn(synchronizer);
-
-        assertDoesNotThrow(() -> useCase.execute(expectedId.getValue()));
-
-        verify(gateway, times(1)).findById(eq(expectedId));
-        verify(synchronizers, times(1)).get(eq(expectedType));
-        verify(synchronizer, times(0)).synchronizeTiers(any());
-        verify(synchronizer, times(0)).synchronizeSubsFromTier(any(), any());
-    }
-
     @ParameterizedTest
     @MethodSource("authenticationTypes")
     void givenAValidParameters_whenCallsExecuteAndDoNotSyncAnyTier_shouldBeOk(
@@ -120,11 +102,15 @@ public class SyncSubProviderUseCaseTest extends UseCaseTest {
     ) {
         final var expectedType = SubProviderType.PATREON;
 
-        final var provider = SubProvider.create(
-                expectedType,
+        final var provider = SubProvider.with(
+                expectedAuthentication.getProviderID().getValue(),
+                SubProviderType.PATREON,
                 "Patreon Integration",
                 "https://www.patreon.com",
-                expectedAuthentication);
+                true,
+                null,
+                expectedAuthentication
+        );
 
         final var expectedId = provider.getId();
 
@@ -142,16 +128,20 @@ public class SyncSubProviderUseCaseTest extends UseCaseTest {
 
     @ParameterizedTest
     @MethodSource("authenticationTypes")
-    void givenAValidParameters_whenCallsExecuteAndSyncAnyTier_subsShouldBySync(
+    void givenAValidParameters_whenCallsExecuteAndSyncAnyTier_subsShouldBeSync(
             final Authentication expectedAuthentication
     ) {
         final var expectedType = SubProviderType.PATREON;
 
-        final var provider = SubProvider.create(
-                expectedType,
+        final var provider = SubProvider.with(
+                expectedAuthentication.getProviderID().getValue(),
+                SubProviderType.PATREON,
                 "Patreon Integration",
                 "https://www.patreon.com",
-                expectedAuthentication);
+                true,
+                null,
+                expectedAuthentication
+        );
 
         final var expectedId = provider.getId();
 
@@ -170,6 +160,84 @@ public class SyncSubProviderUseCaseTest extends UseCaseTest {
         assertDoesNotThrow(() -> useCase.execute(expectedId.getValue()));
 
         verify(gateway, times(1)).findById(eq(expectedId));
+        verify(synchronizers, times(1)).get(eq(expectedType));
+        verify(synchronizer, times(1)).synchronizeTiers(expectedAuthentication);
+        verify(synchronizer, times(1)).synchronizeSubsFromTier(expectedAuthentication, tier);
+    }
+
+    @ParameterizedTest
+    @MethodSource("authenticationTypes")
+    void givenAValidInactiveProvider_whenCallsExecute_subsShouldBeNotSync(
+            final Authentication expectedAuthentication
+    ) {
+        final var expectedType = SubProviderType.PATREON;
+
+        final var provider = SubProvider.with(
+                expectedAuthentication.getProviderID().getValue(),
+                SubProviderType.PATREON,
+                "Patreon Integration",
+                "https://www.patreon.com",
+                false,
+                null,
+                expectedAuthentication
+        );
+
+        final var expectedId = provider.getId();
+
+        final var tier = Tier.create(
+                expectedId.getValue(),
+                UUID.randomUUID().toString(),
+                "Subscriber",
+                "Default Subscriber",
+                "1500"
+        );
+
+        when(gateway.findById(any())).thenReturn(Optional.of(provider));
+
+        assertDoesNotThrow(() -> useCase.execute(expectedId.getValue()));
+
+        verify(gateway, times(1)).findById(eq(expectedId));
+        verify(synchronizers, times(0)).get(eq(expectedType));
+        verify(synchronizer, times(0)).synchronizeTiers(expectedAuthentication);
+        verify(synchronizer, times(0)).synchronizeSubsFromTier(expectedAuthentication, tier);
+    }
+
+    @ParameterizedTest
+    @MethodSource("authenticationTypes")
+    void givenAValidParams_whenCallsExecute_subsShouldBeSync(
+            final Authentication expectedAuthentication
+    ) {
+        final var expectedType = SubProviderType.PATREON;
+        final var lastSync = InstantUtils.now();
+
+        final var provider = SubProvider.with(
+                expectedAuthentication.getProviderID().getValue(),
+                SubProviderType.PATREON,
+                "Patreon Integration",
+                "https://www.patreon.com",
+                true,
+                lastSync,
+                expectedAuthentication
+        );
+
+        final var expectedId = provider.getId();
+
+        final var tier = Tier.create(
+                expectedId.getValue(),
+                UUID.randomUUID().toString(),
+                "Subscriber",
+                "Default Subscriber",
+                "1500"
+        );
+
+        when(gateway.findById(any())).thenReturn(Optional.of(provider));
+        when(synchronizers.get(expectedType)).thenReturn(synchronizer);
+        when(synchronizer.synchronizeTiers(expectedAuthentication)).thenReturn(List.of(tier));
+
+        assertDoesNotThrow(() -> useCase.execute(expectedId.getValue()));
+
+        verify(gateway, times(1)).findById(eq(expectedId));
+        verify(gateway, times(1)).update(eq(provider));
         verify(synchronizers, times(1)).get(eq(expectedType));
         verify(synchronizer, times(1)).synchronizeTiers(expectedAuthentication);
         verify(synchronizer, times(1)).synchronizeSubsFromTier(expectedAuthentication, tier);

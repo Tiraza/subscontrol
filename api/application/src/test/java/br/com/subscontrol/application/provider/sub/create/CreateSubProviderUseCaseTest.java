@@ -82,10 +82,10 @@ class CreateSubProviderUseCaseTest extends UseCaseTest {
     }
 
     @Test
-    void givenAValidCommand_whenCallsCreateWithAuthenticationClientFile_shouldReturnId() {
-        final var expectedType = "Google Drive";
-        final var expectedName = "Google Drive Integration";
-        final var expectedBaseUrl = "http://google.com";
+    void givenAValidCommand_whenCallsCreateWithAuthenticationFile_shouldReturnId() {
+        final var expectedType = "Patreon";
+        final var expectedName = "Patreon";
+        final var expectedBaseUrl = "http://patreon.com";
         final var expectedAuthenticationType = AuthenticationType.FILE;
         final var expectedFile = Base64.getEncoder().encodeToString("test".getBytes());
 

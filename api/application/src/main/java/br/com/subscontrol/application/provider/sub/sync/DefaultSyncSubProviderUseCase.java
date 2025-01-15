@@ -28,7 +28,11 @@ public class DefaultSyncSubProviderUseCase extends SyncSubProviderUseCase {
         final SubProvider subProvider = this.gateway.findById(providerID)
                 .orElseThrow(NotFoundException.notFound(SubProvider.class, providerID));
 
-        getSynchronizer(subProvider.getType()).synchronize(subProvider);
+        if (subProvider.isActive()) {
+            getSynchronizer(subProvider.getType()).synchronize(subProvider);
+            subProvider.updateLastSync();
+            this.gateway.update(subProvider);
+        }
     }
 
     private SubSynchronizer getSynchronizer(final SubProviderType providerType) {

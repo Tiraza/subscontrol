@@ -21,7 +21,15 @@ public class DefaultUpdateSubProviderUseCase extends UpdateSubProviderUseCase {
         SubProvider provider = this.gateway.findById(providerID)
                 .orElseThrow(NotFoundException.notFound(SubProvider.class, providerID));
         provider.update(command.name(), command.baseUrl(), command.active());
-        //TODO: Update Authentication
+        provider.updateAuthentication(
+                providerID,
+                command.authenticationType(),
+                command.clientId(),
+                command.clientSecret(),
+                command.authorizationUrl(),
+                command.tokenUrl(),
+                command.fileBase64()
+        );
         return UpdateSubProviderOutput.from(this.gateway.update(provider));
     }
 
