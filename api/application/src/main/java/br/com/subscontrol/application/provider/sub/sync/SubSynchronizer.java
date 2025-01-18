@@ -9,7 +9,7 @@ import java.util.Optional;
 public abstract class SubSynchronizer implements SubSynchronization {
 
     public final void synchronize(final SubProvider provider) {
-        synchronized (provider.getId().getValue()) {
+        synchronized (provider.getId()) {
             Optional.ofNullable(provider.getAuthentication()).ifPresent(this::start);
         }
     }
