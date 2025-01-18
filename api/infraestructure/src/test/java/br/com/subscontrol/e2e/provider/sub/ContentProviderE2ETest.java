@@ -2,12 +2,12 @@ package br.com.subscontrol.e2e.provider.sub;
 
 import br.com.subscontrol.E2ETest;
 import br.com.subscontrol.domain.provider.authentication.AuthenticationType;
-import br.com.subscontrol.domain.provider.sub.SubProviderID;
+import br.com.subscontrol.domain.provider.content.ContentProviderID;
 import br.com.subscontrol.infraestructure.configuration.json.Json;
-import br.com.subscontrol.infraestructure.provider.sub.models.CreateSubProviderRequest;
-import br.com.subscontrol.infraestructure.provider.sub.models.SubProviderResponse;
-import br.com.subscontrol.infraestructure.provider.sub.models.UpdateSubProviderRequest;
-import br.com.subscontrol.infraestructure.provider.sub.persistence.SubProviderRepository;
+import br.com.subscontrol.infraestructure.provider.content.models.ContentProviderResponse;
+import br.com.subscontrol.infraestructure.provider.content.models.CreateContentProviderRequest;
+import br.com.subscontrol.infraestructure.provider.content.models.UpdateContentProviderRequest;
+import br.com.subscontrol.infraestructure.provider.content.persistence.ContentProviderRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -30,13 +30,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @E2ETest
 @Testcontainers
-class SubProviderE2ETest {
+class ContentProviderE2ETest {
 
     @Autowired
     private MockMvc mvc;
 
     @Autowired
-    private SubProviderRepository repository;
+    private ContentProviderRepository repository;
 
     @Container
     private static final PostgreSQLContainer<?> POSTGRESQL_CONTAINER = new PostgreSQLContainer<>("postgres:15")
@@ -50,13 +50,13 @@ class SubProviderE2ETest {
     }
 
     @Test
-    void asAdminIShouldBeAbleToCreateANewSubProviderWithValidValues() throws Exception {
+    void asAdminIShouldBeAbleToCreateANewContentProviderWithValidValues() throws Exception {
         assertTrue(POSTGRESQL_CONTAINER.isRunning());
         assertEquals(0, repository.count());
 
-        final var expectedType = "Patreon";
-        final var expectedName = "Patreon Integration";
-        final var expectedBaseUrl = "http://www.patreon.com";
+        final var expectedType = "Google Drive";
+        final var expectedName = "Google Integration";
+        final var expectedBaseUrl = "http://www.google.com";
         final var expectedAuthenticationType = AuthenticationType.CLIENT_SECRET;
         final var expectedClientId = UUID.randomUUID().toString();
         final var expectedClientSecret = UUID.randomUUID().toString();
@@ -78,56 +78,56 @@ class SubProviderE2ETest {
 
         assertEquals(1, repository.count());
 
-        final var subProvider = repository.findById(subProviderID.getValue()).get();
+        final var provider = repository.findById(subProviderID.getValue()).get();
 
-        assertEquals(expectedType, subProvider.getType().getName());
-        assertEquals(expectedName, subProvider.getName());
-        assertEquals(expectedBaseUrl, subProvider.getBaseUrl());
-        assertEquals(expectedAuthenticationType, subProvider.getAuthentication().getType());
-        assertEquals(expectedClientId, subProvider.getAuthentication().getClientId());
-        assertEquals(expectedClientSecret, subProvider.getAuthentication().getClientSecret());
-        assertEquals(expectedAuthorizationUrl, subProvider.getAuthentication().getAuthorizationUrl());
-        assertEquals(expectedTokenUrl, subProvider.getAuthentication().getTokenUrl());
-        assertEquals(expectedIsActive, subProvider.isActive());
-        assertNull(subProvider.getLastSync());
+        assertEquals(expectedType, provider.getType().getName());
+        assertEquals(expectedName, provider.getName());
+        assertEquals(expectedBaseUrl, provider.getBaseUrl());
+        assertEquals(expectedAuthenticationType, provider.getAuthentication().getType());
+        assertEquals(expectedClientId, provider.getAuthentication().getClientId());
+        assertEquals(expectedClientSecret, provider.getAuthentication().getClientSecret());
+        assertEquals(expectedAuthorizationUrl, provider.getAuthentication().getAuthorizationUrl());
+        assertEquals(expectedTokenUrl, provider.getAuthentication().getTokenUrl());
+        assertEquals(expectedIsActive, provider.isActive());
+        assertNull(provider.getLastSync());
     }
 
     @Test
-    void asAdminIShouldBeAbleToNavigateToAllSubProviders() throws Exception {
+    void asAdminIShouldBeAbleToNavigateToAllContentProviders() throws Exception {
         assertTrue(POSTGRESQL_CONTAINER.isRunning());
         assertEquals(0, repository.count());
 
-        givenASubProvider("Patreon");
-        givenASubProvider("Kickstarter");
-        givenASubProvider("Indiegogo");
+        givenASubProvider("Google");
+        givenASubProvider("Dropbox");
+        givenASubProvider("OneDrive");
 
         assertEquals(3, repository.count());
 
-        listSubProviders(0, 1)
+        listcontentproviders(0, 1)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.current_page", equalTo(0)))
                 .andExpect(jsonPath("$.per_page", equalTo(1)))
                 .andExpect(jsonPath("$.total", equalTo(3)))
                 .andExpect(jsonPath("$.items", hasSize(1)))
-                .andExpect(jsonPath("$.items[0].name", equalTo("Indiegogo")));
+                .andExpect(jsonPath("$.items[0].name", equalTo("Dropbox")));
 
-        listSubProviders(1, 1)
+        listcontentproviders(1, 1)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.current_page", equalTo(1)))
                 .andExpect(jsonPath("$.per_page", equalTo(1)))
                 .andExpect(jsonPath("$.total", equalTo(3)))
                 .andExpect(jsonPath("$.items", hasSize(1)))
-                .andExpect(jsonPath("$.items[0].name", equalTo("Kickstarter")));
+                .andExpect(jsonPath("$.items[0].name", equalTo("Google")));
 
-        listSubProviders(2, 1)
+        listcontentproviders(2, 1)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.current_page", equalTo(2)))
                 .andExpect(jsonPath("$.per_page", equalTo(1)))
                 .andExpect(jsonPath("$.total", equalTo(3)))
                 .andExpect(jsonPath("$.items", hasSize(1)))
-                .andExpect(jsonPath("$.items[0].name", equalTo("Patreon")));
+                .andExpect(jsonPath("$.items[0].name", equalTo("OneDrive")));
 
-        listSubProviders(3, 1)
+        listcontentproviders(3, 1)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.current_page", equalTo(3)))
                 .andExpect(jsonPath("$.per_page", equalTo(1)))
@@ -136,55 +136,55 @@ class SubProviderE2ETest {
     }
 
     @Test
-    void asAdminIShouldBeAbleToSearchBetweenAllSubProviders() throws Exception {
+    void asAdminIShouldBeAbleToSearchBetweenAllContentProviders() throws Exception {
         assertTrue(POSTGRESQL_CONTAINER.isRunning());
         assertEquals(0, repository.count());
 
-        givenASubProvider("Patreon");
-        givenASubProvider("Kickstarter");
-        givenASubProvider("Indiegogo");
+        givenASubProvider("Google");
+        givenASubProvider("Dropbox");
+        givenASubProvider("OneDrive");
 
         assertEquals(3, repository.count());
 
-        listSubProviders(0, 3, "kick")
+        listcontentproviders(0, 3, "pbox")
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.current_page", equalTo(0)))
                 .andExpect(jsonPath("$.per_page", equalTo(3)))
                 .andExpect(jsonPath("$.total", equalTo(1)))
                 .andExpect(jsonPath("$.items", hasSize(1)))
-                .andExpect(jsonPath("$.items[0].name", equalTo("Kickstarter")));
+                .andExpect(jsonPath("$.items[0].name", equalTo("Dropbox")));
     }
 
     @Test
-    void asAdminIShouldBeAbleToSortAllSubProvidersByNameDesc() throws Exception {
+    void asAdminIShouldBeAbleToSortAllContentProvidersByNameDesc() throws Exception {
         assertTrue(POSTGRESQL_CONTAINER.isRunning());
         assertEquals(0, repository.count());
 
-        givenASubProvider("Patreon");
-        givenASubProvider("Kickstarter");
-        givenASubProvider("Indiegogo");
+        givenASubProvider("Google");
+        givenASubProvider("Dropbox");
+        givenASubProvider("OneDrive");
 
         assertEquals(3, repository.count());
 
-        listSubProviders(0, 3, "", "name", "desc")
+        listcontentproviders(0, 3, "", "name", "desc")
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.current_page", equalTo(0)))
                 .andExpect(jsonPath("$.per_page", equalTo(3)))
                 .andExpect(jsonPath("$.total", equalTo(3)))
                 .andExpect(jsonPath("$.items", hasSize(3)))
-                .andExpect(jsonPath("$.items[0].name", equalTo("Patreon")))
-                .andExpect(jsonPath("$.items[1].name", equalTo("Kickstarter")))
-                .andExpect(jsonPath("$.items[2].name", equalTo("Indiegogo")));
+                .andExpect(jsonPath("$.items[0].name", equalTo("OneDrive")))
+                .andExpect(jsonPath("$.items[1].name", equalTo("Google")))
+                .andExpect(jsonPath("$.items[2].name", equalTo("Dropbox")));
     }
 
     @Test
-    void asAdminIShouldBeAbleToGetASubProviderByItsIdentifier() throws Exception {
+    void asAdminIShouldBeAbleToGetAContentProviderByItsIdentifier() throws Exception {
         assertTrue(POSTGRESQL_CONTAINER.isRunning());
         assertEquals(0, repository.count());
 
-        final var expectedType = "Patreon";
-        final var expectedName = "Patreon Integration";
-        final var expectedBaseUrl = "http://www.patreon.com";
+        final var expectedType = "Google Drive";
+        final var expectedName = "Google Integration";
+        final var expectedBaseUrl = "http://www.google.com";
         final var expectedAuthenticationType = AuthenticationType.CLIENT_SECRET.name();
         final var expectedClientId = UUID.randomUUID().toString();
         final var expectedClientSecret = UUID.randomUUID().toString();
@@ -192,7 +192,7 @@ class SubProviderE2ETest {
         final var expectedTokenUrl = "/token";
         final var expectedIsActive = true;
 
-        final var subProviderID = givenASubProvider(
+        final var providerID = givenASubProvider(
                 expectedType,
                 expectedName,
                 expectedBaseUrl,
@@ -206,41 +206,41 @@ class SubProviderE2ETest {
 
         assertEquals(1, repository.count());
 
-        final var subProvider = retrieveASubProvider(subProviderID.getValue());
+        final var provider = retrieveASubProvider(providerID.getValue());
 
-        assertEquals(expectedType, subProvider.type());
-        assertEquals(expectedName, subProvider.name());
-        assertEquals(expectedBaseUrl, subProvider.baseUrl());
-        assertEquals(expectedAuthenticationType, subProvider.authenticationType());
-        assertEquals(expectedClientId, subProvider.clientId());
-        assertEquals(expectedClientSecret, subProvider.clientSecret());
-        assertEquals(expectedAuthorizationUrl, subProvider.authorizationUrl());
-        assertEquals(expectedTokenUrl, subProvider.tokenUrl());
-        assertEquals(expectedIsActive, subProvider.active());
-        assertNull(subProvider.lastSync());
+        assertEquals(expectedType, provider.type());
+        assertEquals(expectedName, provider.name());
+        assertEquals(expectedBaseUrl, provider.baseUrl());
+        assertEquals(expectedAuthenticationType, provider.authenticationType());
+        assertEquals(expectedClientId, provider.clientId());
+        assertEquals(expectedClientSecret, provider.clientSecret());
+        assertEquals(expectedAuthorizationUrl, provider.authorizationUrl());
+        assertEquals(expectedTokenUrl, provider.tokenUrl());
+        assertEquals(expectedIsActive, provider.active());
+        assertNull(provider.lastSync());
     }
 
     @Test
-    void asAdminIShouldBeAbleToSeeATreatedErrorByGettingANotFoundSubProvider() throws Exception {
+    void asAdminIShouldBeAbleToSeeATreatedErrorByGettingANotFoundContentProvider() throws Exception {
         assertTrue(POSTGRESQL_CONTAINER.isRunning());
         assertEquals(0, repository.count());
 
-        final var request = get("/subproviders/123")
+        final var request = get("/contentproviders/123")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON);
 
         this.mvc.perform(request)
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message", equalTo("SubProvider with ID 123 was not found")));
+                .andExpect(jsonPath("$.message", equalTo("ContentProvider with ID 123 was not found")));
     }
 
     @Test
-    void asAdminIShouldBeAbleToUpdateASubProviderByItsIdentifier() throws Exception {
+    void asAdminIShouldBeAbleToUpdateAContentProviderByItsIdentifier() throws Exception {
         assertTrue(POSTGRESQL_CONTAINER.isRunning());
         assertEquals(0, repository.count());
 
         final var subProviderID = givenASubProvider(
-                "Patreon",
+                "Google Drive",
                 "Integration",
                 "http://www.test.com",
                 "CLIENT_SECRET",
@@ -253,9 +253,9 @@ class SubProviderE2ETest {
 
         assertEquals(1, repository.count());
 
-        final var expectedType = "Patreon";
-        final var expectedName = "Patreon Provider";
-        final var expectedBaseUrl = "http://www.patreon.com";
+        final var expectedType = "Google Drive";
+        final var expectedName = "Google Provider";
+        final var expectedBaseUrl = "http://www.google.com";
         final var expectedIsActive = false;
         final var expectedAuthenticationType = AuthenticationType.CLIENT_SECRET;
         final var expectedClientId = UUID.randomUUID().toString();
@@ -263,7 +263,7 @@ class SubProviderE2ETest {
         final var expectedAuthorizationUrl = "/authorization";
         final var expectedTokenUrl = "/token";
 
-        final var requestBody = new UpdateSubProviderRequest(
+        final var requestBody = new UpdateContentProviderRequest(
                 expectedName,
                 expectedBaseUrl,
                 expectedIsActive,
@@ -275,35 +275,35 @@ class SubProviderE2ETest {
                 null
         );
 
-        final var request = put("/subproviders/" + subProviderID.getValue())
+        final var request = put("/contentproviders/" + subProviderID.getValue())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(Json.writeValueAsString(requestBody));
 
         this.mvc.perform(request).andExpect(status().isOk());
 
-        final var subProvider = repository.findById(subProviderID.getValue()).get();
+        final var provider = repository.findById(subProviderID.getValue()).get();
 
-        assertEquals(expectedType, subProvider.getType().getName());
-        assertEquals(expectedName, subProvider.getName());
-        assertEquals(expectedBaseUrl, subProvider.getBaseUrl());
-        assertEquals(expectedAuthenticationType, subProvider.getAuthentication().getType());
-        assertEquals(expectedClientId, subProvider.getAuthentication().getClientId());
-        assertEquals(expectedClientSecret, subProvider.getAuthentication().getClientSecret());
-        assertEquals(expectedAuthorizationUrl, subProvider.getAuthentication().getAuthorizationUrl());
-        assertEquals(expectedTokenUrl, subProvider.getAuthentication().getTokenUrl());
-        assertEquals(expectedIsActive, subProvider.isActive());
-        assertNull(subProvider.getLastSync());
+        assertEquals(expectedType, provider.getType().getName());
+        assertEquals(expectedName, provider.getName());
+        assertEquals(expectedBaseUrl, provider.getBaseUrl());
+        assertEquals(expectedAuthenticationType, provider.getAuthentication().getType());
+        assertEquals(expectedClientId, provider.getAuthentication().getClientId());
+        assertEquals(expectedClientSecret, provider.getAuthentication().getClientSecret());
+        assertEquals(expectedAuthorizationUrl, provider.getAuthentication().getAuthorizationUrl());
+        assertEquals(expectedTokenUrl, provider.getAuthentication().getTokenUrl());
+        assertEquals(expectedIsActive, provider.isActive());
+        assertNull(provider.getLastSync());
     }
 
     @Test
-    void asAdminIShouldBeAbleToDeleteASubProviderByItsIdentifier() throws Exception {
+    void asAdminIShouldBeAbleToDeleteAContentProviderByItsIdentifier() throws Exception {
         assertTrue(POSTGRESQL_CONTAINER.isRunning());
         assertEquals(0, repository.count());
 
-        final var subProviderID = givenASubProvider(
-                "Patreon",
-                "Patreon Integration",
-                "http://www.patreon.com",
+        final var providerID = givenASubProvider(
+                "Google Drive",
+                "Google Integration",
+                "http://www.google.com",
                 "CLIENT_SECRET",
                 UUID.randomUUID().toString(),
                 UUID.randomUUID().toString(),
@@ -314,7 +314,7 @@ class SubProviderE2ETest {
 
         assertEquals(1, repository.count());
 
-        this.mvc.perform(delete("/subproviders/" + subProviderID.getValue()))
+        this.mvc.perform(delete("/contentproviders/" + providerID.getValue()))
                 .andExpect(status().isNoContent());
 
         assertEquals(0, repository.count());
@@ -322,9 +322,9 @@ class SubProviderE2ETest {
 
     private void givenASubProvider(final String name) throws Exception {
         givenASubProvider(
-                "Patreon",
+                "Google Drive",
                 name,
-                "http://www.patreon.com",
+                "http://www.google.com",
                 "CLIENT_SECRET",
                 UUID.randomUUID().toString(),
                 UUID.randomUUID().toString(),
@@ -334,7 +334,7 @@ class SubProviderE2ETest {
         );
     }
 
-    private SubProviderID givenASubProvider(
+    private ContentProviderID givenASubProvider(
             final String type,
             final String name,
             final String baseUrl,
@@ -345,7 +345,7 @@ class SubProviderE2ETest {
             final String tokenUrl,
             final String file
     ) throws Exception {
-        final var requestBody = new CreateSubProviderRequest(
+        final var requestBody = new CreateContentProviderRequest(
                 type,
                 name,
                 baseUrl,
@@ -357,7 +357,7 @@ class SubProviderE2ETest {
                 file
         );
 
-        final var request = post("/subproviders")
+        final var request = post("/contentproviders")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(Json.writeValueAsString(requestBody));
 
@@ -365,13 +365,13 @@ class SubProviderE2ETest {
                 .andExpect(status().isCreated())
                 .andReturn()
                 .getResponse().getHeader("Location")
-                .replace("/subproviders/", "");
+                .replace("/contentproviders/", "");
 
-        return SubProviderID.from(actualId);
+        return ContentProviderID.from(actualId);
     }
 
-    private SubProviderResponse retrieveASubProvider(final String id) throws Exception {
-        final var request = get("/subproviders/" + id)
+    private ContentProviderResponse retrieveASubProvider(final String id) throws Exception {
+        final var request = get("/contentproviders/" + id)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON);
 
@@ -380,25 +380,25 @@ class SubProviderE2ETest {
                 .andReturn()
                 .getResponse().getContentAsString();
 
-        return Json.readValue(json, SubProviderResponse.class);
+        return Json.readValue(json, ContentProviderResponse.class);
     }
 
-    private ResultActions listSubProviders(final int page, final int perPage) throws Exception {
-        return listSubProviders(page, perPage, "", "", "");
+    private ResultActions listcontentproviders(final int page, final int perPage) throws Exception {
+        return listcontentproviders(page, perPage, "", "", "");
     }
 
-    private ResultActions listSubProviders(final int page, final int perPage, final String search) throws Exception {
-        return listSubProviders(page, perPage, search, "", "");
+    private ResultActions listcontentproviders(final int page, final int perPage, final String search) throws Exception {
+        return listcontentproviders(page, perPage, search, "", "");
     }
 
-    private ResultActions listSubProviders(
+    private ResultActions listcontentproviders(
             final int page,
             final int perPage,
             final String search,
             final String sort,
             final String direction
     ) throws Exception {
-        final var request = get("/subproviders")
+        final var request = get("/contentproviders")
                 .queryParam("page", String.valueOf(page))
                 .queryParam("perPage", String.valueOf(perPage))
                 .queryParam("search", search)
@@ -409,4 +409,5 @@ class SubProviderE2ETest {
 
         return this.mvc.perform(request);
     }
+
 }

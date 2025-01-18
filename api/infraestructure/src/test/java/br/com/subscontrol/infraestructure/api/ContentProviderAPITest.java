@@ -1,19 +1,20 @@
 package br.com.subscontrol.infraestructure.api;
 
 import br.com.subscontrol.ControllerTest;
-import br.com.subscontrol.application.provider.sub.create.CreateSubProviderOutput;
-import br.com.subscontrol.application.provider.sub.create.CreateSubProviderUseCase;
-import br.com.subscontrol.application.provider.sub.delete.DeleteSubProviderUseCase;
-import br.com.subscontrol.application.provider.sub.retrieve.get.GetSubProviderUseCase;
-import br.com.subscontrol.application.provider.sub.retrieve.get.SubProviderOutPut;
-import br.com.subscontrol.application.provider.sub.retrieve.list.ListSubProviderUseCase;
-import br.com.subscontrol.application.provider.sub.retrieve.list.SubProviderListOutput;
-import br.com.subscontrol.application.provider.sub.update.UpdateSubProviderOutput;
-import br.com.subscontrol.application.provider.sub.update.UpdateSubProviderUseCase;
+import br.com.subscontrol.application.provider.content.create.CreateContentProviderOutput;
+import br.com.subscontrol.application.provider.content.create.CreateContentProviderUseCase;
+import br.com.subscontrol.application.provider.content.delete.DeleteContentProviderUseCase;
+import br.com.subscontrol.application.provider.content.retrieve.get.ContentProviderOutput;
+import br.com.subscontrol.application.provider.content.retrieve.get.GetContentProviderUseCase;
+import br.com.subscontrol.application.provider.content.retrieve.list.ContentProviderListOutput;
+import br.com.subscontrol.application.provider.content.retrieve.list.ListContentProviderUseCase;
+import br.com.subscontrol.application.provider.content.update.UpdateContentProviderOutput;
+import br.com.subscontrol.application.provider.content.update.UpdateContentProviderUseCase;
 import br.com.subscontrol.domain.exceptions.DomainException;
 import br.com.subscontrol.domain.exceptions.NotFoundException;
 import br.com.subscontrol.domain.pagination.Pagination;
 import br.com.subscontrol.domain.provider.authentication.AuthenticationType;
+import br.com.subscontrol.domain.provider.content.ContentProvider;
 import br.com.subscontrol.domain.provider.sub.SubProvider;
 import br.com.subscontrol.domain.provider.sub.SubProviderID;
 import br.com.subscontrol.infraestructure.provider.sub.models.CreateSubProviderRequest;
@@ -37,8 +38,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@ControllerTest(controllers = SubProviderAPI.class)
-class SubProviderAPITest {
+@ControllerTest(controllers = ContentProviderAPI.class)
+class ContentProviderAPITest {
 
     @Autowired
     private MockMvc mvc;
@@ -47,19 +48,19 @@ class SubProviderAPITest {
     private ObjectMapper mapper;
 
     @MockBean
-    private CreateSubProviderUseCase createSubProviderUseCase;
+    private CreateContentProviderUseCase createContentProviderUseCase;
 
     @MockBean
-    private GetSubProviderUseCase getSubProviderUseCase;
+    private GetContentProviderUseCase getContentProviderUseCase;
 
     @MockBean
-    private UpdateSubProviderUseCase updateSubProviderUseCase;
+    private UpdateContentProviderUseCase updateContentProviderUseCase;
 
     @MockBean
-    private DeleteSubProviderUseCase deleteSubProviderUseCase;
+    private DeleteContentProviderUseCase deleteContentProviderUseCase;
 
     @MockBean
-    private ListSubProviderUseCase listSubProviderUseCase;
+    private ListContentProviderUseCase listContentProviderUseCase;
 
     @Test
     void givenAValidCommand_whenCallsCreate_shouldReturnId() throws Exception {
@@ -84,10 +85,10 @@ class SubProviderAPITest {
                 null
         );
 
-        when(createSubProviderUseCase.execute(any()))
-                .thenReturn(CreateSubProviderOutput.from("123"));
+        when(createContentProviderUseCase.execute(any()))
+                .thenReturn(CreateContentProviderOutput.from("123"));
 
-        final var request = post("/subproviders")
+        final var request = post("/contentproviders")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(requestBody));
 
@@ -95,25 +96,25 @@ class SubProviderAPITest {
                 .andDo(print());
 
         response.andExpect(status().isCreated())
-                .andExpect(header().string("Location", "/subproviders/123"))
+                .andExpect(header().string("Location", "/contentproviders/123"))
                 .andExpect(header().string("Content-Type", MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$.id", equalTo("123")));
 
-        verify(createSubProviderUseCase, times(1)).execute(argThat(subProvider ->
-                Objects.equals(expectedType, subProvider.type())
-                        && Objects.equals(expectedName, subProvider.name())
-                        && Objects.equals(expectedBaseUrl, subProvider.baseUrl())
-                        && Objects.equals(expectedAuthenticationType, subProvider.authenticationType())
-                        && Objects.equals(expectedClientId, subProvider.clientId())
-                        && Objects.equals(expectedClientSecret, subProvider.clientSecret())
-                        && Objects.equals(expectedAuthorizationUrl, subProvider.authorizationUrl())
-                        && Objects.equals(expectedTokenUrl, subProvider.tokenUrl())
+        verify(createContentProviderUseCase, times(1)).execute(argThat(provider ->
+                Objects.equals(expectedType, provider.type())
+                        && Objects.equals(expectedName, provider.name())
+                        && Objects.equals(expectedBaseUrl, provider.baseUrl())
+                        && Objects.equals(expectedAuthenticationType, provider.authenticationType())
+                        && Objects.equals(expectedClientId, provider.clientId())
+                        && Objects.equals(expectedClientSecret, provider.clientSecret())
+                        && Objects.equals(expectedAuthorizationUrl, provider.authorizationUrl())
+                        && Objects.equals(expectedTokenUrl, provider.tokenUrl())
         ));
     }
 
     @Test
     void givenAInvalidName_whenCallsCreate_thenShouldReturnNotification() throws Exception {
-        final var expectedType = "Patreon";
+        final var expectedType = "Google";
         final String expectedName = null;
         final var expectedBaseUrl = "http://www.patreon.com";
         final var expectedAuthenticationType = AuthenticationType.CLIENT_SECRET.name();
@@ -135,10 +136,10 @@ class SubProviderAPITest {
                 null
         );
 
-        when(createSubProviderUseCase.execute(any()))
+        when(createContentProviderUseCase.execute(any()))
                 .thenThrow(DomainException.with(expectedMessage));
 
-        final var request = post("/subproviders")
+        final var request = post("/contentproviders")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(requestBody));
 
@@ -151,7 +152,7 @@ class SubProviderAPITest {
                 .andExpect(jsonPath("$.errors", hasSize(1)))
                 .andExpect(jsonPath("$.errors[0].message", equalTo(expectedMessage)));
 
-        verify(createSubProviderUseCase, times(1)).execute(argThat(cmd ->
+        verify(createContentProviderUseCase, times(1)).execute(argThat(cmd ->
                 Objects.equals(expectedType, cmd.type())
                         && Objects.equals(expectedName, cmd.name())
                         && Objects.equals(expectedBaseUrl, cmd.baseUrl())
@@ -164,9 +165,9 @@ class SubProviderAPITest {
 
     @Test
     void givenAValidId_whenCallsGet_shouldReturnProvider() throws Exception {
-        final var expectedType = "Patreon";
-        final var expectedName = "Patreon Integration";
-        final var expectedBaseUrl = "http://www.patreon.com";
+        final var expectedType = "Google Drive";
+        final var expectedName = "Google Integration";
+        final var expectedBaseUrl = "http://www.google.com";
         final var expectedAuthenticationType = AuthenticationType.CLIENT_SECRET.name();
         final var expectedClientId = UUID.randomUUID().toString();
         final var expectedClientSecret = UUID.randomUUID().toString();
@@ -174,7 +175,7 @@ class SubProviderAPITest {
         final var expectedTokenUrl = "/token";
         final var expectedIsActive = true;
 
-        final var provider = SubProvider.create(
+        final var provider = ContentProvider.create(
                 expectedType,
                 expectedName,
                 expectedBaseUrl,
@@ -188,10 +189,10 @@ class SubProviderAPITest {
 
         final var expectedId = provider.getId().getValue();
 
-        when(getSubProviderUseCase.execute(any()))
-                .thenReturn(SubProviderOutPut.from(provider));
+        when(getContentProviderUseCase.execute(any()))
+                .thenReturn(ContentProviderOutput.from(provider));
 
-        final var request = get("/subproviders/{id}", expectedId)
+        final var request = get("/contentproviders/{id}", expectedId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON);
 
@@ -211,7 +212,7 @@ class SubProviderAPITest {
                 .andExpect(jsonPath("$.authorization_url", equalTo(expectedAuthorizationUrl)))
                 .andExpect(jsonPath("$.token_url", equalTo(expectedTokenUrl)));
 
-        verify(getSubProviderUseCase, times(1)).execute(eq(expectedId));
+        verify(getContentProviderUseCase, times(1)).execute(eq(expectedId));
     }
 
     @Test
@@ -219,10 +220,10 @@ class SubProviderAPITest {
         final var expectedErrorMessage = "SubProvider with ID 123 was not found";
         final var expectedId = SubProviderID.from("123");
 
-        when(getSubProviderUseCase.execute(any()))
+        when(getContentProviderUseCase.execute(any()))
                 .thenThrow(NotFoundException.with(SubProvider.class, expectedId));
 
-        final var request = get("/subproviders/{id}", expectedId.getValue())
+        final var request = get("/contentproviders/{id}", expectedId.getValue())
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON);
 
@@ -244,8 +245,8 @@ class SubProviderAPITest {
         final var expectedAuthorizationUrl = "/authorization";
         final var expectedTokenUrl = "/token";
 
-        when(updateSubProviderUseCase.execute(any()))
-                .thenReturn(UpdateSubProviderOutput.from(expectedId));
+        when(updateContentProviderUseCase.execute(any()))
+                .thenReturn(UpdateContentProviderOutput.from(expectedId));
 
         final var aCommand = new UpdateSubProviderRequest(
                 expectedName,
@@ -259,7 +260,7 @@ class SubProviderAPITest {
                 null
         );
 
-        final var request = put("/subproviders/{id}", expectedId)
+        final var request = put("/contentproviders/{id}", expectedId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(aCommand));
@@ -271,7 +272,7 @@ class SubProviderAPITest {
                 .andExpect(header().string("Content-Type", MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$.id", equalTo(expectedId)));
 
-        verify(updateSubProviderUseCase, times(1)).execute(argThat(cmd ->
+        verify(updateContentProviderUseCase, times(1)).execute(argThat(cmd ->
                 Objects.equals(expectedName, cmd.name())
                         && Objects.equals(expectedBaseUrl, cmd.baseUrl())
                         && Objects.equals(expectedIsActive, cmd.active())
@@ -298,7 +299,7 @@ class SubProviderAPITest {
         final var expectedErrorCount = 1;
         final var expectedMessage = "'name' should not be null";
 
-        when(updateSubProviderUseCase.execute(any()))
+        when(updateContentProviderUseCase.execute(any()))
                 .thenThrow(DomainException.with(expectedMessage));
 
         final var aCommand = new UpdateSubProviderRequest(
@@ -313,7 +314,7 @@ class SubProviderAPITest {
                 null
         );
 
-        final var request = put("/subproviders/{id}", expectedId)
+        final var request = put("/contentproviders/{id}", expectedId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(aCommand));
@@ -326,7 +327,7 @@ class SubProviderAPITest {
                 .andExpect(jsonPath("$.errors", hasSize(expectedErrorCount)))
                 .andExpect(jsonPath("$.errors[0].message", equalTo(expectedMessage)));
 
-        verify(updateSubProviderUseCase, times(1)).execute(argThat(cmd ->
+        verify(updateContentProviderUseCase, times(1)).execute(argThat(cmd ->
                 Objects.equals(expectedName, cmd.name())
                         && Objects.equals(expectedBaseUrl, cmd.baseUrl())
                         && Objects.equals(expectedIsActive, cmd.active())
@@ -352,7 +353,7 @@ class SubProviderAPITest {
 
         final var expectedErrorMessage = "SubProvider with ID not-found was not found";
 
-        when(updateSubProviderUseCase.execute(any()))
+        when(updateContentProviderUseCase.execute(any()))
                 .thenThrow(NotFoundException.with(SubProvider.class, SubProviderID.from(expectedId)));
 
         final var aCommand = new UpdateSubProviderRequest(
@@ -367,7 +368,7 @@ class SubProviderAPITest {
                 null
         );
 
-        final var request = put("/subproviders/{id}", expectedId)
+        final var request = put("/contentproviders/{id}", expectedId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(aCommand));
@@ -379,7 +380,7 @@ class SubProviderAPITest {
                 .andExpect(header().string("Content-Type", MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$.message", equalTo(expectedErrorMessage)));
 
-        verify(updateSubProviderUseCase, times(1)).execute(argThat(cmd ->
+        verify(updateContentProviderUseCase, times(1)).execute(argThat(cmd ->
                 Objects.equals(expectedName, cmd.name())
                         && Objects.equals(expectedBaseUrl, cmd.baseUrl())
                         && Objects.equals(expectedIsActive, cmd.active())
@@ -396,9 +397,9 @@ class SubProviderAPITest {
         final var expectedId = "123";
 
         doNothing()
-                .when(deleteSubProviderUseCase).execute(any());
+                .when(deleteContentProviderUseCase).execute(any());
 
-        final var request = delete("/subproviders/{id}", expectedId)
+        final var request = delete("/contentproviders/{id}", expectedId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON);
 
@@ -407,15 +408,15 @@ class SubProviderAPITest {
 
         response.andExpect(status().isNoContent());
 
-        verify(deleteSubProviderUseCase, times(1)).execute(eq(expectedId));
+        verify(deleteContentProviderUseCase, times(1)).execute(eq(expectedId));
     }
 
     @Test
     void givenValidParams_whenCallsList_shouldReturnProviders() throws Exception {
-        final var provider = SubProvider.create(
-                "Patreon",
-                "Patreon Integration",
-                "http://www.patreon.com",
+        final var provider = ContentProvider.create(
+                "Google Drive",
+                "Google Integration",
+                "http://www.google.com",
                 "CLIENT_SECRET",
                 UUID.randomUUID().toString(),
                 UUID.randomUUID().toString(),
@@ -432,12 +433,12 @@ class SubProviderAPITest {
         final var expectedItemsCount = 1;
         final var expectedTotal = 1;
 
-        final var expectedItems = List.of(SubProviderListOutput.from(provider));
+        final var expectedItems = List.of(ContentProviderListOutput.from(provider));
 
-        when(listSubProviderUseCase.execute(any()))
+        when(listContentProviderUseCase.execute(any()))
                 .thenReturn(new Pagination<>(expectedPage, expectedPerPage, expectedTotal, expectedItems));
 
-        final var request = get("/subproviders")
+        final var request = get("/contentproviders")
                 .queryParam("page", String.valueOf(expectedPage))
                 .queryParam("perPage", String.valueOf(expectedPerPage))
                 .queryParam("sort", expectedSort)
@@ -459,7 +460,7 @@ class SubProviderAPITest {
                 .andExpect(jsonPath("$.items[0].is_active", equalTo(provider.isActive())))
                 .andExpect(jsonPath("$.items[0].last_sync", equalTo(provider.getLastSync())));
 
-        verify(listSubProviderUseCase, times(1)).execute(argThat(query ->
+        verify(listContentProviderUseCase, times(1)).execute(argThat(query ->
                 Objects.equals(expectedPage, query.page())
                         && Objects.equals(expectedPerPage, query.perPage())
                         && Objects.equals(expectedDirection, query.direction())
@@ -467,5 +468,4 @@ class SubProviderAPITest {
                         && Objects.equals(expectedTerms, query.terms())
         ));
     }
-
 }
