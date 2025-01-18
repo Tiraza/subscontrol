@@ -57,7 +57,6 @@ public abstract class Provider<ID extends ProviderID> extends Entity<ID> {
     }
 
     public void updateAuthentication(
-            final ProviderID providerID,
             final String typeName,
             final String clientId,
             final String clientSecret,
@@ -66,7 +65,7 @@ public abstract class Provider<ID extends ProviderID> extends Entity<ID> {
             final String fileBase64
     ) {
         this.authentication = Authentication.create(
-                providerID,
+                this.id,
                 typeName,
                 clientId,
                 clientSecret,

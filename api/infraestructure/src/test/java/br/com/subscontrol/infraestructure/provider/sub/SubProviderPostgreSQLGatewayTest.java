@@ -2,6 +2,7 @@ package br.com.subscontrol.infraestructure.provider.sub;
 
 import br.com.subscontrol.PostgreSQLGatewayTest;
 import br.com.subscontrol.domain.pagination.SearchQuery;
+import br.com.subscontrol.domain.provider.authentication.AuthenticationType;
 import br.com.subscontrol.domain.provider.sub.SubProvider;
 import br.com.subscontrol.domain.provider.sub.SubProviderID;
 import br.com.subscontrol.domain.provider.sub.SubProviderType;
@@ -31,6 +32,7 @@ class SubProviderPostgreSQLGatewayTest {
         final var expectedType = SubProviderType.PATREON.getName();
         final var expectedName = "Patreon Integration";
         final var expectedBaseUrl = "https://www.patreon.com";
+        final var expectedAuthenticationType = AuthenticationType.CLIENT_SECRET;
         final var expectedClientId = UUID.randomUUID().toString();
         final var expectedClientSecret = UUID.randomUUID().toString();
         final var expectedAuthorizationUrl = "http://patreon.com/authorization";
@@ -40,10 +42,13 @@ class SubProviderPostgreSQLGatewayTest {
                 expectedType,
                 expectedName,
                 expectedBaseUrl,
+                expectedAuthenticationType.name(),
                 expectedClientId,
                 expectedClientSecret,
                 expectedAuthorizationUrl,
-                expectedTokenUrl);
+                expectedTokenUrl,
+                null
+        );
 
         assertEquals(0, repository.count());
 
@@ -59,10 +64,10 @@ class SubProviderPostgreSQLGatewayTest {
         assertEquals(expectedType, returnedProvider.getType().getName());
         assertEquals(expectedName, returnedProvider.getName());
         assertEquals(expectedBaseUrl, returnedProvider.getBaseUrl());
-        assertEquals(expectedClientId, returnedProvider.getAuthentication().clientId());
-        assertEquals(expectedClientSecret, returnedProvider.getAuthentication().clientSecret());
-        assertEquals(expectedAuthorizationUrl, returnedProvider.getAuthentication().authorizationUrl());
-        assertEquals(expectedTokenUrl, returnedProvider.getAuthentication().tokenUrl());
+        assertEquals(expectedClientId, returnedProvider.getAuthentication().getClientId());
+        assertEquals(expectedClientSecret, returnedProvider.getAuthentication().getClientSecret());
+        assertEquals(expectedAuthorizationUrl, returnedProvider.getAuthentication().getAuthorizationUrl());
+        assertEquals(expectedTokenUrl, returnedProvider.getAuthentication().getTokenUrl());
 
         final var persistedProvider = repository.findById(provider.getId().getValue()).get();
 
@@ -74,10 +79,10 @@ class SubProviderPostgreSQLGatewayTest {
         assertEquals(expectedType, persistedProvider.getType().getName());
         assertEquals(expectedName, persistedProvider.getName());
         assertEquals(expectedBaseUrl, persistedProvider.getBaseUrl());
-        assertEquals(expectedClientId, persistedProvider.getAuthentication().clientId());
-        assertEquals(expectedClientSecret, persistedProvider.getAuthentication().clientSecret());
-        assertEquals(expectedAuthorizationUrl, persistedProvider.getAuthentication().authorizationUrl());
-        assertEquals(expectedTokenUrl, persistedProvider.getAuthentication().tokenUrl());
+        assertEquals(expectedClientId, persistedProvider.getAuthentication().getClientId());
+        assertEquals(expectedClientSecret, persistedProvider.getAuthentication().getClientSecret());
+        assertEquals(expectedAuthorizationUrl, persistedProvider.getAuthentication().getAuthorizationUrl());
+        assertEquals(expectedTokenUrl, persistedProvider.getAuthentication().getTokenUrl());
     }
 
     @Test
@@ -85,6 +90,7 @@ class SubProviderPostgreSQLGatewayTest {
         final var expectedType = SubProviderType.PATREON.getName();
         final var expectedName = "Patreon Integration";
         final var expectedBaseUrl = "https://www.patreon.com";
+        final var expectedAuthenticationType = AuthenticationType.CLIENT_SECRET;
         final var expectedClientId = UUID.randomUUID().toString();
         final var expectedClientSecret = UUID.randomUUID().toString();
         final var expectedAuthorizationUrl = "http://patreon.com/authorization";
@@ -95,10 +101,13 @@ class SubProviderPostgreSQLGatewayTest {
                 expectedType,
                 "Patreon",
                 "https://www.patreon.com.br",
+                AuthenticationType.CLIENT_SECRET.name(),
                 "123",
                 "123",
                 "https://www.patreon.com.br",
-                "https://www.patreon.com.br");
+                "https://www.patreon.com.br",
+                null
+        );
 
         assertEquals(0, repository.count());
 
@@ -115,20 +124,20 @@ class SubProviderPostgreSQLGatewayTest {
         assertEquals(expectedType, firstPersistedProvider.getType().getName());
         assertEquals("Patreon", firstPersistedProvider.getName());
         assertEquals("https://www.patreon.com.br", firstPersistedProvider.getBaseUrl());
-        assertEquals("123", firstPersistedProvider.getAuthentication().clientId());
-        assertEquals("123", firstPersistedProvider.getAuthentication().clientSecret());
-        assertEquals("https://www.patreon.com.br", firstPersistedProvider.getAuthentication().authorizationUrl());
-        assertEquals("https://www.patreon.com.br", firstPersistedProvider.getAuthentication().tokenUrl());
+        assertEquals("123", firstPersistedProvider.getAuthentication().getClientId());
+        assertEquals("123", firstPersistedProvider.getAuthentication().getClientSecret());
+        assertEquals("https://www.patreon.com.br", firstPersistedProvider.getAuthentication().getAuthorizationUrl());
+        assertEquals("https://www.patreon.com.br", firstPersistedProvider.getAuthentication().getTokenUrl());
 
         final var updatedProvider = SubProvider.with(provider);
-        updatedProvider.update(
-                expectedName,
-                expectedBaseUrl,
-                expectedIsActive,
+        updatedProvider.update(expectedName, expectedBaseUrl, expectedIsActive);
+        updatedProvider.updateAuthentication(
+                expectedAuthenticationType.name(),
                 expectedClientId,
                 expectedClientSecret,
                 expectedAuthorizationUrl,
-                expectedTokenUrl
+                expectedTokenUrl,
+                null
         );
 
         final var returnedProvider = gateway.update(updatedProvider);
@@ -142,10 +151,10 @@ class SubProviderPostgreSQLGatewayTest {
         assertEquals(expectedType, returnedProvider.getType().getName());
         assertEquals(expectedName, returnedProvider.getName());
         assertEquals(expectedBaseUrl, returnedProvider.getBaseUrl());
-        assertEquals(expectedClientId, returnedProvider.getAuthentication().clientId());
-        assertEquals(expectedClientSecret, returnedProvider.getAuthentication().clientSecret());
-        assertEquals(expectedAuthorizationUrl, returnedProvider.getAuthentication().authorizationUrl());
-        assertEquals(expectedTokenUrl, returnedProvider.getAuthentication().tokenUrl());
+        assertEquals(expectedClientId, returnedProvider.getAuthentication().getClientId());
+        assertEquals(expectedClientSecret, returnedProvider.getAuthentication().getClientSecret());
+        assertEquals(expectedAuthorizationUrl, returnedProvider.getAuthentication().getAuthorizationUrl());
+        assertEquals(expectedTokenUrl, returnedProvider.getAuthentication().getTokenUrl());
 
         final var secondPersistedProvider = repository.findById(updatedProvider.getId().getValue()).get();
 
@@ -156,10 +165,10 @@ class SubProviderPostgreSQLGatewayTest {
         assertEquals(expectedType, secondPersistedProvider.getType().getName());
         assertEquals(expectedName, secondPersistedProvider.getName());
         assertEquals(expectedBaseUrl, secondPersistedProvider.getBaseUrl());
-        assertEquals(expectedClientId, secondPersistedProvider.getAuthentication().clientId());
-        assertEquals(expectedClientSecret, secondPersistedProvider.getAuthentication().clientSecret());
-        assertEquals(expectedAuthorizationUrl, secondPersistedProvider.getAuthentication().authorizationUrl());
-        assertEquals(expectedTokenUrl, secondPersistedProvider.getAuthentication().tokenUrl());
+        assertEquals(expectedClientId, secondPersistedProvider.getAuthentication().getClientId());
+        assertEquals(expectedClientSecret, secondPersistedProvider.getAuthentication().getClientSecret());
+        assertEquals(expectedAuthorizationUrl, secondPersistedProvider.getAuthentication().getAuthorizationUrl());
+        assertEquals(expectedTokenUrl, secondPersistedProvider.getAuthentication().getTokenUrl());
     }
 
     @Test
@@ -168,10 +177,13 @@ class SubProviderPostgreSQLGatewayTest {
                 SubProviderType.PATREON.getName(),
                 "Patreon",
                 "https://www.patreon.com.br",
+                AuthenticationType.CLIENT_SECRET.name(),
                 "123",
                 "123",
                 "https://www.patreon.com.br",
-                "https://www.patreon.com.br");
+                "https://www.patreon.com.br",
+                null
+        );
 
         assertEquals(0, repository.count());
 
@@ -198,6 +210,7 @@ class SubProviderPostgreSQLGatewayTest {
         final var expectedType = SubProviderType.PATREON.getName();
         final var expectedName = "Patreon Integration";
         final var expectedBaseUrl = "https://www.patreon.com";
+        final var expectedAuthenticationType = AuthenticationType.CLIENT_SECRET;
         final var expectedClientId = UUID.randomUUID().toString();
         final var expectedClientSecret = UUID.randomUUID().toString();
         final var expectedAuthorizationUrl = "http://patreon.com/authorization";
@@ -207,10 +220,13 @@ class SubProviderPostgreSQLGatewayTest {
                 expectedType,
                 expectedName,
                 expectedBaseUrl,
+                expectedAuthenticationType.name(),
                 expectedClientId,
                 expectedClientSecret,
                 expectedAuthorizationUrl,
-                expectedTokenUrl);
+                expectedTokenUrl,
+                null
+        );
 
         assertEquals(0, repository.count());
 
@@ -230,10 +246,10 @@ class SubProviderPostgreSQLGatewayTest {
         assertEquals(expectedType, actualProvider.getType().getName());
         assertEquals(expectedName, actualProvider.getName());
         assertEquals(expectedBaseUrl, actualProvider.getBaseUrl());
-        assertEquals(expectedClientId, actualProvider.getAuthentication().clientId());
-        assertEquals(expectedClientSecret, actualProvider.getAuthentication().clientSecret());
-        assertEquals(expectedAuthorizationUrl, actualProvider.getAuthentication().authorizationUrl());
-        assertEquals(expectedTokenUrl, actualProvider.getAuthentication().tokenUrl());
+        assertEquals(expectedClientId, actualProvider.getAuthentication().getClientId());
+        assertEquals(expectedClientSecret, actualProvider.getAuthentication().getClientSecret());
+        assertEquals(expectedAuthorizationUrl, actualProvider.getAuthentication().getAuthorizationUrl());
+        assertEquals(expectedTokenUrl, actualProvider.getAuthentication().getTokenUrl());
     }
 
     @Test
@@ -381,10 +397,12 @@ class SubProviderPostgreSQLGatewayTest {
                         SubProviderType.PATREON.getName(),
                         name,
                         "https://www.patreon.com.br",
+                        AuthenticationType.CLIENT_SECRET.name(),
                         UUID.randomUUID().toString(),
                         UUID.randomUUID().toString(),
                         "/authorization",
-                        "/token"
+                        "/token",
+                        null
                 )
         );
     }

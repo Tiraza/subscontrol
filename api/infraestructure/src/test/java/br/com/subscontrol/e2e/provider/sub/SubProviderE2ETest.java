@@ -1,6 +1,7 @@
 package br.com.subscontrol.e2e.provider.sub;
 
 import br.com.subscontrol.E2ETest;
+import br.com.subscontrol.domain.provider.authentication.AuthenticationType;
 import br.com.subscontrol.domain.provider.sub.SubProviderID;
 import br.com.subscontrol.infraestructure.configuration.json.Json;
 import br.com.subscontrol.infraestructure.provider.sub.models.CreateSubProviderRequest;
@@ -57,6 +58,7 @@ class SubProviderE2ETest {
         final var expectedType = "Patreon";
         final var expectedName = "Patreon Integration";
         final var expectedBaseUrl = "http://www.patreon.com";
+        final var expectedAuthenticationType = AuthenticationType.CLIENT_SECRET;
         final var expectedClientId = UUID.randomUUID().toString();
         final var expectedClientSecret = UUID.randomUUID().toString();
         final var expectedAuthorizationUrl = "/authorization";
@@ -67,10 +69,12 @@ class SubProviderE2ETest {
                 expectedType,
                 expectedName,
                 expectedBaseUrl,
+                expectedAuthenticationType.name(),
                 expectedClientId,
                 expectedClientSecret,
                 expectedAuthorizationUrl,
-                expectedTokenUrl
+                expectedTokenUrl,
+                null
         );
 
         assertEquals(1, repository.count());
@@ -80,10 +84,11 @@ class SubProviderE2ETest {
         assertEquals(expectedType, subProvider.getType().getName());
         assertEquals(expectedName, subProvider.getName());
         assertEquals(expectedBaseUrl, subProvider.getBaseUrl());
-        assertEquals(expectedClientId, subProvider.getAuthentication().clientId());
-        assertEquals(expectedClientSecret, subProvider.getAuthentication().clientSecret());
-        assertEquals(expectedAuthorizationUrl, subProvider.getAuthentication().authorizationUrl());
-        assertEquals(expectedTokenUrl, subProvider.getAuthentication().tokenUrl());
+        assertEquals(expectedAuthenticationType, subProvider.getAuthentication().getType());
+        assertEquals(expectedClientId, subProvider.getAuthentication().getClientId());
+        assertEquals(expectedClientSecret, subProvider.getAuthentication().getClientSecret());
+        assertEquals(expectedAuthorizationUrl, subProvider.getAuthentication().getAuthorizationUrl());
+        assertEquals(expectedTokenUrl, subProvider.getAuthentication().getTokenUrl());
         assertEquals(expectedIsActive, subProvider.isActive());
         assertNull(subProvider.getLastSync());
     }
@@ -181,6 +186,7 @@ class SubProviderE2ETest {
         final var expectedType = "Patreon";
         final var expectedName = "Patreon Integration";
         final var expectedBaseUrl = "http://www.patreon.com";
+        final var expectedAuthenticationType = AuthenticationType.CLIENT_SECRET.name();
         final var expectedClientId = UUID.randomUUID().toString();
         final var expectedClientSecret = UUID.randomUUID().toString();
         final var expectedAuthorizationUrl = "/authorization";
@@ -191,10 +197,12 @@ class SubProviderE2ETest {
                 expectedType,
                 expectedName,
                 expectedBaseUrl,
+                expectedAuthenticationType,
                 expectedClientId,
                 expectedClientSecret,
                 expectedAuthorizationUrl,
-                expectedTokenUrl
+                expectedTokenUrl,
+                null
         );
 
         assertEquals(1, repository.count());
@@ -204,6 +212,7 @@ class SubProviderE2ETest {
         assertEquals(expectedType, subProvider.type());
         assertEquals(expectedName, subProvider.name());
         assertEquals(expectedBaseUrl, subProvider.baseUrl());
+        assertEquals(expectedAuthenticationType, subProvider.authenticationType());
         assertEquals(expectedClientId, subProvider.clientId());
         assertEquals(expectedClientSecret, subProvider.clientSecret());
         assertEquals(expectedAuthorizationUrl, subProvider.authorizationUrl());
@@ -235,10 +244,12 @@ class SubProviderE2ETest {
                 "Patreon",
                 "Integration",
                 "http://www.test.com",
+                "CLIENT_SECRET",
                 "123",
                 "123",
                 "/test",
-                "/test"
+                "/test",
+                null
         );
 
         assertEquals(1, repository.count());
@@ -247,6 +258,7 @@ class SubProviderE2ETest {
         final var expectedName = "Patreon Provider";
         final var expectedBaseUrl = "http://www.patreon.com";
         final var expectedIsActive = false;
+        final var expectedAuthenticationType = AuthenticationType.CLIENT_SECRET;
         final var expectedClientId = UUID.randomUUID().toString();
         final var expectedClientSecret = UUID.randomUUID().toString();
         final var expectedAuthorizationUrl = "/authorization";
@@ -256,10 +268,12 @@ class SubProviderE2ETest {
                 expectedName,
                 expectedBaseUrl,
                 expectedIsActive,
+                expectedAuthenticationType.name(),
                 expectedClientId,
                 expectedClientSecret,
                 expectedAuthorizationUrl,
-                expectedTokenUrl
+                expectedTokenUrl,
+                null
         );
 
         final var request = put("/subproviders/" + subProviderID.getValue())
@@ -273,10 +287,11 @@ class SubProviderE2ETest {
         assertEquals(expectedType, subProvider.getType().getName());
         assertEquals(expectedName, subProvider.getName());
         assertEquals(expectedBaseUrl, subProvider.getBaseUrl());
-        assertEquals(expectedClientId, subProvider.getAuthentication().clientId());
-        assertEquals(expectedClientSecret, subProvider.getAuthentication().clientSecret());
-        assertEquals(expectedAuthorizationUrl, subProvider.getAuthentication().authorizationUrl());
-        assertEquals(expectedTokenUrl, subProvider.getAuthentication().tokenUrl());
+        assertEquals(expectedAuthenticationType, subProvider.getAuthentication().getType());
+        assertEquals(expectedClientId, subProvider.getAuthentication().getClientId());
+        assertEquals(expectedClientSecret, subProvider.getAuthentication().getClientSecret());
+        assertEquals(expectedAuthorizationUrl, subProvider.getAuthentication().getAuthorizationUrl());
+        assertEquals(expectedTokenUrl, subProvider.getAuthentication().getTokenUrl());
         assertEquals(expectedIsActive, subProvider.isActive());
         assertNull(subProvider.getLastSync());
     }
@@ -290,10 +305,12 @@ class SubProviderE2ETest {
                 "Patreon",
                 "Patreon Integration",
                 "http://www.patreon.com",
+                "CLIENT_SECRET",
                 UUID.randomUUID().toString(),
                 UUID.randomUUID().toString(),
                 "/authorization",
-                "/token"
+                "/token",
+                null
         );
 
         assertEquals(1, repository.count());
@@ -309,10 +326,12 @@ class SubProviderE2ETest {
                 "Patreon",
                 name,
                 "http://www.patreon.com",
+                "CLIENT_SECRET",
                 UUID.randomUUID().toString(),
                 UUID.randomUUID().toString(),
                 "/authorization",
-                "/token"
+                "/token",
+                null
         );
     }
 
@@ -320,13 +339,24 @@ class SubProviderE2ETest {
             final String type,
             final String name,
             final String baseUrl,
+            final String authenticationType,
             final String clientId,
             final String clientSecret,
             final String authorizationUrl,
-            final String tokenUrl
+            final String tokenUrl,
+            final String file
     ) throws Exception {
-        final var requestBody =
-                new CreateSubProviderRequest(type, name, baseUrl, clientId, clientSecret, authorizationUrl, tokenUrl);
+        final var requestBody = new CreateSubProviderRequest(
+                type,
+                name,
+                baseUrl,
+                authenticationType,
+                clientId,
+                clientSecret,
+                authorizationUrl,
+                tokenUrl,
+                file
+        );
 
         final var request = post("/subproviders")
                 .contentType(MediaType.APPLICATION_JSON)

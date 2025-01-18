@@ -1,6 +1,7 @@
 package br.com.subscontrol.infraestructure.provider.content.persistence;
 
 import br.com.subscontrol.PostgreSQLGatewayTest;
+import br.com.subscontrol.domain.provider.authentication.AuthenticationType;
 import br.com.subscontrol.domain.provider.content.ContentProvider;
 import br.com.subscontrol.domain.provider.content.ContentProviderType;
 import org.hibernate.PropertyValueException;
@@ -55,10 +56,13 @@ class ContentProviderRepositoryTest {
                 ContentProviderType.GOOGLE_DRIVE.getName(),
                 "Google Drive Integration",
                 "https://www.google.com",
+                AuthenticationType.CLIENT_SECRET.name(),
                 UUID.randomUUID().toString(),
                 UUID.randomUUID().toString(),
                 "/authorization",
-                "/token");
+                "/token",
+                null
+        );
     }
 
 }

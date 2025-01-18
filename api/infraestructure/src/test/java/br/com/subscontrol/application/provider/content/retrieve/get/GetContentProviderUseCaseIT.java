@@ -2,6 +2,7 @@ package br.com.subscontrol.application.provider.content.retrieve.get;
 
 import br.com.subscontrol.IntegrationTest;
 import br.com.subscontrol.domain.exceptions.NotFoundException;
+import br.com.subscontrol.domain.provider.authentication.AuthenticationType;
 import br.com.subscontrol.domain.provider.content.ContentProvider;
 import br.com.subscontrol.domain.provider.content.ContentProviderGateway;
 import br.com.subscontrol.domain.provider.content.ContentProviderID;
@@ -34,6 +35,7 @@ public class GetContentProviderUseCaseIT {
         final var expectedName = "Google Drive Integration";
         final var expectedBaseUrl = "https://www.google.com";
         final var expectedIsActive = true;
+        final var expectedAuthenticationType = AuthenticationType.CLIENT_SECRET.name();
         final var expectedClientId = UUID.randomUUID().toString();
         final var expectedClientSecret = UUID.randomUUID().toString();
         final var expectedAuthorizationUrl = "http://google.com/authorization";
@@ -43,10 +45,13 @@ public class GetContentProviderUseCaseIT {
                 expectedType,
                 expectedName,
                 expectedBaseUrl,
+                expectedAuthenticationType,
                 expectedClientId,
                 expectedClientSecret,
                 expectedAuthorizationUrl,
-                expectedTokenUrl);
+                expectedTokenUrl,
+                null
+        );
 
         assertEquals(0, repository.count());
 
@@ -65,6 +70,7 @@ public class GetContentProviderUseCaseIT {
         assertEquals(expectedName, actualProvider.name());
         assertEquals(expectedBaseUrl, actualProvider.baseUrl());
         assertEquals(expectedIsActive, actualProvider.isActive());
+        assertEquals(expectedAuthenticationType, actualProvider.authenticationType());
         assertEquals(expectedClientId, actualProvider.clientId());
         assertEquals(expectedClientSecret, actualProvider.clientSecret());
         assertEquals(expectedAuthorizationUrl, actualProvider.authorizationUrl());

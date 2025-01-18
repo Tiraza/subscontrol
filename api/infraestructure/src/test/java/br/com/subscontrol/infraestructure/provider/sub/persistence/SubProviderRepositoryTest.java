@@ -1,6 +1,7 @@
 package br.com.subscontrol.infraestructure.provider.sub.persistence;
 
 import br.com.subscontrol.PostgreSQLGatewayTest;
+import br.com.subscontrol.domain.provider.authentication.AuthenticationType;
 import br.com.subscontrol.domain.provider.sub.SubProvider;
 import br.com.subscontrol.domain.provider.sub.SubProviderType;
 import org.hibernate.PropertyValueException;
@@ -55,10 +56,13 @@ class SubProviderRepositoryTest {
                 SubProviderType.PATREON.getName(),
                 "Patreon Integration",
                 "https://www.patreon.com",
+                AuthenticationType.CLIENT_SECRET.name(),
                 UUID.randomUUID().toString(),
                 UUID.randomUUID().toString(),
                 "http://patreon.com/authorization",
-                "http://patreon.com/token");
+                "http://patreon.com/token",
+                null
+        );
     }
 
 }

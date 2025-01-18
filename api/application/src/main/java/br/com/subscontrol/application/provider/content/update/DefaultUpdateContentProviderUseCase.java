@@ -22,7 +22,6 @@ public class DefaultUpdateContentProviderUseCase extends UpdateContentProviderUs
                 .orElseThrow(NotFoundException.notFound(ContentProvider.class, providerID));
         provider.update(command.name(), command.baseUrl(), command.active());
         provider.updateAuthentication(
-                providerID,
                 command.authenticationType(),
                 command.clientId(),
                 command.clientSecret(),

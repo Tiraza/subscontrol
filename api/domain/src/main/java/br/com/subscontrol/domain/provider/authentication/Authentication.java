@@ -3,6 +3,7 @@ package br.com.subscontrol.domain.provider.authentication;
 import br.com.subscontrol.domain.ValueObject;
 import br.com.subscontrol.domain.exceptions.UnsupportedAuthenticationType;
 import br.com.subscontrol.domain.provider.ProviderID;
+import br.com.subscontrol.domain.provider.sub.SubProviderID;
 import br.com.subscontrol.domain.validation.ValidationHandler;
 
 import java.util.Base64;
@@ -49,6 +50,25 @@ public class Authentication extends ValueObject {
             return withClientSecret(providerID, clientId, clientSecret, authorizationUrl, tokenUrl);
         } else if (type == AuthenticationType.FILE) {
             return withFile(providerID, Base64.getDecoder().decode(fileBase64));
+        } else {
+            throw UnsupportedAuthenticationType.with(type);
+        }
+    }
+
+    public static Authentication with(
+            final String providerID,
+            final String typeName,
+            final String clientId,
+            final String clientSecret,
+            final String authorizationUrl,
+            final String tokenUrl,
+            final byte[] fileBase64
+    ) {
+        AuthenticationType type = AuthenticationType.from(typeName);
+        if (type == AuthenticationType.CLIENT_SECRET) {
+            return withClientSecret(SubProviderID.from(providerID), clientId, clientSecret, authorizationUrl, tokenUrl);
+        } else if (type == AuthenticationType.FILE) {
+            return withFile(SubProviderID.from(providerID), Base64.getDecoder().decode(fileBase64));
         } else {
             throw UnsupportedAuthenticationType.with(type);
         }

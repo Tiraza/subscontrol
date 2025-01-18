@@ -1,6 +1,7 @@
 package br.com.subscontrol.infraestructure.provider.sub.models;
 
 import br.com.subscontrol.JacksonTest;
+import br.com.subscontrol.domain.provider.authentication.AuthenticationType;
 import br.com.subscontrol.domain.utils.InstantUtils;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,7 @@ class SubProviderResponseTest {
         final var expectedBaseUrl = "http://www.patreon.com";
         final var expectedIsActive = true;
         final var expectedLastSync = InstantUtils.now();
+        final var expectedAuthenticationType = AuthenticationType.CLIENT_SECRET.name();
         final var expectedClientId = UUID.randomUUID().toString();
         final var expectedClientSecret = UUID.randomUUID().toString();
         final var expectedAuthorizationUrl = "/authorization";
@@ -35,6 +37,7 @@ class SubProviderResponseTest {
                 expectedBaseUrl,
                 expectedIsActive,
                 expectedLastSync,
+                expectedAuthenticationType,
                 expectedClientId,
                 expectedClientSecret,
                 expectedAuthorizationUrl,
@@ -50,6 +53,7 @@ class SubProviderResponseTest {
                 .hasJsonPathValue("$.base_url", expectedBaseUrl)
                 .hasJsonPathValue("$.is_active", expectedIsActive)
                 .hasJsonPathValue("$.last_sync", expectedLastSync.toString())
+                .hasJsonPathValue("$.authentication_type", expectedAuthenticationType)
                 .hasJsonPathValue("$.client_id", expectedClientId)
                 .hasJsonPathValue("$.client_secret", expectedClientSecret)
                 .hasJsonPathValue("$.authorization_url", expectedAuthorizationUrl)
@@ -64,6 +68,7 @@ class SubProviderResponseTest {
         final var expectedBaseUrl = "http://www.patreon.com";
         final var expectedIsActive = true;
         final var expectedLastSync = InstantUtils.now();
+        final var expectedAuthenticationType = AuthenticationType.CLIENT_SECRET.name();
         final var expectedClientId = UUID.randomUUID().toString();
         final var expectedClientSecret = UUID.randomUUID().toString();
         final var expectedAuthorizationUrl = "/authorization";
@@ -77,6 +82,7 @@ class SubProviderResponseTest {
             "base_url": "%s",
             "is_active": %s,
             "last_sync": "%s",
+            "authentication_type": "%s",
             "client_id": "%s",
             "client_secret": "%s",
             "authorization_url": "%s",
@@ -89,6 +95,7 @@ class SubProviderResponseTest {
                 expectedBaseUrl,
                 expectedIsActive,
                 expectedLastSync.toString(),
+                expectedAuthenticationType,
                 expectedClientId,
                 expectedClientSecret,
                 expectedAuthorizationUrl,
@@ -104,6 +111,7 @@ class SubProviderResponseTest {
                 .hasFieldOrPropertyWithValue("baseUrl", expectedBaseUrl)
                 .hasFieldOrPropertyWithValue("active", expectedIsActive)
                 .hasFieldOrPropertyWithValue("lastSync", expectedLastSync)
+                .hasFieldOrPropertyWithValue("authenticationType", expectedAuthenticationType)
                 .hasFieldOrPropertyWithValue("clientId", expectedClientId)
                 .hasFieldOrPropertyWithValue("clientSecret", expectedClientSecret)
                 .hasFieldOrPropertyWithValue("authorizationUrl", expectedAuthorizationUrl)

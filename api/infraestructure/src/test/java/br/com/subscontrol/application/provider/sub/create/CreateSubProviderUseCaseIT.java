@@ -2,6 +2,7 @@ package br.com.subscontrol.application.provider.sub.create;
 
 import br.com.subscontrol.IntegrationTest;
 import br.com.subscontrol.domain.exceptions.DomainException;
+import br.com.subscontrol.domain.provider.authentication.AuthenticationType;
 import br.com.subscontrol.domain.provider.sub.SubProviderGateway;
 import br.com.subscontrol.infraestructure.provider.sub.persistence.SubProviderRepository;
 import org.junit.jupiter.api.Assertions;
@@ -34,6 +35,7 @@ public class CreateSubProviderUseCaseIT {
         final var expectedType = "Patreon";
         final var expectedName = "Patreon Integration";
         final var expectedBaseUrl = "http://patreon.com";
+        final var expectedAuthenticationType = AuthenticationType.CLIENT_SECRET;
         final var expectedClientId = UUID.randomUUID().toString();
         final var expectedClientSecret = UUID.randomUUID().toString();
         final var expectedAuthorizationUrl = "http://patreon.com/authorization";
@@ -43,10 +45,12 @@ public class CreateSubProviderUseCaseIT {
                 expectedType,
                 expectedName,
                 expectedBaseUrl,
+                expectedAuthenticationType.name(),
                 expectedClientId,
                 expectedClientSecret,
                 expectedAuthorizationUrl,
-                expectedTokenUrl
+                expectedTokenUrl,
+                null
         );
 
         assertEquals(0, repository.count());
@@ -63,16 +67,18 @@ public class CreateSubProviderUseCaseIT {
         assertEquals(expectedType, actualProvider.getType().getName());
         assertEquals(expectedName, actualProvider.getName());
         assertEquals(expectedBaseUrl, actualProvider.getBaseUrl());
-        assertEquals(expectedClientId, actualProvider.getAuthentication().clientId());
-        assertEquals(expectedClientSecret, actualProvider.getAuthentication().clientSecret());
-        assertEquals(expectedAuthorizationUrl, actualProvider.getAuthentication().authorizationUrl());
-        assertEquals(expectedTokenUrl, actualProvider.getAuthentication().tokenUrl());
+        assertEquals(expectedAuthenticationType, actualProvider.getAuthentication().getType());
+        assertEquals(expectedClientId, actualProvider.getAuthentication().getClientId());
+        assertEquals(expectedClientSecret, actualProvider.getAuthentication().getClientSecret());
+        assertEquals(expectedAuthorizationUrl, actualProvider.getAuthentication().getAuthorizationUrl());
+        assertEquals(expectedTokenUrl, actualProvider.getAuthentication().getTokenUrl());
     }
 
     @ParameterizedTest
     @MethodSource("provideArguments")
     void givenInvalidCommand_whenCallsCreate_thenReceiveDomainException(String errorMessage, String name, String url) {
         final var expectedType = "Patreon";
+        final var expectedAuthenticationType = AuthenticationType.CLIENT_SECRET;
         final var expectedClientId = UUID.randomUUID().toString();
         final var expectedClientSecret = UUID.randomUUID().toString();
         final var expectedAuthorizationUrl = "http://patreon.com/authorization";
@@ -82,10 +88,12 @@ public class CreateSubProviderUseCaseIT {
                 expectedType,
                 name,
                 url,
+                expectedAuthenticationType.name(),
                 expectedClientId,
                 expectedClientSecret,
                 expectedAuthorizationUrl,
-                expectedTokenUrl
+                expectedTokenUrl,
+                null
         );
 
         assertEquals(0, repository.count());

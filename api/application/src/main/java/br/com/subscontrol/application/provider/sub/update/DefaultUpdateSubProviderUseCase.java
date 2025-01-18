@@ -22,7 +22,6 @@ public class DefaultUpdateSubProviderUseCase extends UpdateSubProviderUseCase {
                 .orElseThrow(NotFoundException.notFound(SubProvider.class, providerID));
         provider.update(command.name(), command.baseUrl(), command.active());
         provider.updateAuthentication(
-                providerID,
                 command.authenticationType(),
                 command.clientId(),
                 command.clientSecret(),

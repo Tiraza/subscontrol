@@ -13,6 +13,7 @@ import br.com.subscontrol.application.provider.sub.update.UpdateSubProviderUseCa
 import br.com.subscontrol.domain.exceptions.DomainException;
 import br.com.subscontrol.domain.exceptions.NotFoundException;
 import br.com.subscontrol.domain.pagination.Pagination;
+import br.com.subscontrol.domain.provider.authentication.AuthenticationType;
 import br.com.subscontrol.domain.provider.sub.SubProvider;
 import br.com.subscontrol.domain.provider.sub.SubProviderID;
 import br.com.subscontrol.infraestructure.provider.sub.models.CreateSubProviderRequest;
@@ -65,6 +66,7 @@ class SubProviderAPITest {
         final var expectedType = "Patreon";
         final var expectedName = "Patreon Integration";
         final var expectedBaseUrl = "http://www.patreon.com";
+        final var expectedAuthenticationType = AuthenticationType.CLIENT_SECRET.name();
         final var expectedClientId = UUID.randomUUID().toString();
         final var expectedClientSecret = UUID.randomUUID().toString();
         final var expectedAuthorizationUrl = "/authorization";
@@ -74,10 +76,12 @@ class SubProviderAPITest {
                 expectedType,
                 expectedName,
                 expectedBaseUrl,
+                expectedAuthenticationType,
                 expectedClientId,
                 expectedClientSecret,
                 expectedAuthorizationUrl,
-                expectedTokenUrl
+                expectedTokenUrl,
+                null
         );
 
         when(createSubProviderUseCase.execute(any()))
@@ -99,6 +103,7 @@ class SubProviderAPITest {
                 Objects.equals(expectedType, subProvider.type())
                         && Objects.equals(expectedName, subProvider.name())
                         && Objects.equals(expectedBaseUrl, subProvider.baseUrl())
+                        && Objects.equals(expectedAuthenticationType, subProvider.authenticationType())
                         && Objects.equals(expectedClientId, subProvider.clientId())
                         && Objects.equals(expectedClientSecret, subProvider.clientSecret())
                         && Objects.equals(expectedAuthorizationUrl, subProvider.authorizationUrl())
@@ -111,6 +116,7 @@ class SubProviderAPITest {
         final var expectedType = "Patreon";
         final String expectedName = null;
         final var expectedBaseUrl = "http://www.patreon.com";
+        final var expectedAuthenticationType = AuthenticationType.CLIENT_SECRET.name();
         final var expectedClientId = UUID.randomUUID().toString();
         final var expectedClientSecret = UUID.randomUUID().toString();
         final var expectedAuthorizationUrl = "/authorization";
@@ -121,10 +127,12 @@ class SubProviderAPITest {
                 expectedType,
                 null,
                 expectedBaseUrl,
+                expectedAuthenticationType,
                 expectedClientId,
                 expectedClientSecret,
                 expectedAuthorizationUrl,
-                expectedTokenUrl
+                expectedTokenUrl,
+                null
         );
 
         when(createSubProviderUseCase.execute(any()))
@@ -159,6 +167,7 @@ class SubProviderAPITest {
         final var expectedType = "Patreon";
         final var expectedName = "Patreon Integration";
         final var expectedBaseUrl = "http://www.patreon.com";
+        final var expectedAuthenticationType = AuthenticationType.CLIENT_SECRET.name();
         final var expectedClientId = UUID.randomUUID().toString();
         final var expectedClientSecret = UUID.randomUUID().toString();
         final var expectedAuthorizationUrl = "/authorization";
@@ -169,10 +178,12 @@ class SubProviderAPITest {
                 expectedType,
                 expectedName,
                 expectedBaseUrl,
+                expectedAuthenticationType,
                 expectedClientId,
                 expectedClientSecret,
                 expectedAuthorizationUrl,
-                expectedTokenUrl
+                expectedTokenUrl,
+                null
         );
 
         final var expectedId = provider.getId().getValue();
@@ -227,6 +238,7 @@ class SubProviderAPITest {
         final var expectedName = "Patreon Integration";
         final var expectedBaseUrl = "http://www.patreon.com";
         final var expectedIsActive = true;
+        final var expectedAuthenticationType = AuthenticationType.CLIENT_SECRET.name();
         final var expectedClientId = UUID.randomUUID().toString();
         final var expectedClientSecret = UUID.randomUUID().toString();
         final var expectedAuthorizationUrl = "/authorization";
@@ -239,10 +251,12 @@ class SubProviderAPITest {
                 expectedName,
                 expectedBaseUrl,
                 expectedIsActive,
+                expectedAuthenticationType,
                 expectedClientId,
                 expectedClientSecret,
                 expectedAuthorizationUrl,
-                expectedTokenUrl
+                expectedTokenUrl,
+                null
         );
 
         final var request = put("/subproviders/{id}", expectedId)
@@ -261,6 +275,7 @@ class SubProviderAPITest {
                 Objects.equals(expectedName, cmd.name())
                         && Objects.equals(expectedBaseUrl, cmd.baseUrl())
                         && Objects.equals(expectedIsActive, cmd.active())
+                        && Objects.equals(expectedAuthenticationType, cmd.authenticationType())
                         && Objects.equals(expectedClientId, cmd.clientId())
                         && Objects.equals(expectedClientSecret, cmd.clientSecret())
                         && Objects.equals(expectedAuthorizationUrl, cmd.authorizationUrl())
@@ -274,6 +289,7 @@ class SubProviderAPITest {
         final String expectedName = null;
         final var expectedBaseUrl = "http://www.patreon.com";
         final var expectedIsActive = true;
+        final var expectedAuthenticationType = AuthenticationType.CLIENT_SECRET.name();
         final var expectedClientId = UUID.randomUUID().toString();
         final var expectedClientSecret = UUID.randomUUID().toString();
         final var expectedAuthorizationUrl = "/authorization";
@@ -289,10 +305,12 @@ class SubProviderAPITest {
                 expectedName,
                 expectedBaseUrl,
                 expectedIsActive,
+                expectedAuthenticationType,
                 expectedClientId,
                 expectedClientSecret,
                 expectedAuthorizationUrl,
-                expectedTokenUrl
+                expectedTokenUrl,
+                null
         );
 
         final var request = put("/subproviders/{id}", expectedId)
@@ -312,6 +330,7 @@ class SubProviderAPITest {
                 Objects.equals(expectedName, cmd.name())
                         && Objects.equals(expectedBaseUrl, cmd.baseUrl())
                         && Objects.equals(expectedIsActive, cmd.active())
+                        && Objects.equals(expectedAuthenticationType, cmd.authenticationType())
                         && Objects.equals(expectedClientId, cmd.clientId())
                         && Objects.equals(expectedClientSecret, cmd.clientSecret())
                         && Objects.equals(expectedAuthorizationUrl, cmd.authorizationUrl())
@@ -325,6 +344,7 @@ class SubProviderAPITest {
         final var expectedName = "Patreon";
         final var expectedBaseUrl = "http://www.patreon.com";
         final var expectedIsActive = true;
+        final var expectedAuthenticationType = AuthenticationType.CLIENT_SECRET.name();
         final var expectedClientId = UUID.randomUUID().toString();
         final var expectedClientSecret = UUID.randomUUID().toString();
         final var expectedAuthorizationUrl = "/authorization";
@@ -339,10 +359,12 @@ class SubProviderAPITest {
                 expectedName,
                 expectedBaseUrl,
                 expectedIsActive,
+                expectedAuthenticationType,
                 expectedClientId,
                 expectedClientSecret,
                 expectedAuthorizationUrl,
-                expectedTokenUrl
+                expectedTokenUrl,
+                null
         );
 
         final var request = put("/subproviders/{id}", expectedId)
@@ -361,6 +383,7 @@ class SubProviderAPITest {
                 Objects.equals(expectedName, cmd.name())
                         && Objects.equals(expectedBaseUrl, cmd.baseUrl())
                         && Objects.equals(expectedIsActive, cmd.active())
+                        && Objects.equals(expectedAuthenticationType, cmd.authenticationType())
                         && Objects.equals(expectedClientId, cmd.clientId())
                         && Objects.equals(expectedClientSecret, cmd.clientSecret())
                         && Objects.equals(expectedAuthorizationUrl, cmd.authorizationUrl())
@@ -393,10 +416,12 @@ class SubProviderAPITest {
                 "Patreon",
                 "Patreon Integration",
                 "http://www.patreon.com",
+                "CLIENT_SECRET",
                 UUID.randomUUID().toString(),
                 UUID.randomUUID().toString(),
                 "/authorization",
-                "/token"
+                "/token",
+                null
         );
 
         final var expectedPage = 0;
