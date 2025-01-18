@@ -4,10 +4,10 @@ import br.com.subscontrol.domain.provider.authentication.Authentication;
 import br.com.subscontrol.domain.provider.sub.SubProvider;
 import br.com.subscontrol.domain.provider.sub.SubProviderType;
 import br.com.subscontrol.infraestructure.provider.ProviderJpaEntity;
+import br.com.subscontrol.infraestructure.provider.authentication.AuthenticationJpaEntity;
 import jakarta.persistence.*;
 
 import java.time.Instant;
-import java.util.Optional;
 
 @Entity
 @Table(name = "SUB_PROVIDERS")
@@ -28,37 +28,28 @@ public class SubProviderJpaEntity extends ProviderJpaEntity {
             final SubProviderType type,
             final String name,
             final String baseUrl,
-            final String clientId,
-            final String clientSecret,
-            final String authorizationUrl,
-            final String tokenUrl,
             final boolean active,
-            final Instant lastSync) {
+            final Instant lastSync,
+            final AuthenticationJpaEntity authentication
+    ) {
         this.id = id;
         this.type = type;
         this.name = name;
         this.baseUrl = baseUrl;
-        this.clientId = clientId;
-        this.clientSecret = clientSecret;
-        this.authorizationUrl = authorizationUrl;
-        this.tokenUrl = tokenUrl;
         this.active = active;
         this.lastSync = lastSync;
+        this.authentication = authentication;
     }
 
     public static SubProviderJpaEntity from(final SubProvider subProvider) {
-        Authentication authentication = subProvider.getAuthentication();
         return new SubProviderJpaEntity(
                 subProvider.getId().getValue(),
                 subProvider.getType(),
                 subProvider.getName(),
                 subProvider.getBaseUrl(),
-                Optional.ofNullable(authentication).map(Authentication::clientId).orElse(""),
-                Optional.ofNullable(authentication).map(Authentication::clientSecret).orElse(""),
-                Optional.ofNullable(authentication).map(Authentication::authorizationUrl).orElse(""),
-                Optional.ofNullable(authentication).map(Authentication::tokenUrl).orElse(""),
                 subProvider.isActive(),
-                subProvider.getLastSync()
+                subProvider.getLastSync(),
+                AuthenticationJpaEntity.from(subProvider.getAuthentication())
         );
     }
 
@@ -70,7 +61,15 @@ public class SubProviderJpaEntity extends ProviderJpaEntity {
                 getBaseUrl(),
                 isActive(),
                 getLastSync(),
-                getAuthentication()
+                Authentication.with(
+                        getAuthentication().getProviderID(),
+                        getAuthentication().getType().name(),
+                        getAuthentication().getClientId(),
+                        getAuthentication().getClientSecret(),
+                        getAuthentication().getAuthorizationUrl(),
+                        getAuthentication().getTokenUrl(),
+                        getAuthentication().getFile()
+                )
         );
     }
 

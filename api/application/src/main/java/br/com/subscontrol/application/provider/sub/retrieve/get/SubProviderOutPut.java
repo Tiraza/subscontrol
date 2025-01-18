@@ -12,6 +12,7 @@ public record SubProviderOutPut(
         String baseUrl,
         boolean isActive,
         Instant lastSync,
+        String authenticationType,
         String clientId,
         String clientSecret,
         String authorizationUrl,
@@ -19,19 +20,7 @@ public record SubProviderOutPut(
 ) {
 
     public static SubProviderOutPut from(final SubProvider provider) {
-        String clientId = "";
-        String clientSecret = "";
-        String authorizationUrl = "";
-        String tokenUrl = "";
-
-        Authentication authentication = provider.getAuthentication();
-        if (authentication != null) {
-            clientId = authentication.clientId();
-            clientSecret = authentication.clientSecret();
-            authorizationUrl = authentication.authorizationUrl();
-            tokenUrl = authentication.tokenUrl();
-        }
-
+        final Authentication authentication = provider.getAuthentication();
         return new SubProviderOutPut(
                 provider.getId().getValue(),
                 provider.getType().getName(),
@@ -39,10 +28,11 @@ public record SubProviderOutPut(
                 provider.getBaseUrl(),
                 provider.isActive(),
                 provider.getLastSync(),
-                clientId,
-                clientSecret,
-                authorizationUrl,
-                tokenUrl
+                authentication.getType().name(),
+                authentication.getClientId(),
+                authentication.getClientSecret(),
+                authentication.getAuthorizationUrl(),
+                authentication.getTokenUrl()
         );
     }
 

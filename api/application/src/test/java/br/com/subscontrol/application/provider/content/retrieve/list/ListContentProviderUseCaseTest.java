@@ -3,6 +3,7 @@ package br.com.subscontrol.application.provider.content.retrieve.list;
 import br.com.subscontrol.application.UseCaseTest;
 import br.com.subscontrol.domain.pagination.Pagination;
 import br.com.subscontrol.domain.pagination.SearchQuery;
+import br.com.subscontrol.domain.provider.authentication.AuthenticationType;
 import br.com.subscontrol.domain.provider.content.ContentProvider;
 import br.com.subscontrol.domain.provider.content.ContentProviderGateway;
 import br.com.subscontrol.domain.provider.content.ContentProviderType;
@@ -13,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -35,8 +37,8 @@ class ListContentProviderUseCaseTest extends UseCaseTest {
     @Test
     void givenAValidQuery_whenCallsList_shouldReturnProviders() {
         final var providers = List.of(
-                ContentProvider.create(ContentProviderType.GOOGLE_DRIVE, "Google", "http://google.com", null),
-                ContentProvider.create(ContentProviderType.GOOGLE_DRIVE, "Drive", "http://drive.com", null)
+                createProviderForTest("Google"),
+                createProviderForTest( "Drive")
         );
 
         final var expectedPage = 0;
@@ -122,5 +124,18 @@ class ListContentProviderUseCaseTest extends UseCaseTest {
         Assertions.assertEquals(expectedErrorMessage, actualOutput.getMessage());
 
         Mockito.verify(gateway, times(1)).findAll(eq(aQuery));
+    }
+
+    private static ContentProvider createProviderForTest(final String name) {
+        return ContentProvider.create(
+                ContentProviderType.GOOGLE_DRIVE.getName(),
+                name,
+                null,
+                AuthenticationType.CLIENT_SECRET.name(),
+                UUID.randomUUID().toString(),
+                UUID.randomUUID().toString(),
+                "/authorization",
+                "/token",
+                null);
     }
 }

@@ -3,6 +3,8 @@ package br.com.subscontrol.application.provider.content.update;
 import br.com.subscontrol.application.UseCaseTest;
 import br.com.subscontrol.domain.exceptions.DomainException;
 import br.com.subscontrol.domain.exceptions.NotFoundException;
+import br.com.subscontrol.domain.provider.authentication.Authentication;
+import br.com.subscontrol.domain.provider.authentication.AuthenticationType;
 import br.com.subscontrol.domain.provider.content.ContentProvider;
 import br.com.subscontrol.domain.provider.content.ContentProviderGateway;
 import br.com.subscontrol.domain.provider.content.ContentProviderID;
@@ -43,16 +45,22 @@ class UpdateContentProviderUseCaseTest extends UseCaseTest {
 
     @Test
     void givenAValidCommand_whenCallsUpdate_shouldReturnId() {
-        final var provider = ContentProvider.create(
+        final var providerID = ContentProviderID.unique();
+        final var provider = ContentProvider.with(
+                providerID.getValue(),
                 ContentProviderType.GOOGLE_DRIVE,
                 "Google Integration",
                 "http://google.com",
-                null);
+                true,
+                null,
+                Authentication.withFile(providerID, new byte[1])
+        );
 
         final var expectedId = provider.getId();
         final var expectedName = "Google Drive Integration";
         final var expectedBaseUrl = "https://www.google.com";
         final var expectedIsActive = false;
+        final var expectedAuthenticationType = AuthenticationType.CLIENT_SECRET;
         final var expectedClientId = UUID.randomUUID().toString();
         final var expectedClientSecret = UUID.randomUUID().toString();
         final var expectedAuthorizationUrl = "http://google.com/authorization";
@@ -63,10 +71,12 @@ class UpdateContentProviderUseCaseTest extends UseCaseTest {
                 expectedName,
                 expectedBaseUrl,
                 expectedIsActive,
+                expectedAuthenticationType.name(),
                 expectedClientId,
                 expectedClientSecret,
                 expectedAuthorizationUrl,
-                expectedTokenUrl
+                expectedTokenUrl,
+                null
         );
 
         when(gateway.findById(any())).thenReturn(Optional.of(provider));
@@ -84,10 +94,10 @@ class UpdateContentProviderUseCaseTest extends UseCaseTest {
                 Objects.equals(expectedName, contentProvider.getName())
                         && Objects.equals(expectedBaseUrl, contentProvider.getBaseUrl())
                         && Objects.equals(expectedIsActive, contentProvider.isActive())
-                        && Objects.equals(expectedClientId, contentProvider.getAuthentication().clientId())
-                        && Objects.equals(expectedClientSecret, contentProvider.getAuthentication().clientSecret())
-                        && Objects.equals(expectedAuthorizationUrl, contentProvider.getAuthentication().authorizationUrl())
-                        && Objects.equals(expectedTokenUrl, contentProvider.getAuthentication().tokenUrl())
+                        && Objects.equals(expectedClientId, contentProvider.getAuthentication().getClientId())
+                        && Objects.equals(expectedClientSecret, contentProvider.getAuthentication().getClientSecret())
+                        && Objects.equals(expectedAuthorizationUrl, contentProvider.getAuthentication().getAuthorizationUrl())
+                        && Objects.equals(expectedTokenUrl, contentProvider.getAuthentication().getTokenUrl())
         ));
     }
 
@@ -100,10 +110,12 @@ class UpdateContentProviderUseCaseTest extends UseCaseTest {
                 "Google Drive Integration",
                 "https://www.google.com",
                 true,
+                AuthenticationType.FILE.name(),
                 UUID.randomUUID().toString(),
                 UUID.randomUUID().toString(),
                 "http://google.com/authorization",
-                "http://google.com/token"
+                "http://google.com/token",
+                null
         );
 
         when(gateway.findById(any())).thenReturn(Optional.empty());
@@ -121,14 +133,20 @@ class UpdateContentProviderUseCaseTest extends UseCaseTest {
     @ParameterizedTest
     @MethodSource("provideArguments")
     void givenInvalidCommand_whenCallsUpdate_thenReceiveDomainException(String errorMessage, String name, String url) {
-        final var provider = ContentProvider.create(
+        ContentProviderID providerID = ContentProviderID.unique();
+        final var provider = ContentProvider.with(
+                providerID.getValue(),
                 ContentProviderType.GOOGLE_DRIVE,
                 "Google Integration",
                 "http://google.com",
-                null);
+                true,
+                null,
+                Authentication.withFile(providerID, new byte[1])
+        );
 
         final var expectedId = provider.getId();
         final var expectedIsActive = true;
+        final var expectedAuthenticationType = AuthenticationType.CLIENT_SECRET;
         final var expectedClientId = UUID.randomUUID().toString();
         final var expectedClientSecret = UUID.randomUUID().toString();
         final var expectedAuthorizationUrl = "http://google.com/authorization";
@@ -139,10 +157,12 @@ class UpdateContentProviderUseCaseTest extends UseCaseTest {
                 name,
                 url,
                 expectedIsActive,
+                expectedAuthenticationType.name(),
                 expectedClientId,
                 expectedClientSecret,
                 expectedAuthorizationUrl,
-                expectedTokenUrl
+                expectedTokenUrl,
+                null
         );
 
         when(gateway.findById(any())).thenReturn(Optional.of(provider));

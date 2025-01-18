@@ -3,6 +3,7 @@ package br.com.subscontrol.application.provider.content.update;
 import br.com.subscontrol.IntegrationTest;
 import br.com.subscontrol.domain.exceptions.DomainException;
 import br.com.subscontrol.domain.exceptions.NotFoundException;
+import br.com.subscontrol.domain.provider.authentication.AuthenticationType;
 import br.com.subscontrol.domain.provider.content.ContentProvider;
 import br.com.subscontrol.domain.provider.content.ContentProviderGateway;
 import br.com.subscontrol.domain.provider.content.ContentProviderType;
@@ -36,11 +37,16 @@ public class UpdateContentProviderUseCaseIT {
     @Test
     void givenAValidCommand_whenCallsUpdate_shouldReturnId() {
         final var provider = ContentProvider.create(
-                ContentProviderType.GOOGLE_DRIVE,
+                ContentProviderType.GOOGLE_DRIVE.getName(),
                 "Google Integration",
                 "http://google.com",
-                null);
-
+                "CLIENT_SECRET",
+                "123",
+                "123",
+                "/auth",
+                "/token",
+                null
+        );
 
         assertEquals(0, repository.count());
 
@@ -52,6 +58,7 @@ public class UpdateContentProviderUseCaseIT {
         final var expectedName = "Google Drive Integration";
         final var expectedBaseUrl = "https://www.google.com";
         final var expectedIsActive = false;
+        final var expectedAuthenticationType = AuthenticationType.CLIENT_SECRET;
         final var expectedClientId = UUID.randomUUID().toString();
         final var expectedClientSecret = UUID.randomUUID().toString();
         final var expectedAuthorizationUrl = "http://google.com/authorization";
@@ -62,10 +69,12 @@ public class UpdateContentProviderUseCaseIT {
                 expectedName,
                 expectedBaseUrl,
                 expectedIsActive,
+                expectedAuthenticationType.name(),
                 expectedClientId,
                 expectedClientSecret,
                 expectedAuthorizationUrl,
-                expectedTokenUrl
+                expectedTokenUrl,
+                null
         );
 
         final var output = useCase.execute(command);
@@ -80,10 +89,10 @@ public class UpdateContentProviderUseCaseIT {
         assertEquals(ContentProviderType.GOOGLE_DRIVE.getName(), actualProvider.getType().getName());
         assertEquals(expectedName, actualProvider.getName());
         assertEquals(expectedBaseUrl, actualProvider.getBaseUrl());
-        assertEquals(expectedClientId, actualProvider.getAuthentication().clientId());
-        assertEquals(expectedClientSecret, actualProvider.getAuthentication().clientSecret());
-        assertEquals(expectedAuthorizationUrl, actualProvider.getAuthentication().authorizationUrl());
-        assertEquals(expectedTokenUrl, actualProvider.getAuthentication().tokenUrl());
+        assertEquals(expectedClientId, actualProvider.getAuthentication().getClientId());
+        assertEquals(expectedClientSecret, actualProvider.getAuthentication().getClientSecret());
+        assertEquals(expectedAuthorizationUrl, actualProvider.getAuthentication().getAuthorizationUrl());
+        assertEquals(expectedTokenUrl, actualProvider.getAuthentication().getTokenUrl());
     }
 
     @Test
@@ -95,10 +104,12 @@ public class UpdateContentProviderUseCaseIT {
                 "Google Drive Integration",
                 "https://www.google.com",
                 true,
+                "CLIENT_SECRET",
                 UUID.randomUUID().toString(),
                 UUID.randomUUID().toString(),
                 "http://google.com/authorization",
-                "http://google.com/token"
+                "http://google.com/token",
+                null
         );
 
         assertEquals(0, repository.count());
@@ -115,10 +126,16 @@ public class UpdateContentProviderUseCaseIT {
     @MethodSource("provideArguments")
     void givenInvalidCommand_whenCallsUpdate_thenReceiveDomainException(String errorMessage, String name, String url) {
         final var provider = ContentProvider.create(
-                ContentProviderType.GOOGLE_DRIVE,
+                ContentProviderType.GOOGLE_DRIVE.getName(),
                 "Google Integration",
                 "http://google.com",
-                null);
+                "CLIENT_SECRET",
+                "123",
+                "123",
+                "/auth",
+                "/token",
+                null
+        );
 
         assertEquals(0, repository.count());
 
@@ -128,6 +145,7 @@ public class UpdateContentProviderUseCaseIT {
 
         final var expectedId = provider.getId();
         final var expectedIsActive = true;
+        final var expectedAuthenticationType = AuthenticationType.CLIENT_SECRET;
         final var expectedClientId = UUID.randomUUID().toString();
         final var expectedClientSecret = UUID.randomUUID().toString();
         final var expectedAuthorizationUrl = "http://google.com/authorization";
@@ -138,12 +156,13 @@ public class UpdateContentProviderUseCaseIT {
                 name,
                 url,
                 expectedIsActive,
+                expectedAuthenticationType.name(),
                 expectedClientId,
                 expectedClientSecret,
                 expectedAuthorizationUrl,
-                expectedTokenUrl
+                expectedTokenUrl,
+                null
         );
-
 
         final var exception = Assertions.assertThrows(DomainException.class, () -> useCase.execute(command));
 

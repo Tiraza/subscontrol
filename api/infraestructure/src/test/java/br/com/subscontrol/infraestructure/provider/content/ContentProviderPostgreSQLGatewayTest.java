@@ -2,6 +2,7 @@ package br.com.subscontrol.infraestructure.provider.content;
 
 import br.com.subscontrol.PostgreSQLGatewayTest;
 import br.com.subscontrol.domain.pagination.SearchQuery;
+import br.com.subscontrol.domain.provider.authentication.AuthenticationType;
 import br.com.subscontrol.domain.provider.content.ContentProvider;
 import br.com.subscontrol.domain.provider.content.ContentProviderID;
 import br.com.subscontrol.domain.provider.content.ContentProviderType;
@@ -31,6 +32,7 @@ public class ContentProviderPostgreSQLGatewayTest {
         final var expectedType = ContentProviderType.GOOGLE_DRIVE.getName();
         final var expectedName = "Google Drive Integration";
         final var expectedBaseUrl = "https://www.google.com";
+        final var expectedAuthenticationType = AuthenticationType.CLIENT_SECRET;
         final var expectedClientId = UUID.randomUUID().toString();
         final var expectedClientSecret = UUID.randomUUID().toString();
         final var expectedAuthorizationUrl = "/authorization";
@@ -40,10 +42,13 @@ public class ContentProviderPostgreSQLGatewayTest {
                 expectedType,
                 expectedName,
                 expectedBaseUrl,
+                expectedAuthenticationType.name(),
                 expectedClientId,
                 expectedClientSecret,
                 expectedAuthorizationUrl,
-                expectedTokenUrl);
+                expectedTokenUrl,
+                null
+        );
 
         assertEquals(0, repository.count());
 
@@ -59,10 +64,11 @@ public class ContentProviderPostgreSQLGatewayTest {
         assertEquals(expectedType, returnedProvider.getType().getName());
         assertEquals(expectedName, returnedProvider.getName());
         assertEquals(expectedBaseUrl, returnedProvider.getBaseUrl());
-        assertEquals(expectedClientId, returnedProvider.getAuthentication().clientId());
-        assertEquals(expectedClientSecret, returnedProvider.getAuthentication().clientSecret());
-        assertEquals(expectedAuthorizationUrl, returnedProvider.getAuthentication().authorizationUrl());
-        assertEquals(expectedTokenUrl, returnedProvider.getAuthentication().tokenUrl());
+        assertEquals(expectedAuthenticationType, returnedProvider.getAuthentication().getType());
+        assertEquals(expectedClientId, returnedProvider.getAuthentication().getClientId());
+        assertEquals(expectedClientSecret, returnedProvider.getAuthentication().getClientSecret());
+        assertEquals(expectedAuthorizationUrl, returnedProvider.getAuthentication().getAuthorizationUrl());
+        assertEquals(expectedTokenUrl, returnedProvider.getAuthentication().getTokenUrl());
 
         final var persistedProvider = repository.findById(provider.getId().getValue()).get();
 
@@ -74,10 +80,11 @@ public class ContentProviderPostgreSQLGatewayTest {
         assertEquals(expectedType, persistedProvider.getType().getName());
         assertEquals(expectedName, persistedProvider.getName());
         assertEquals(expectedBaseUrl, persistedProvider.getBaseUrl());
-        assertEquals(expectedClientId, persistedProvider.getAuthentication().clientId());
-        assertEquals(expectedClientSecret, persistedProvider.getAuthentication().clientSecret());
-        assertEquals(expectedAuthorizationUrl, persistedProvider.getAuthentication().authorizationUrl());
-        assertEquals(expectedTokenUrl, persistedProvider.getAuthentication().tokenUrl());
+        assertEquals(expectedAuthenticationType, persistedProvider.getAuthentication().getType());
+        assertEquals(expectedClientId, persistedProvider.getAuthentication().getClientId());
+        assertEquals(expectedClientSecret, persistedProvider.getAuthentication().getClientSecret());
+        assertEquals(expectedAuthorizationUrl, persistedProvider.getAuthentication().getAuthorizationUrl());
+        assertEquals(expectedTokenUrl, persistedProvider.getAuthentication().getTokenUrl());
     }
 
     @Test
@@ -85,6 +92,7 @@ public class ContentProviderPostgreSQLGatewayTest {
         final var expectedType = ContentProviderType.GOOGLE_DRIVE.getName();
         final var expectedName = "Google Drive Integration";
         final var expectedBaseUrl = "https://www.google.com";
+        final var expectedAuthenticationType = AuthenticationType.CLIENT_SECRET;
         final var expectedClientId = UUID.randomUUID().toString();
         final var expectedClientSecret = UUID.randomUUID().toString();
         final var expectedAuthorizationUrl = "/authorization";
@@ -95,10 +103,13 @@ public class ContentProviderPostgreSQLGatewayTest {
                 expectedType,
                 "Google",
                 "https://www.google.com.br",
+                expectedAuthenticationType.name(),
                 "123",
                 "123",
                 "https://www.google.com.br",
-                "https://www.google.com.br");
+                "https://www.google.com.br",
+                null
+        );
 
         assertEquals(0, repository.count());
 
@@ -115,20 +126,20 @@ public class ContentProviderPostgreSQLGatewayTest {
         assertEquals(expectedType, firstPersistedProvider.getType().getName());
         assertEquals("Google", firstPersistedProvider.getName());
         assertEquals("https://www.google.com.br", firstPersistedProvider.getBaseUrl());
-        assertEquals("123", firstPersistedProvider.getAuthentication().clientId());
-        assertEquals("123", firstPersistedProvider.getAuthentication().clientSecret());
-        assertEquals("https://www.google.com.br", firstPersistedProvider.getAuthentication().authorizationUrl());
-        assertEquals("https://www.google.com.br", firstPersistedProvider.getAuthentication().tokenUrl());
+        assertEquals("123", firstPersistedProvider.getAuthentication().getClientId());
+        assertEquals("123", firstPersistedProvider.getAuthentication().getClientSecret());
+        assertEquals("https://www.google.com.br", firstPersistedProvider.getAuthentication().getAuthorizationUrl());
+        assertEquals("https://www.google.com.br", firstPersistedProvider.getAuthentication().getTokenUrl());
 
         final var updatedProvider = ContentProvider.with(provider);
-        updatedProvider.update(
-                expectedName,
-                expectedBaseUrl,
-                expectedIsActive,
+        updatedProvider.update(expectedName, expectedBaseUrl, expectedIsActive);
+        updatedProvider.updateAuthentication(
+                expectedAuthenticationType.name(),
                 expectedClientId,
                 expectedClientSecret,
                 expectedAuthorizationUrl,
-                expectedTokenUrl
+                expectedTokenUrl,
+                null
         );
 
         final var returnedProvider = gateway.update(updatedProvider);
@@ -142,10 +153,11 @@ public class ContentProviderPostgreSQLGatewayTest {
         assertEquals(expectedType, returnedProvider.getType().getName());
         assertEquals(expectedName, returnedProvider.getName());
         assertEquals(expectedBaseUrl, returnedProvider.getBaseUrl());
-        assertEquals(expectedClientId, returnedProvider.getAuthentication().clientId());
-        assertEquals(expectedClientSecret, returnedProvider.getAuthentication().clientSecret());
-        assertEquals(expectedAuthorizationUrl, returnedProvider.getAuthentication().authorizationUrl());
-        assertEquals(expectedTokenUrl, returnedProvider.getAuthentication().tokenUrl());
+        assertEquals(expectedAuthenticationType, returnedProvider.getAuthentication().getType());
+        assertEquals(expectedClientId, returnedProvider.getAuthentication().getClientId());
+        assertEquals(expectedClientSecret, returnedProvider.getAuthentication().getClientSecret());
+        assertEquals(expectedAuthorizationUrl, returnedProvider.getAuthentication().getAuthorizationUrl());
+        assertEquals(expectedTokenUrl, returnedProvider.getAuthentication().getTokenUrl());
 
         final var secondPersistedProvider = repository.findById(updatedProvider.getId().getValue()).get();
 
@@ -156,10 +168,11 @@ public class ContentProviderPostgreSQLGatewayTest {
         assertEquals(expectedType, secondPersistedProvider.getType().getName());
         assertEquals(expectedName, secondPersistedProvider.getName());
         assertEquals(expectedBaseUrl, secondPersistedProvider.getBaseUrl());
-        assertEquals(expectedClientId, secondPersistedProvider.getAuthentication().clientId());
-        assertEquals(expectedClientSecret, secondPersistedProvider.getAuthentication().clientSecret());
-        assertEquals(expectedAuthorizationUrl, secondPersistedProvider.getAuthentication().authorizationUrl());
-        assertEquals(expectedTokenUrl, secondPersistedProvider.getAuthentication().tokenUrl());
+        assertEquals(expectedAuthenticationType, secondPersistedProvider.getAuthentication().getType());
+        assertEquals(expectedClientId, secondPersistedProvider.getAuthentication().getClientId());
+        assertEquals(expectedClientSecret, secondPersistedProvider.getAuthentication().getClientSecret());
+        assertEquals(expectedAuthorizationUrl, secondPersistedProvider.getAuthentication().getAuthorizationUrl());
+        assertEquals(expectedTokenUrl, secondPersistedProvider.getAuthentication().getTokenUrl());
     }
 
     @Test
@@ -168,10 +181,13 @@ public class ContentProviderPostgreSQLGatewayTest {
                 ContentProviderType.GOOGLE_DRIVE.getName(),
                 "Google Drive",
                 "https://www.google.com.br",
+                AuthenticationType.CLIENT_SECRET.name(),
                 "123",
                 "123",
                 "https://www.google.com.br",
-                "https://www.google.com.br");
+                "https://www.google.com.br",
+                null
+        );
 
         assertEquals(0, repository.count());
 
@@ -198,6 +214,7 @@ public class ContentProviderPostgreSQLGatewayTest {
         final var expectedType = ContentProviderType.GOOGLE_DRIVE.getName();
         final var expectedName = "Google Drive Integration";
         final var expectedBaseUrl = "https://www.google.com";
+        final var expectedAuthenticationType = AuthenticationType.CLIENT_SECRET;
         final var expectedClientId = UUID.randomUUID().toString();
         final var expectedClientSecret = UUID.randomUUID().toString();
         final var expectedAuthorizationUrl = "/authorization";
@@ -207,10 +224,13 @@ public class ContentProviderPostgreSQLGatewayTest {
                 expectedType,
                 expectedName,
                 expectedBaseUrl,
+                expectedAuthenticationType.name(),
                 expectedClientId,
                 expectedClientSecret,
                 expectedAuthorizationUrl,
-                expectedTokenUrl);
+                expectedTokenUrl,
+                null
+        );
 
         assertEquals(0, repository.count());
 
@@ -230,10 +250,11 @@ public class ContentProviderPostgreSQLGatewayTest {
         assertEquals(expectedType, actualProvider.getType().getName());
         assertEquals(expectedName, actualProvider.getName());
         assertEquals(expectedBaseUrl, actualProvider.getBaseUrl());
-        assertEquals(expectedClientId, actualProvider.getAuthentication().clientId());
-        assertEquals(expectedClientSecret, actualProvider.getAuthentication().clientSecret());
-        assertEquals(expectedAuthorizationUrl, actualProvider.getAuthentication().authorizationUrl());
-        assertEquals(expectedTokenUrl, actualProvider.getAuthentication().tokenUrl());
+        assertEquals(expectedAuthenticationType, actualProvider.getAuthentication().getType());
+        assertEquals(expectedClientId, actualProvider.getAuthentication().getClientId());
+        assertEquals(expectedClientSecret, actualProvider.getAuthentication().getClientSecret());
+        assertEquals(expectedAuthorizationUrl, actualProvider.getAuthentication().getAuthorizationUrl());
+        assertEquals(expectedTokenUrl, actualProvider.getAuthentication().getTokenUrl());
     }
 
     @Test
@@ -381,10 +402,12 @@ public class ContentProviderPostgreSQLGatewayTest {
                         ContentProviderType.GOOGLE_DRIVE.getName(),
                         name,
                         "https://www.google.com",
+                        AuthenticationType.CLIENT_SECRET.name(),
                         UUID.randomUUID().toString(),
                         UUID.randomUUID().toString(),
                         "/authorization",
-                        "/token"
+                        "/token",
+                        null
                 )
         );
     }

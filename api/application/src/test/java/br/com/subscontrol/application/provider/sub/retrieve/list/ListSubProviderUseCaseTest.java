@@ -3,6 +3,7 @@ package br.com.subscontrol.application.provider.sub.retrieve.list;
 import br.com.subscontrol.application.UseCaseTest;
 import br.com.subscontrol.domain.pagination.Pagination;
 import br.com.subscontrol.domain.pagination.SearchQuery;
+import br.com.subscontrol.domain.provider.authentication.AuthenticationType;
 import br.com.subscontrol.domain.provider.sub.SubProvider;
 import br.com.subscontrol.domain.provider.sub.SubProviderGateway;
 import br.com.subscontrol.domain.provider.sub.SubProviderType;
@@ -13,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -35,8 +37,8 @@ class ListSubProviderUseCaseTest extends UseCaseTest {
     @Test
     void givenAValidQuery_whenCallsList_shouldReturnProviders() {
         final var providers = List.of(
-                SubProvider.create(SubProviderType.PATREON, "Patreon", "http://patreon.com", null),
-                SubProvider.create(SubProviderType.PATREON, "Patreon 2", "http://patreon.com", null)
+                createProviderForTest("Patreon"),
+                createProviderForTest("Patreon 2")
         );
 
         final var expectedPage = 0;
@@ -122,5 +124,18 @@ class ListSubProviderUseCaseTest extends UseCaseTest {
         Assertions.assertEquals(expectedErrorMessage, actualOutput.getMessage());
 
         Mockito.verify(gateway, times(1)).findAll(eq(aQuery));
+    }
+
+    private static SubProvider createProviderForTest(final String name) {
+        return SubProvider.create(
+                SubProviderType.PATREON.getName(),
+                name,
+                null,
+                AuthenticationType.CLIENT_SECRET.name(),
+                UUID.randomUUID().toString(),
+                UUID.randomUUID().toString(),
+                "/authorization",
+                "/token",
+                null);
     }
 }

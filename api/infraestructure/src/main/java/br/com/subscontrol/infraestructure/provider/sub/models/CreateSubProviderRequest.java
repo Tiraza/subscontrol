@@ -6,10 +6,12 @@ public record CreateSubProviderRequest(
         @JsonProperty("type") String type,
         @JsonProperty("name") String name,
         @JsonProperty("base_url") String baseUrl,
+        @JsonProperty("authentication_type") String authenticationType,
         @JsonProperty("client_id") String clientId,
         @JsonProperty("client_secret") String clientSecret,
         @JsonProperty("authorization_url") String authorizationUrl,
-        @JsonProperty("token_url") String tokenUrl
+        @JsonProperty("token_url") String tokenUrl,
+        @JsonProperty("file") String fileBase64
 ) {
 
 }

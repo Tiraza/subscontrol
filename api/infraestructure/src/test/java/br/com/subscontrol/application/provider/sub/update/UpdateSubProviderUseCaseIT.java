@@ -3,6 +3,7 @@ package br.com.subscontrol.application.provider.sub.update;
 import br.com.subscontrol.IntegrationTest;
 import br.com.subscontrol.domain.exceptions.DomainException;
 import br.com.subscontrol.domain.exceptions.NotFoundException;
+import br.com.subscontrol.domain.provider.authentication.AuthenticationType;
 import br.com.subscontrol.domain.provider.sub.SubProvider;
 import br.com.subscontrol.domain.provider.sub.SubProviderGateway;
 import br.com.subscontrol.domain.provider.sub.SubProviderType;
@@ -35,10 +36,16 @@ public class UpdateSubProviderUseCaseIT {
     @Test
     void givenAValidCommand_whenCallsUpdate_shouldReturnId() {
         final var provider = SubProvider.create(
-                SubProviderType.PATREON,
+                "Patreon",
                 "Patreon Integration",
                 "http://patreon.com",
-                null);
+                "CLIENT_SECRET",
+                "123",
+                "123",
+                "/auth",
+                "/token",
+                null
+        );
 
         assertEquals(0, repository.count());
 
@@ -50,6 +57,7 @@ public class UpdateSubProviderUseCaseIT {
         final var expectedName = "Google Drive Integration";
         final var expectedBaseUrl = "https://www.google.com";
         final var expectedIsActive = false;
+        final var expectedAuthenticationType = AuthenticationType.CLIENT_SECRET;
         final var expectedClientId = UUID.randomUUID().toString();
         final var expectedClientSecret = UUID.randomUUID().toString();
         final var expectedAuthorizationUrl = "http://google.com/authorization";
@@ -60,10 +68,12 @@ public class UpdateSubProviderUseCaseIT {
                 expectedName,
                 expectedBaseUrl,
                 expectedIsActive,
+                expectedAuthenticationType.name(),
                 expectedClientId,
                 expectedClientSecret,
                 expectedAuthorizationUrl,
-                expectedTokenUrl
+                expectedTokenUrl,
+                null
         );
 
         final var output = useCase.execute(command);
@@ -78,10 +88,10 @@ public class UpdateSubProviderUseCaseIT {
         assertEquals(SubProviderType.PATREON.getName(), actualProvider.getType().getName());
         assertEquals(expectedName, actualProvider.getName());
         assertEquals(expectedBaseUrl, actualProvider.getBaseUrl());
-        assertEquals(expectedClientId, actualProvider.getAuthentication().clientId());
-        assertEquals(expectedClientSecret, actualProvider.getAuthentication().clientSecret());
-        assertEquals(expectedAuthorizationUrl, actualProvider.getAuthentication().authorizationUrl());
-        assertEquals(expectedTokenUrl, actualProvider.getAuthentication().tokenUrl());
+        assertEquals(expectedClientId, actualProvider.getAuthentication().getClientId());
+        assertEquals(expectedClientSecret, actualProvider.getAuthentication().getClientSecret());
+        assertEquals(expectedAuthorizationUrl, actualProvider.getAuthentication().getAuthorizationUrl());
+        assertEquals(expectedTokenUrl, actualProvider.getAuthentication().getTokenUrl());
     }
 
     @Test
@@ -93,10 +103,12 @@ public class UpdateSubProviderUseCaseIT {
                 "Patreon Integration",
                 "https://www.patreon.com",
                 true,
+                "CLIENT_SECRET",
                 UUID.randomUUID().toString(),
                 UUID.randomUUID().toString(),
                 "http://patreon.com/authorization",
-                "http://patreon.com/token"
+                "http://patreon.com/token",
+                null
         );
 
         assertEquals(0, repository.count());
@@ -113,10 +125,16 @@ public class UpdateSubProviderUseCaseIT {
     @MethodSource("provideArguments")
     void givenInvalidCommand_whenCallsUpdate_thenReceiveDomainException(String errorMessage, String name, String url) {
         final var provider = SubProvider.create(
-                SubProviderType.PATREON,
+                "Patreon",
                 "Patreon Integration",
                 "http://patreon.com",
-                null);
+                "CLIENT_SECRET",
+                "123",
+                "123",
+                "/auth",
+                "/token",
+                null
+        );
 
         assertEquals(0, repository.count());
 
@@ -126,6 +144,7 @@ public class UpdateSubProviderUseCaseIT {
 
         final var expectedId = provider.getId();
         final var expectedIsActive = true;
+        final var expectedAuthenticationType = AuthenticationType.CLIENT_SECRET;
         final var expectedClientId = UUID.randomUUID().toString();
         final var expectedClientSecret = UUID.randomUUID().toString();
         final var expectedAuthorizationUrl = "http://google.com/authorization";
@@ -136,10 +155,12 @@ public class UpdateSubProviderUseCaseIT {
                 name,
                 url,
                 expectedIsActive,
+                expectedAuthenticationType.name(),
                 expectedClientId,
                 expectedClientSecret,
                 expectedAuthorizationUrl,
-                expectedTokenUrl
+                expectedTokenUrl,
+                null
         );
 
         final var exception = Assertions.assertThrows(DomainException.class, () -> useCase.execute(command));

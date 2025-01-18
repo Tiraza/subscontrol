@@ -19,10 +19,12 @@ public class DefaultCreateContentProviderUseCase extends CreateContentProviderUs
                 command.type(),
                 command.name(),
                 command.baseUrl(),
+                command.authenticationType(),
                 command.clientId(),
                 command.clientSecret(),
                 command.authorizationUrl(),
-                command.tokenUrl());
+                command.tokenUrl(),
+                command.fileBase64());
 
         return CreateContentProviderOutput.from(this.gateway.create(provider));
     }

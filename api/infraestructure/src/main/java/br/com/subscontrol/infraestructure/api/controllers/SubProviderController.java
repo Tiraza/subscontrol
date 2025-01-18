@@ -49,10 +49,12 @@ public class SubProviderController implements SubProviderAPI {
                 input.type(),
                 input.name(),
                 input.baseUrl(),
+                input.authenticationType(),
                 input.clientId(),
                 input.clientSecret(),
                 input.authorizationUrl(),
-                input.tokenUrl()
+                input.tokenUrl(),
+                input.fileBase64()
         );
 
         final var output = this.createSubProviderUseCase.execute(command);
@@ -83,10 +85,12 @@ public class SubProviderController implements SubProviderAPI {
                 input.name(),
                 input.baseUrl(),
                 input.active(),
+                input.authenticationType(),
                 input.clientId(),
                 input.clientSecret(),
                 input.authorizationUrl(),
-                input.tokenUrl()
+                input.tokenUrl(),
+                input.fileBase64()
         );
 
         return  ResponseEntity.ok(this.updateSubProviderUseCase.execute(command));

@@ -1,8 +1,11 @@
 package br.com.subscontrol.domain.provider;
 
 import br.com.subscontrol.domain.utils.ValidationUtils;
+import br.com.subscontrol.domain.validation.ErrorMessage;
 import br.com.subscontrol.domain.validation.ValidationHandler;
 import br.com.subscontrol.domain.validation.Validator;
+
+import java.util.Objects;
 
 public class ProviderValidator extends Validator {
 
@@ -19,6 +22,10 @@ public class ProviderValidator extends Validator {
 
         if (provider.getBaseUrl() != null && !provider.getBaseUrl().isEmpty()) {
             ValidationUtils.checkUrlConstraints(provider.getBaseUrl(), validationHandler());
+        }
+
+        if (Objects.isNull(provider.getAuthentication())) {
+            validationHandler().append(new ErrorMessage("A provider must have authentication"));
         }
     }
 }

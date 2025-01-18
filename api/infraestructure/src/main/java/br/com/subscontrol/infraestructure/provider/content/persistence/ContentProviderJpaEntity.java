@@ -4,10 +4,10 @@ import br.com.subscontrol.domain.provider.authentication.Authentication;
 import br.com.subscontrol.domain.provider.content.ContentProvider;
 import br.com.subscontrol.domain.provider.content.ContentProviderType;
 import br.com.subscontrol.infraestructure.provider.ProviderJpaEntity;
+import br.com.subscontrol.infraestructure.provider.authentication.AuthenticationJpaEntity;
 import jakarta.persistence.*;
 
 import java.time.Instant;
-import java.util.Optional;
 
 @Entity
 @Table(name = "CONTENT_PROVIDERS")
@@ -28,37 +28,28 @@ public class ContentProviderJpaEntity extends ProviderJpaEntity {
             final ContentProviderType type,
             final String name,
             final String baseUrl,
-            final String clientId,
-            final String clientSecret,
-            final String authorizationUrl,
-            final String tokenUrl,
             final boolean active,
-            final Instant lastSync) {
+            final Instant lastSync,
+            final AuthenticationJpaEntity authentication
+    ) {
         this.id = id;
         this.type = type;
         this.name = name;
         this.baseUrl = baseUrl;
-        this.clientId = clientId;
-        this.clientSecret = clientSecret;
-        this.authorizationUrl = authorizationUrl;
-        this.tokenUrl = tokenUrl;
         this.active = active;
         this.lastSync = lastSync;
+        this.authentication = authentication;
     }
 
     public static ContentProviderJpaEntity from(final ContentProvider contentProvider) {
-        Authentication authentication = contentProvider.getAuthentication();
         return new ContentProviderJpaEntity(
                 contentProvider.getId().getValue(),
                 contentProvider.getType(),
                 contentProvider.getName(),
                 contentProvider.getBaseUrl(),
-                Optional.ofNullable(authentication).map(Authentication::clientId).orElse(""),
-                Optional.ofNullable(authentication).map(Authentication::clientSecret).orElse(""),
-                Optional.ofNullable(authentication).map(Authentication::authorizationUrl).orElse(""),
-                Optional.ofNullable(authentication).map(Authentication::tokenUrl).orElse(""),
                 contentProvider.isActive(),
-                contentProvider.getLastSync()
+                contentProvider.getLastSync(),
+                AuthenticationJpaEntity.from(contentProvider.getAuthentication())
         );
     }
 
@@ -70,7 +61,15 @@ public class ContentProviderJpaEntity extends ProviderJpaEntity {
                 getBaseUrl(),
                 isActive(),
                 getLastSync(),
-                getAuthentication()
+                Authentication.with(
+                        getAuthentication().getProviderID(),
+                        getAuthentication().getType().name(),
+                        getAuthentication().getClientId(),
+                        getAuthentication().getClientSecret(),
+                        getAuthentication().getAuthorizationUrl(),
+                        getAuthentication().getTokenUrl(),
+                        getAuthentication().getFile()
+                )
         );
     }
 

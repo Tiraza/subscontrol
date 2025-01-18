@@ -4,21 +4,34 @@ public record CreateContentProviderCommand(
         String type,
         String name,
         String baseUrl,
+        String authenticationType,
         String clientId,
         String clientSecret,
         String authorizationUrl,
-        String tokenUrl
+        String tokenUrl,
+        String fileBase64
 ) {
 
     public static CreateContentProviderCommand with(
-            String type,
-            String name,
-            String baseUrl,
-            String clientId,
-            String clientSecret,
-            String authorizationUrl,
-            String tokenUrl) {
-        return new CreateContentProviderCommand(type, name, baseUrl, clientId, clientSecret, authorizationUrl, tokenUrl);
+            final String type,
+            final String name,
+            final String baseUrl,
+            final String authenticationType,
+            final String clientId,
+            final String clientSecret,
+            final String authorizationUrl,
+            final String tokenUrl,
+            final String fileBase64) {
+        return new CreateContentProviderCommand(
+                type,
+                name,
+                baseUrl,
+                authenticationType,
+                clientId,
+                clientSecret,
+                authorizationUrl,
+                tokenUrl,
+                fileBase64);
     }
 
 }

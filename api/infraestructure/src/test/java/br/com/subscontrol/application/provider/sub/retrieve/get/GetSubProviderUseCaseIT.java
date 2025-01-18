@@ -2,6 +2,7 @@ package br.com.subscontrol.application.provider.sub.retrieve.get;
 
 import br.com.subscontrol.IntegrationTest;
 import br.com.subscontrol.domain.exceptions.NotFoundException;
+import br.com.subscontrol.domain.provider.authentication.AuthenticationType;
 import br.com.subscontrol.domain.provider.sub.SubProvider;
 import br.com.subscontrol.domain.provider.sub.SubProviderGateway;
 import br.com.subscontrol.domain.provider.sub.SubProviderID;
@@ -33,6 +34,7 @@ public class GetSubProviderUseCaseIT {
         final var expectedName = "Patreon Integration";
         final var expectedBaseUrl = "https://www.patreon.com";
         final var expectedIsActive = true;
+        final var expectedAuthenticationType = AuthenticationType.CLIENT_SECRET;
         final var expectedClientId = UUID.randomUUID().toString();
         final var expectedClientSecret = UUID.randomUUID().toString();
         final var expectedAuthorizationUrl = "http://patreon.com/authorization";
@@ -42,10 +44,13 @@ public class GetSubProviderUseCaseIT {
                 expectedType,
                 expectedName,
                 expectedBaseUrl,
+                expectedAuthenticationType.name(),
                 expectedClientId,
                 expectedClientSecret,
                 expectedAuthorizationUrl,
-                expectedTokenUrl);
+                expectedTokenUrl,
+                null
+        );
 
         assertEquals(0, repository.count());
 

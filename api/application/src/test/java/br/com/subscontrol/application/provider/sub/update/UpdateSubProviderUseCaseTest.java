@@ -3,6 +3,8 @@ package br.com.subscontrol.application.provider.sub.update;
 import br.com.subscontrol.application.UseCaseTest;
 import br.com.subscontrol.domain.exceptions.DomainException;
 import br.com.subscontrol.domain.exceptions.NotFoundException;
+import br.com.subscontrol.domain.provider.authentication.Authentication;
+import br.com.subscontrol.domain.provider.authentication.AuthenticationType;
 import br.com.subscontrol.domain.provider.sub.SubProvider;
 import br.com.subscontrol.domain.provider.sub.SubProviderGateway;
 import br.com.subscontrol.domain.provider.sub.SubProviderID;
@@ -43,16 +45,22 @@ public class UpdateSubProviderUseCaseTest extends UseCaseTest {
 
     @Test
     void givenAValidCommand_whenCallsUpdate_shouldReturnId() {
-        final var provider = SubProvider.create(
+        final var providerID = SubProviderID.unique();
+        final var provider = SubProvider.with(
+                providerID.getValue(),
                 SubProviderType.PATREON,
                 "Patreon Integration",
                 "http://patreon.com",
-                null);
+                true,
+                null,
+                Authentication.withFile(providerID, new byte[1])
+        );
 
         final var expectedId = provider.getId();
         final var expectedName = "Google Drive Integration";
         final var expectedBaseUrl = "https://www.google.com";
         final var expectedIsActive = false;
+        final var expectedAuthenticationType = AuthenticationType.CLIENT_SECRET;
         final var expectedClientId = UUID.randomUUID().toString();
         final var expectedClientSecret = UUID.randomUUID().toString();
         final var expectedAuthorizationUrl = "http://google.com/authorization";
@@ -63,10 +71,12 @@ public class UpdateSubProviderUseCaseTest extends UseCaseTest {
                 expectedName,
                 expectedBaseUrl,
                 expectedIsActive,
+                expectedAuthenticationType.name(),
                 expectedClientId,
                 expectedClientSecret,
                 expectedAuthorizationUrl,
-                expectedTokenUrl
+                expectedTokenUrl,
+                null
         );
 
         when(gateway.findById(any())).thenReturn(Optional.of(provider));
@@ -84,10 +94,10 @@ public class UpdateSubProviderUseCaseTest extends UseCaseTest {
                 Objects.equals(expectedName, subProvider.getName())
                         && Objects.equals(expectedBaseUrl, subProvider.getBaseUrl())
                         && Objects.equals(expectedIsActive, subProvider.isActive())
-                        && Objects.equals(expectedClientId, subProvider.getAuthentication().clientId())
-                        && Objects.equals(expectedClientSecret, subProvider.getAuthentication().clientSecret())
-                        && Objects.equals(expectedAuthorizationUrl, subProvider.getAuthentication().authorizationUrl())
-                        && Objects.equals(expectedTokenUrl, subProvider.getAuthentication().tokenUrl())
+                        && Objects.equals(expectedClientId, subProvider.getAuthentication().getClientId())
+                        && Objects.equals(expectedClientSecret, subProvider.getAuthentication().getClientSecret())
+                        && Objects.equals(expectedAuthorizationUrl, subProvider.getAuthentication().getAuthorizationUrl())
+                        && Objects.equals(expectedTokenUrl, subProvider.getAuthentication().getTokenUrl())
         ));
     }
 
@@ -100,10 +110,12 @@ public class UpdateSubProviderUseCaseTest extends UseCaseTest {
                 "Patreon Integration",
                 "https://www.patreon.com",
                 true,
+                AuthenticationType.CLIENT_SECRET.name(),
                 UUID.randomUUID().toString(),
                 UUID.randomUUID().toString(),
                 "http://patreon.com/authorization",
-                "http://patreon.com/token"
+                "http://patreon.com/token",
+                null
         );
 
         when(gateway.findById(any())).thenReturn(Optional.empty());
@@ -121,14 +133,20 @@ public class UpdateSubProviderUseCaseTest extends UseCaseTest {
     @ParameterizedTest
     @MethodSource("provideArguments")
     void givenInvalidCommand_whenCallsUpdate_thenReceiveDomainException(String errorMessage, String name, String url) {
-        final var provider = SubProvider.create(
+        final var providerID = SubProviderID.unique();
+        final var provider = SubProvider.with(
+                providerID.getValue(),
                 SubProviderType.PATREON,
                 "Patreon Integration",
                 "http://patreon.com",
-                null);
+                true,
+                null,
+                Authentication.withFile(providerID, new byte[1])
+        );
 
         final var expectedId = provider.getId();
         final var expectedIsActive = true;
+        final var expectedAuthenticationType = AuthenticationType.CLIENT_SECRET;
         final var expectedClientId = UUID.randomUUID().toString();
         final var expectedClientSecret = UUID.randomUUID().toString();
         final var expectedAuthorizationUrl = "http://google.com/authorization";
@@ -139,10 +157,12 @@ public class UpdateSubProviderUseCaseTest extends UseCaseTest {
                 name,
                 url,
                 expectedIsActive,
+                expectedAuthenticationType.name(),
                 expectedClientId,
                 expectedClientSecret,
                 expectedAuthorizationUrl,
-                expectedTokenUrl
+                expectedTokenUrl,
+                null
         );
 
         when(gateway.findById(any())).thenReturn(Optional.of(provider));

@@ -4,7 +4,6 @@ import br.com.subscontrol.IntegrationTest;
 import br.com.subscontrol.domain.provider.sub.SubProvider;
 import br.com.subscontrol.domain.provider.sub.SubProviderGateway;
 import br.com.subscontrol.domain.provider.sub.SubProviderID;
-import br.com.subscontrol.domain.provider.sub.SubProviderType;
 import br.com.subscontrol.infraestructure.provider.sub.persistence.SubProviderJpaEntity;
 import br.com.subscontrol.infraestructure.provider.sub.persistence.SubProviderRepository;
 import org.junit.jupiter.api.Test;
@@ -29,10 +28,16 @@ public class DeleteSubProviderUseCaseIT {
     @Test
     void givenAValidId_whenCallsDelete_shouldDelete() {
         final var provider = SubProvider.create(
-                SubProviderType.PATREON,
+                "Patreon",
                 "Patreon Integration",
                 "http://patreon.com",
-                null);
+                "CLIENT_SECRET",
+                "123",
+                "123",
+                "/auth",
+                "/token",
+                null
+        );
 
         final var expectedId = provider.getId();
 
@@ -50,10 +55,16 @@ public class DeleteSubProviderUseCaseIT {
     @Test
     void givenAnInvalidId_whenCallsDelete_shouldBeOk() {
         final var provider = SubProvider.create(
-                SubProviderType.PATREON,
+                "Patreon",
                 "Patreon Integration",
                 "http://patreon.com",
-                null);
+                "CLIENT_SECRET",
+                "123",
+                "123",
+                "/auth",
+                "/token",
+                null
+        );
 
         assertEquals(0, repository.count());
 

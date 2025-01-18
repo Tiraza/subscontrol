@@ -2,6 +2,7 @@ package br.com.subscontrol.application.provider.sub.retrieve.list;
 
 import br.com.subscontrol.IntegrationTest;
 import br.com.subscontrol.domain.pagination.SearchQuery;
+import br.com.subscontrol.domain.provider.authentication.AuthenticationType;
 import br.com.subscontrol.domain.provider.sub.SubProvider;
 import br.com.subscontrol.domain.provider.sub.SubProviderGateway;
 import br.com.subscontrol.domain.provider.sub.SubProviderType;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -30,8 +32,8 @@ public class ListSubProviderUseCaseIT {
     @Test
     void givenAValidQuery_whenCallsList_shouldReturnProviders() {
         final var providers = List.of(
-                SubProvider.create(SubProviderType.PATREON, "Patreon", "http://patreon.com", null),
-                SubProvider.create(SubProviderType.PATREON, "Kickstarter", "http://kickstarter.com", null)
+                createProviderForTest("Patreon"),
+                createProviderForTest("Kickstarter")
         );
 
         assertEquals(0, repository.count());
@@ -81,5 +83,18 @@ public class ListSubProviderUseCaseIT {
         assertEquals(expectedPerPage, actualOutput.perPage());
         assertEquals(expectedTotal, actualOutput.total());
         assertEquals(expectedItems, actualOutput.items());
+    }
+
+    private static SubProvider createProviderForTest(final String name) {
+        return SubProvider.create(
+                SubProviderType.PATREON.getName(),
+                name,
+                null,
+                AuthenticationType.CLIENT_SECRET.name(),
+                UUID.randomUUID().toString(),
+                UUID.randomUUID().toString(),
+                "/authorization",
+                "/token",
+                null);
     }
 }

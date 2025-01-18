@@ -22,6 +22,7 @@ public abstract class Entity<ID extends Identifier> {
 
     protected void selfValidate() {
         final var notification = Notification.create();
+
         validate(notification);
 
         if (notification.hasError()) {

@@ -29,10 +29,16 @@ class DeleteContentProviderUseCaseIT {
     @Test
     void givenAValidId_whenCallsDelete_shouldDelete() {
         final var provider = ContentProvider.create(
-                ContentProviderType.GOOGLE_DRIVE,
-                "Google Drive Integration",
+                ContentProviderType.GOOGLE_DRIVE.getName(),
+                "Google Integration",
                 "http://google.com",
-                null);
+                "CLIENT_SECRET",
+                "123",
+                "123",
+                "/auth",
+                "/token",
+                null
+        );
 
         final var expectedId = provider.getId();
 
@@ -50,10 +56,16 @@ class DeleteContentProviderUseCaseIT {
     @Test
     void givenAnInvalidId_whenCallsDelete_shouldBeOk() {
         final var provider = ContentProvider.create(
-                ContentProviderType.GOOGLE_DRIVE,
-                "Google Drive Integration",
+                ContentProviderType.GOOGLE_DRIVE.getName(),
+                "Google Integration",
                 "http://google.com",
-                null);
+                "CLIENT_SECRET",
+                "123",
+                "123",
+                "/auth",
+                "/token",
+                null
+        );
 
         assertEquals(0, repository.count());
 
